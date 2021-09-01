@@ -1,0 +1,9 @@
+.history
+.versions
+out
+dist
+node_modules/
+.vscode-test/
+*.vsix
+/config
+README-local.md
