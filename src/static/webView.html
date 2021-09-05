@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta name="renderer" content="webkit" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+		/>
+
+		<meta charset="UTF-8" />
+		<title>阅读</title>
+		<!-- 控制引用权限 -->
+		<meta http-equiv="Content-Security-Policy" content="script-src #csp; style-src #csp" />
+		<link rel="stylesheet" href="@./style.css" />
+		<script src="@./webView.js"></script>
+	</head>
+	<body class="body">
+		<!-- 没啥名字起的,就nav吧 -->
+		<div class="nav">
+			<button class="button prev">上一章</button>
+			<div class="content-container">
+				<div class="title flex-center">章节标题</div>
+				<div class="zoom flex-center">20px 500%</div>
+			</div>
+			<button class="button next">下一章</div>
+		</div>
+		<div class="main">
+			<div class="header standard-width">
+				<div class="title">章节标题</div>
+			</div>
+			<div class="content-box">
+				<div class="content standard-width">
+					<div> 您现在应该看到内容,如果没有,请重新打开章节 </div>
+				</div>
+			</div>
+			<div class="footer standard-width">
+				<div class="btn-box">
+					<button class="prev">上一章</button>
+					<button class="next">下一章</button>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,26 +1,50 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+// vscode模块包含VS Code可扩展性API
+// 导入模块并在下面的代码中使用别名vscode引用它
 import * as vscode from 'vscode';
+// 方法在index.js,导入,并集中添加
+const index = require("./index");
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+
+// 此方法在您的扩展被激活时被调用
+// 您的扩展是激活的第一次命令被执行
+/**
+ * 拓展激活的事件,激活拓展时执行,拓展激活事件只会执行一次
+ */
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "novel-look-ts" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('novel-look-ts.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from novel-look-ts!');
-	});
+	console.log("拓展初始化");
+	// console.log(context.globalState);
+	// console.log(context.globalStoragePath);
+	// console.log(context.globalStorageUri);
+	// 初始化自己的文件夹
+	// C:\Users\Administrator\AppData\Roaming\Code\User\globalStorage\ytx.novel-look
+	// let uri = context.globalStorageUri;
+	// let fs = vscode.workspace.fs;
+	// let t=fs.createDirectory(uri).then(function (e,e2) {
+	// 	console.warn("createDirectory");
+	// 	console.warn(e,e2);
+	// 	console.warn(t);
+	// })
+	index.init(context)
+	// 注册命令
+	let command = index.command;
+	for (var item in command) {
+		// console.warn(item,command[item]);
+		context.subscriptions.push(vscode.commands.registerCommand("novel-look." + item, command[item]));
+	}
+	// 测试专用命令
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(
+		vscode.commands.registerCommand("novel-look.test", function () {
+			vscode.window.showInformationMessage("test");
+			// vscode.commands.getCommands().then(allCommands => {
+			// 	console.log("所有命令：", allCommands);
+			// });
+		})
+	);
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() {}
+// 当你的扩展被停用时，这个方法被调用
+export function deactivate() {
+	vscode.window.showInformationMessage('拓展被停用');
+}

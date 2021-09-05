@@ -10,3 +10,8 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+
+config
+.history
+README-local.md
+img/old/

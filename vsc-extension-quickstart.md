@@ -1,3 +1,4 @@
+# 这个文件应该没用,只是一个说明文件
 # Welcome to your VS Code Extension
 
 ## What's in the folder

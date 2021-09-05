@@ -1,8 +1,8 @@
 {
-  "name": "novel-look-ts",
-	"displayName": "novel-look-ts",
-	"description": "novel-look的第二版",
-	"version": "0.0.1",
+	"name": "novel-look-ts",
+	"displayName": "novel-look",
+	"description": "高性能,支持高度自定义操作的看(mo)书(yu)插件",
+	"version": "0.0.4",
 	"keywords": [
 		"novel",
 		"摸鱼",
@@ -16,18 +16,267 @@
 	"categories": [
 		"Other"
 	],
+	"capabilities": {
+		"virtualWorkspaces": true,
+		"untrustedWorkspaces": {
+			"supported": false,
+			"description": ""
+		}
+	},
+	"icon": "img/fish.png",
 	"activationEvents": [
-        "onCommand:novel-look-ts.helloWorld"
+		"onView:novelLookTreeView",
+		"onCommand:novel-look.openWebView"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
+		"title": "novel-look",
+		"properties": {
+			"novelLook.match.novelName": {
+				"type": "string",
+				"default": "^.*\\.txt$",
+				"description": "小说名的正则,'\\'不需要转义"
+			},
+			"novelLook.match.chapterName": {
+				"type": "string",
+				"default": "(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*",
+				"description": "匹配章节名称的正则,'\\'不需要转义"
+			},
+			"novelLook.ignoreDir": {
+				"type": "array",
+				"default": [
+					"tmp",
+					"static"
+				],
+				"description": "需要忽略的文件夹的名称"
+			},
+			"novelLook.ignoreFileName": {
+				"type": "array",
+				"default": [],
+				"description": "需要忽略的文件的名称"
+			},
+			"novelLook.readSetting.1": {
+				"type": "string",
+				"default": "说明",
+				"enum": [
+					"说明"
+				],
+				"description": "说明(此项无需修改)\n修改阅读设置后,需要重新打开webView以读取设置"
+			},
+			"novelLook.readSetting.lineIndent": {
+				"type": "number",
+				"minimum": 0,
+				"default": 2,
+				"description": "每一行开头的缩进量,em"
+			},
+			"novelLook.readSetting.rootFontSize": {
+				"type": "number",
+				"minimum": 1,
+				"default": 20,
+				"description": "字体大小(html字体大小,正文字体为1rem)"
+			},
+			"novelLook.readSetting.titleSize": {
+				"type": "number",
+				"minimum": 1,
+				"default": 1.6,
+				"description": "章节名称的字体大小,单位是rem"
+			},
+			"novelLook.readSetting.zoom": {
+				"type": "number",
+				"minimum": 0.1,
+				"maximum": 5,
+				"default": 1,
+				"scope": "application",
+				"description": "字体大小的缩放倍数,字体实际大小=root*zoom\n缩放这里只是一个默认值,如果你自己修改过缩放的值,那么这个值就永远不会生效"
+			},
+			"novelLook.readSetting.scrollSpeed": {
+				"type": "number",
+				"minimum": 0,
+				"default": 144,
+				"scope": "application",
+				"description": "自动滚动速度(每秒多少px)  推荐 72, 96, 120, 144, 168, 192\n这个值如果很低,会让人产生一卡一卡的感觉"
+			},
+			"novelLook.readSetting.scrollEndTime": {
+				"type": "number",
+				"minimum": 0,
+				"default": 3000,
+				"description": "滚动到章节底部的等待时间(ms)"
+			},
+			"novelLook.readSetting.scrollStartTime": {
+				"type": "number",
+				"minimum": 0,
+				"default": 3000,
+				"description": "自动切换到下一章之后,等待多少时间开始滚屏(ms)"
+			},
+			"novelLook.readSetting.lineSpace": {
+				"type": "number",
+				"minimum": 0,
+				"default": 1,
+				"description": "行与行之间以几个换行符分割,仅文件模式生效"
+			}
+		},
 		"commands": [
 			{
-				"command": "novel-look-ts.helloWorld",
-				"title": "Hello World"
+				"command": "novel-look.helloWorld",
+				"category": "小说阅读",
+				"title": "Hello World11111"
+			},
+			{
+				"command": "novel-look.test",
+				"category": "小说阅读",
+				"title": "test"
+			},
+			{
+				"command": "novel-look.refreshFile",
+				"category": "小说阅读",
+				"icon": "img/refresh.png",
+				"title": "刷新"
+			},
+			{
+				"command": "novel-look.openExplorer",
+				"category": "小说阅读",
+				"icon": "img/add.png",
+				"title": "打开文件目录"
+			},
+			{
+				"command": "novel-look.openWebViewDir",
+				"category": "小说阅读",
+				"icon": "",
+				"title": "打开webView文件目录"
+			},
+			{
+				"command": "novel-look.showChapter",
+				"category": "小说阅读",
+				"title": "打开本章"
+			},
+			{
+				"command": "novel-look.closeWebView",
+				"category": "小说阅读",
+				"title": "关闭窗口"
+			},
+			{
+				"command": "novel-look.openWebView",
+				"category": "小说阅读",
+				"title": "打开窗口"
+			},
+			{
+				"command": "novel-look.showReadChapter",
+				"category": "小说阅读",
+				"icon": "img/refresh.png",
+				"title": "显示已读章节"
+			},
+			{
+				"command": "novel-look.hideReadChapter",
+				"category": "小说阅读",
+				"icon": "img/refresh.png",
+				"title": "隐藏已读章节"
+			},
+			{
+				"command": "novel-look.clearReadChapter",
+				"category": "小说阅读",
+				"title": "清空已读章节"
+			},
+			{
+				"command": "extension.sayHello",
+				"title": "Hello World22222",
+				"category": "小说阅读",
+				"icon": {
+					"light": "path/to/light/icon.png",
+					"dark": "path/to/dark/icon.png"
+				}
+			},
+			{
+				"command": "novel-look.sayHello",
+				"category": "小说阅读",
+				"icon": "img/refresh.png",
+				"title": "删除"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "novel-look.closeWebView",
+				"key": "alt+d",
+				"mac": "alt+d"
+			},
+			{
+				"command": "novel-look.openWebView",
+				"key": "alt+s",
+				"mac": "alt+s"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "novel-look.refreshFile",
+					"when": "view == novelLookTreeView",
+					"group": "navigation"
+				},
+				{
+					"command": "novel-look.openExplorer",
+					"when": "view == novelLookTreeView",
+					"group": "navigation"
+				},
+				{
+					"command": "novel-look.openWebViewDir",
+					"when": "view == novelLookTreeView",
+					"group": ""
+				},
+				{
+					"command": "novel-look.showReadChapter",
+					"when": "view == novelLookTreeView",
+					"group": ""
+				},
+				{
+					"command": "novel-look.hideReadChapter",
+					"when": "view == novelLookTreeView",
+					"group": ""
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "novel-look.clearReadChapter",
+					"when": "view == novelLookTreeViewk"
+				},
+				{
+					"command": "novel-look.showChapter",
+					"when": "view == novelLookTreeViewk"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "novel-look",
+					"title": "看(mo)书(yu)",
+					"icon": "img/fish.png"
+				}
+			]
+		},
+		"views": {
+			"novel-look": [
+				{
+					"id": "novelLookTreeView",
+					"name": "书架",
+					"contextualTitle": "我的书架"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "novelLookTreeView",
+				"contents": "您还没有电子书,请添加电子书\n[添加](command:novel-look.openExplorer)"
 			}
 		]
 	},
+	"license": "SEE LICENSE IN LICENSE.txt",
+	"bugs": {
+		"url": "https://github.com/ytx222/novel-look-ts/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ytx222/novel-look-ts"
+	},
+	"homepage": "https://github.com/ytx222/novel-look-ts/blob/master/README.md",
 	"scripts": {
 		"vscode:prepublish": "npm run package",
 		"compile": "webpack",
@@ -40,19 +289,23 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.59.0",
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.2.2",
 		"@types/node": "14.x",
-		"eslint": "^7.27.0",
+		"@types/vscode": "^1.59.0",
 		"@typescript-eslint/eslint-plugin": "^4.26.0",
 		"@typescript-eslint/parser": "^4.26.0",
+		"eslint": "^7.27.0",
 		"glob": "^7.1.7",
 		"mocha": "^8.4.0",
+		"ts-loader": "^9.2.2",
 		"typescript": "^4.3.2",
 		"vscode-test": "^1.5.2",
-		"ts-loader": "^9.2.2",
 		"webpack": "^5.38.1",
 		"webpack-cli": "^4.7.0"
+	},
+	"dependencies": {
+		"chardet": "^1.3.0",
+		"iconv-lite": "^0.6.3"
 	}
 }

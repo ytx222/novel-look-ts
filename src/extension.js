@@ -1,6 +1,6 @@
 // vscode模块包含VS Code可扩展性API
 // 导入模块并在下面的代码中使用别名vscode引用它
-const vscode = require("vscode");
+import * as vscode from 'vscode';
 // 方法在index.js,导入,并集中添加
 const index = require("./index");
 
@@ -51,7 +51,7 @@ function deactivate() {
 }
 
 
-module.exports = {
-	activate,
-	deactivate,
-};
+// module.exports = {
+// 	activate,
+// 	deactivate,
+// };
