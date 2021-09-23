@@ -7,7 +7,8 @@ const iconv = require('iconv-lite');
  * 自动识别buffer内容的编码,并转换成对应字符串
  * @return {String}
  */
-export default function (buffer: Buffer): string {
+//buffer: Buffer
+export default function (buffer:Uint8Array): string {
 	//Uint8Array
 	let det = { fRawInput: buffer, fRawLength: buffer.length };
 	if (det.fRawLength > 1024 * 128) {

@@ -10,6 +10,7 @@ export const env = config.env;
  */
 export function get<T>(key: string, defaultValue: T ): T {
 	let t = vscode.workspace.getConfiguration('novelLook');
+	console.log('match',t.get('match'));
 	return t.get(key, defaultValue);
 }
 /**

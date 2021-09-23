@@ -1,68 +1,74 @@
-const path = require('path');
 import * as vscode from 'vscode';
-const file = require('./file/file');
-const split = require('./split');
-const webView = require('./webView');
-const { getState, setState, setSync } = require('./util');
-/**
- * @type {Chapter} 当前显示章节
- */
-let curChapter = null;
-/**
- * @type {vscode.ExtensionContext}
- */
-// let content;
+import * as file from './file/file';
+import { split } from './split';
+import * as webView from './webView';
+import { getFileName } from './file/fileUtil';
+import { getState, setState, setSync, getExtensionUri, getStateDefault } from './util';
+/** 当前显示章节 */
+let curChapter: Chapter;
 
-// extends vscode.TreeDataProvider
-export class Bookrack {
+//
+export class Bookrack implements vscode.TreeDataProvider<Book | Chapter> {
 	/**
-	 * @param {any} arr
+	 * 初始化书架
+	 * @param arr 书的地址列表
 	 */
-	constructor(arr) {
+	constructor(arr: vscode.Uri[]) {
 		this.list = this.parseArr(arr);
 		// console.warn("创建书架--", arr);
-		this._onDidChangeTreeData = new vscode.EventEmitter();
-		this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+		this._onDidChangeTreeData = new vscode.EventEmitter<Bookrack>();
+		// this.onDidChangeTreeData = this._onDidChangeTreeData.event;
 	}
+	// 书架列表
+	list: Book[];
+	//
+	_onDidChangeTreeData: vscode.EventEmitter<Bookrack>;
+	// onDidChangeTreeData: vscode.Event<Bookrack>;
 	/**
-	 * @param {string | any[]} arr
+	 * 根据书的地址列表,取出对应的信息,格式化
+	 * @param arr
+	 * @returns
 	 */
-	parseArr(arr) {
-		const res = [];
-		for (var i = 0; i < arr.length; i++) {
-			let t = path.parse(arr[i]);
-			// 0不可折叠 	1折叠 	2展开
-			res[i] = new Book(t.name, i, arr[i], t.base);
-		}
-		return res;
+	parseArr(arr: vscode.Uri[]): Book[] {
+		return arr.map(u => new Book(u));
+		// const res = [];
+		// for (var i = 0; i < arr.length; i++) {
+		// 	console.log(arr[i]);
+		// 	// 0不可折叠 	1折叠 	2展开
+		// 	res[i] = new Book(name, arr[i].fsPath);
+		// }
+		// return res;
 	}
 	// private _onDidChangeTreeData: vscode.EventEmitter<Dependency | undefined | null | void> = new vscode.EventEmitter<Dependency | undefined | null | void>();
 	// readonly onDidChangeTreeData: vscode.Event<Dependency | undefined | null | void> = this._onDidChangeTreeData.event;
 	/**
 	 *
-	 * @param {String[]} arr
 	 */
-	refresh(arr) {
+	refresh(uris: vscode.Uri[]): void {
+		let arr = uris.map(e => e.fsPath);
 		console.warn('执行刷新', arr);
 		// 对比差异,目录顺序是固定的,所以返回的也应该是固定的
-		for (var i = 0; i < this.list.length; i++) {
-			if (this.list[i].fullPath === arr[i]) {
-				//如果相等,则什么都不做
-			} else {
-				//如果不相等,首先判断是否是被删除了
-				if (arr.includes(this.list[i].fullPath)) {
-					//新增
-					let t = path.parse(arr[i]);
-					this.list.splice(i, 0, new Book(t.name, i, arr[i], t.base));
+		if (this.list.length) {
+			for (var i = 0; i < this.list.length; i++) {
+				if (this.list[i].fullPath === arr[i]) {
+					//如果相等,则什么都不做
 				} else {
-					//被删除了
-					this.list.splice(i--, 1);
+					//如果不相等,首先判断是否是被删除了
+					if (arr.includes(this.list[i].fullPath)) {
+						//新增
+						this.list.splice(i, 0, new Book(uris[i]));
+					} else {
+						//被删除了
+						this.list.splice(i--, 1);
+					}
 				}
 			}
-			// 可能出现删除或新增,所以i必须更新
-			this.list[i].i = i;
+		} else {
+			console.warn('没有书,则直接使用新数据,不差量更新');
+			console.warn(arr);
+			this.list = this.parseArr(uris);
 		}
-		this._onDidChangeTreeData.fire();
+		this._onDidChangeTreeData.fire(this);
 	}
 
 	/**
@@ -70,7 +76,7 @@ export class Bookrack {
 	 * @param {Book} element
 	 * @return {vscode.TreeItem}
 	 */
-	getTreeItem(element) {
+	getTreeItem(element: Book): Book {
 		// console.log("getTreeItem", element);
 		// console.log(Object.prototype.toString.call(element));
 		return element;
@@ -82,7 +88,8 @@ export class Bookrack {
 	 * @_return {Thenable<vscode.TreeItem[]>} 字类型(章节)数组
 	 * 这两个应该是兼容的,
 	 */
-	async getChildren(element) {
+	//
+	async getChildren(element: Book) {
 		if (!this.list.length) {
 			// console.log("getChildren", this.list, element);
 			vscode.window.showInformationMessage('没有书');
@@ -107,51 +114,60 @@ export class Bookrack {
 class Book extends vscode.TreeItem {
 	/**
 	 * 创建一本书
-	 * @param {String} label 名称
-	 * @param {Number} i 数组中的下标
-	 * @param {String} fullPath 这本书的路径
-	 * @param {String} base 文件名
+	 * @param  label 名称
+	 * @param  fullPath 这本书的路径
 	 */
-	constructor(label, i, fullPath, base) {
-		super(label);
+	constructor(uri: vscode.Uri) {
+		super(getFileName(uri));
 		//FIXME:书名悬浮显示什么
+		this.label = getFileName(uri);
 		this.tooltip = `${this.label}`;
 		this.collapsibleState = 1; // 可展开,未展开
 		// this.description = this.version;
-		console.warn(__filename);
-		console.warn( path.join(__filename, '../../', 'img', 'book.png'));
-		this.iconPath = path.join(__filename, '../../', 'img', 'book.png');
+		this.iconPath = vscode.Uri.joinPath(getExtensionUri() ,'img/book.png')
 		// 自己用的
-		this.i = i;
-		this.fullPath = fullPath;
-		this.base = base;
+		this.fullPath = uri.fsPath;
 		this.txt = ''; //文件内容,暂时留空
-		/**
-		 * @type {Chapter[]}
-		 */
-		this.chapterList = []; //章节列表,暂时留空
-		this.showList = []; // 真正的用来显示的列表
-		this.timer = null;
+
 		// 已读章节
-		this.readList = getState('book_' + label, []);
-		console.warn(label);
+		this.readList = getStateDefault<number[]>('book_' + this.label, []);
+		console.warn(this.label);
 		console.warn(this.readList);
 	}
+	label: string;
+	fullPath: string;
+	txt: string;
+	chapterList: Chapter[] = [];
+	showList: Chapter[] = [];
+	// TODO:类型
+	readList: number[] = [];
+	timer?: NodeJS.Timeout;
 	// 获取这本书的章节内容,这个是获取章节列表的最佳方式
 	async getChapterList() {
 		console.warn(`getChapterList==${this.label}`);
 		console.warn(this.readList);
 		// console.time('获取章节内容时间');
 		await this.getContent();
-		let arr = split.split(this.txt);
-		this.chapterList = arr.map((t, i) => {
-			return new Chapter(this, t.s, t.i, t.txtIndex, t.size, this.readList[i] || false);
-		});
+		let arr = split(this.txt);
+		//FIXME: 类型修改
+		this.chapterList = arr.map(
+			(
+				t: {
+					s: string;
+					i: number;
+					txtIndex: number;
+					size: number;
+				},
+				i: number
+			) => {
+				return new Chapter(this, t.s, t.i, t.txtIndex, t.size, !!this.readList[i] || false);
+			}
+		);
 		// console.timeEnd('获取章节内容时间');
 
 		// 如果需要隐藏已读章节
-		console.warn('是否隐藏已读章节', !getState('isShowReadChapter', false));
-		if (!getState('isShowReadChapter', false)) {
+		console.warn('是否隐藏已读章节', !getStateDefault('isShowReadChapter', false));
+		if (!getStateDefault('isShowReadChapter', false)) {
 			// 多筛选一遍,并不怎么消耗性能,但是可以提高可维护性
 			this.showList = this.chapterList.filter(e => !e.isRead);
 		} else {
@@ -167,7 +183,7 @@ class Book extends vscode.TreeItem {
 	 */
 	async getContent() {
 		try {
-			clearInterval(this.timer);
+			if (this.timer) clearInterval(this.timer);
 			//10分钟后清除这本书
 			this.timer = setTimeout(() => {
 				this.clearTxt();
@@ -176,7 +192,8 @@ class Book extends vscode.TreeItem {
 				return;
 			}
 			// console.time();
-			this.txt = await file.readFile(this.fullPath, true);
+			//TODO:
+			this.txt = await file.readFile(vscode.Uri.file(this.fullPath), true);
 			// console.timeEnd();
 		} catch (error) {
 			console.error(error);
@@ -186,9 +203,9 @@ class Book extends vscode.TreeItem {
 
 	/**
 	 * 设置某个章节为已读章节
-	 * @param {Number} i 章节下标
+	 * @param  i 章节下标
 	 */
-	setReadChapter(i) {
+	setReadChapter(i: number) {
 		this.readList[i] = 1; //数据转化为json,所以1应该比true更合适
 		setState('book_' + this.label, this.readList);
 		// console.warn(this.readList);
@@ -199,38 +216,57 @@ class Book extends vscode.TreeItem {
 		this.readList = [];
 		setState('book_' + this.label, []);
 	}
+
+	clearTxt() {
+		console.error('清除txt', this.label);
+		this.txt = '';
+	}
 }
-Book.prototype.clearTxt = function () {
-	console.error('清除txt', this.label);
-	this.txt = '';
-};
+
+interface LastChapterData {
+	title: string;
+	i: number;
+	bookName: string;
+}
+
 /**
  * 章节
  */
 class Chapter extends vscode.TreeItem {
 	/**
 	 * 创建章节
-	 * @param {Book} book 这个章节属于哪本书
-	 * @param {string} label 章节标题
-	 * @param {Number} i 数组index
-	 * @param {Number} txtIndex 在这本书的内容的开始下标
-	 * @param {Number} size 长度
-	 * @param {Boolean} isRead 是否已读
+	 * @param book 这个章节属于哪本书
+	 * @param label 章节标题
+	 * @param i 数组index
+	 * @param txtIndex 在这本书的内容的开始下标
+	 * @param size 长度
+	 * @param isRead 是否已读
 	 */
-	constructor(book, label, i, txtIndex, size, isRead = false) {
+	constructor(
+		public book: Book,
+		label: string,
+		public i: number,
+		public txtIndex: number,
+		public size: number,
+		public isRead = false
+	) {
 		super(label.trim());
+		this.label = label.trim();
 		this.tooltip = `${this.label}---共${size}字`;
 		this.collapsibleState = 0; // 不可折叠
 		// 4个自己用的
 		this.title = label;
 		this.i = i;
-		this.txtIndex = txtIndex;
+		// this.txtIndex = txtIndex;
 		this.size = size;
 		this.book = book;
 		this.command = { title: '', command: 'novel-look.showChapter', arguments: [this] }; // 执行命令
 		this.content = '';
 		this.isRead = isRead;
 	}
+	label: string;
+	title: string;
+	content: string;
 	/**
 	 * 打开本章
 	 *
@@ -239,10 +275,10 @@ class Chapter extends vscode.TreeItem {
 		// console.log(this.i, this.txtIndex, this.size);
 		curChapter = this;
 		await this.getTxt();
-		// await file.openChapter("tmp/" + this.book.label + "/", this.label, this.content);
 		let lineList = this.parseChapterTxt_WebView();
 		// 缓存最后打开的章节
-		setState('lastOpenChapter', { title: this.label, i: this.i, bookName: this.book.label });
+		const data: LastChapterData = { title: this.label, i: this.i, bookName: this.book.label };
+		setState('lastOpenChapter', data);
 		webView.showChapter(this.label, lineList);
 	}
 	/**
@@ -250,7 +286,7 @@ class Chapter extends vscode.TreeItem {
 	 */
 	parseChapterTxt_WebView() {
 		let arr = this.content.split('\n');
-		let res = [];
+		let res: string[] = [];
 		arr.forEach(function (item) {
 			item = item.trim();
 			if (item && item.length) {
@@ -270,7 +306,7 @@ class Chapter extends vscode.TreeItem {
 		this.book.setReadChapter(this.i);
 	}
 }
-async function showChapter(e) {
+async function showChapter(e: vscode.TreeItem): Promise<void> {
 	//是对章执行的命令
 	if (e && e instanceof Chapter) {
 		// console.log("showChapter---执行");
@@ -294,7 +330,7 @@ export async function prevChapter() {
  * @param {String} s
  * @param {Boolean} isSave 是否保存当前章节为已读章节
  */
-async function changeChapter(n, s, isSave = false) {
+async function changeChapter(n: number, s: string, isSave = false) {
 	console.log('changeChapter', n, s, isSave);
 	if (curChapter) {
 		if (isSave) {
@@ -327,7 +363,7 @@ async function openWebView() {
 	} else {
 		// 读取缓存中的
 		vscode.window.showInformationMessage(`正在打开`);
-		let data = getState('lastOpenChapter');
+		let data = getState<LastChapterData>('lastOpenChapter');
 		if (data && data.bookName) {
 			// 找到那本书
 			for (var i = 0; i < bookrack.list.length; i++) {
@@ -355,16 +391,14 @@ async function openWebView() {
 	对于treeView的
 */
 
-let treeView = null;
-let bookrack = null;
+let treeView: vscode.TreeView<Bookrack>;
+let bookrack: Bookrack;
 
-export function createTreeView(fileList) {
-	//, _content
-	// content = _content;
+export function createTreeView(fileList: vscode.Uri[]) {
 	// console.log("createTreeView 执行");
 	// vscode.window.registerTreeDataProvider("novelLookTreeView", new Bookrack(t));
 	bookrack = new Bookrack(fileList);
-	treeView = vscode.window.createTreeView('novelLookTreeView', {
+	treeView = vscode.window.createTreeView<Bookrack>('novelLookTreeView', {
 		// @ts-ignore
 		treeDataProvider: bookrack,
 	});
@@ -372,7 +406,7 @@ export function createTreeView(fileList) {
 	if (treeView) return;
 	// treeView.reveal
 }
-async function refreshFile(isNotMsg) {
+async function refreshFile(isNotMsg = false) {
 	// console.log("执行刷新");
 	let list = await file.getBookList();
 	bookrack.refresh(list);
@@ -390,7 +424,7 @@ async function hideReadChapter() {
 	setState('isShowReadChapter', false);
 	await refreshFile();
 }
-async function clearReadChapter(e) {
+async function clearReadChapter(e: vscode.TreeItem): Promise<void> {
 	//是对章执行的命令
 	console.log('clearReadChapter---执行');
 	if (e && e instanceof Chapter) {
@@ -403,7 +437,7 @@ async function clearReadChapter(e) {
 	}
 }
 
-export const command={
+export const command = {
 	showChapter,
 	nextChapter,
 	prevChapter,
@@ -413,4 +447,4 @@ export const command={
 	showReadChapter,
 	hideReadChapter,
 	clearReadChapter,
-}
+};

@@ -2,14 +2,14 @@
  * 提交关于操作文件的,可复用的代码
  */
 
-const path = require('path');
-let _fs = vscode.workspace.fs;
-
-const Uri = vscode.Uri;
-import * as config from './../config';
 import * as vscode from 'vscode';
+const Uri = vscode.Uri;
+let _fs = vscode.workspace.fs;
+import * as config from './../config';
+
 import * as file from './file';
 
+import { fromString } from 'uint8arrays/from-string';
 import encoding from './encoding/index';
 
 /** vscode返回的目录类型 */
@@ -21,7 +21,6 @@ let ignoreDir = config.get<String[]>('ignoreDir', []);
 let ignoreFileName = config.get<String[]>('ignoreFileName', []);
 let novelName = new RegExp(config.get('match.novelName', ''));
 
-
 /**
  * 获取一个目录下的所有可能的电子书文件
  * @param uri 地址
@@ -32,7 +31,8 @@ let novelName = new RegExp(config.get('match.novelName', ''));
 export async function readDir(uri: vscode.Uri, isFilter: boolean = false, root = true): Promise<vscode.Uri[]> {
 	// 每次递归调用时只获取一次
 	if (root) {
-		ignoreDir = config.get<String[]>('ignoreDir', []);
+		// FIXME:这里默认有两个是否合适
+		ignoreDir = config.get<String[]>('ignoreDir', ["tmp", "static"]);
 		ignoreFileName = config.get<String[]>('ignoreFileName', []);
 		novelName = new RegExp(config.get('match.novelName', ''));
 	}
@@ -57,8 +57,9 @@ export async function readDir(uri: vscode.Uri, isFilter: boolean = false, root =
 			}
 		}
 	}
+	console.warn(arr);
 	return arr;
-
+	// 232
 }
 /**
  * 打开文件夹,获取dir对象
@@ -84,89 +85,87 @@ export async function getDir(uri: vscode.Uri): Promise<dir[]> {
  * @param checkEncoding 是否需要检查编码
  * @returns 文件内容
  */
-export function readFile(url: string, checkEncoding = false): Promise<string> {
-	return new Promise(function (resolve, reject) {
-		//{ encoding: "gb2312" },
-		_fs.readFile();
-		fs.readFile(url, function (err, buffer) {
-			if (err) {
-				reject(err);
-				return;
-			}
-			if (checkEncoding) {
-				resolve(encoding(buffer));
-			} else {
-				resolve(buffer.toString());
-			}
-		});
-	});
-}
-export function writeFile(_path: string, content: string, isCreateDir = false) {
-	return new Promise((resolve, reject) => {
-		fs.writeFile(_path, content, async function (err) {
-			if (err) {
-				console.warn(isCreateDir, err.code === 'ENOENT');
-				if (isCreateDir && err.code === 'ENOENT') {
-					await createDir(path.dirname(_path), true);
-					// 返回重新调用自身的结果(但是不强制创建文件夹了)
-					resolve(await writeFile(_path, content));
-				} else {
-					reject(err);
-				}
-			} else {
-				resolve();
-			}
-		});
-	});
+export async function readFile(uri: vscode.Uri, checkEncoding = false): Promise<string> {
+	//{ encoding: "gb2312" },
+	console.log('开始读取文件', uri);
+	let buffer = await _fs.readFile(uri);
+	console.log('读取buffer完成');
+	if (checkEncoding) {
+		return encoding(buffer);
+	} else {
+		return buffer.toString();
+	}
 }
 /**
- *
+ * 写文件
+ * @param _path
+ * @param content
+ * @param isCreateDir
+ * @returns
+ */
+export async function writeFile(path: vscode.Uri, content: string | Uint8Array, isCreateDir = false): Promise<void> {
+	if (typeof content === 'string') {
+		content = fromString(content);
+	}
+	try {
+		//FIXME: 创建目录逻辑
+		await _fs.writeFile(path, content);
+	} catch (error) {
+		console.error(error);
+	}
+
+	// fs.writeFile(_path, content, async function (err) {
+	// 	if (err) {
+	// 		console.warn(isCreateDir, err.code === 'ENOENT');
+	// 		if (isCreateDir && err.code === 'ENOENT') {
+	// 			await createDir(path.dirname(_path), true);
+	// 			// 返回重新调用自身的结果(但是不强制创建文件夹了)
+	// 			resolve(await writeFile(_path, content));
+	// 		} else {
+	// 			reject(err);
+	// 		}
+	// 	} else {
+	// 		resolve();
+	// 	}
+	// });
+}
+
+/**
+ * 创建目录
  * @param {String} path
  * @param {Boolean} recursive
  */
-export function createDir(path: string, recursive: boolean): Promise<void> {
-	return new Promise((resolve, reject) => {
-		fs.mkdir(path, { recursive }, function (err) {
-			if (err) {
-				reject(err);
-			} else {
-				resolve();
-			}
-		});
-	});
+export async function createDir(path: vscode.Uri, recursive: boolean): Promise<void> {
+	try {
+		//FIXME: 创建目录逻辑
+		_fs.createDirectory(path);
+	} catch (error) {
+		console.error(error);
+	}
+	// return new Promise((resolve, reject) => {
+	// 	fs.mkdir(path, { recursive }, function (err) {
+	// 		if (err) {
+	// 			reject(err);
+	// 		} else {
+	// 			resolve();
+	// 		}
+	// 	});
+	// });
 }
 
 /**
- * 打开本地拓展文件路径(Uri)
+ * 获取文件名称
+ * @param uri 文件地址
+ * @param isSuffix 是否包含后缀名
  */
-// async function openUri() {
-// 	let fileUri = vscode.Uri.joinPath(file.uri, openDirFileName);
-// 	fs.writeFile(fileUri.fsPath, openDirReadme + file.uri.path, async function (err) {
-// 		if (err) {
-// 			vscode.window.showInformationMessage("打开失败,无文件权限?");
-// 		}
-// 		// 打开未命名文档
-// 		//  function openTextDocument(options?: { language?: string; content?: string; }):
-// 		let doc = await vscode.workspace.openTextDocument(fileUri);
-// 		await vscode.window.showTextDocument(doc, { preview: false });
-// 	});
-// }
-// async function openChapter(_path, fileName, content) {
-
-// 	let fileUri = vscode.Uri.joinPath(file.getUrl(), _path, fileName + ".vscode-novel");
-// 	fs.writeFile(fileUri.fsPath, content, async function (err) {
-// 		if (err) {
-// 			// 如果是没有文件夹错误,则创建
-// 			if (err.code === "ENOENT") {
-// 				// await createChapterDir(path.join(file.uri.fsPath, _path), fileName);
-// 				return;
-// 			}
-// 			vscode.window.showInformationMessage("打开失败,无文件权限?");
-// 			return;
-// 		}
-// 		// 打开未命名文档
-// 		//  function openTextDocument(options?: { language?: string; content?: string; }):
-// 		let doc = await vscode.workspace.openTextDocument(fileUri);
-// 		await vscode.window.showTextDocument(doc, { preview: false });
-// 	});
-// }
+export function getFileName(uri: vscode.Uri, isSuffix = false): string {
+	const path = uri.path;
+	let tArr = path.split('/');
+	let name = tArr[tArr.length - 1];
+	if (isSuffix) return name;
+	let index = name.lastIndexOf('.');
+	if (index != -1) {
+		name = name.substring(0, index);
+	}
+	return name;
+}
