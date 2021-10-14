@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as file from './file/file';
 
-const path = require('path');
 import * as config from './config';
 import { getState, setState, getExtensionUri, getStateDefault } from './util/util';
 import Log from './util/log';
@@ -26,7 +25,6 @@ export async function createWebView() {
 	// 存储panel相关文件的目录
 	let uri = vscode.Uri.joinPath(content.globalStorageUri, 'static');
 
-	// path.join(content.globalStorageUri.fsPath, 'static');
 	panel = vscode.window.createWebviewPanel(
 		'novel', // 标识webview的类型。在内部使用
 		'阅读', // 标题
@@ -86,7 +84,6 @@ async function getWebviewContent(uri: vscode.Uri) {
 	s = s.replace(/(@)(.+?)/g, (_m, _$1, $2) => {
 		Log.warn(panel!.webview.cspSource);
 		return panel!.webview.asWebviewUri(vscode.Uri.joinPath(uri, $2));
-		//vscode.Uri.file(path.join(url, $2))
 	});
 	return s;
 }
