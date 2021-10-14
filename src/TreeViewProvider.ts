@@ -3,27 +3,36 @@ import * as file from './file/file';
 import { split } from './split';
 import * as webView from './webView';
 import { getFileName } from './file/fileUtil';
-import { getState, setState, setSync, getExtensionUri, getStateDefault } from './util';
+import { getState, setState, setSync, getExtensionUri, getStateDefault } from './util/util';
+import Log from './util/log';
 /** 当前显示章节 */
 let curChapter: Chapter;
 
-//
-export class Bookrack implements vscode.TreeDataProvider<Book | Chapter> {
+/**
+ * 子节点类型
+ */
+type TreeItem = Book | Chapter;
+
+/**
+ * 书架,数据提供者
+ */
+export class Bookrack implements vscode.TreeDataProvider<TreeItem> {
 	/**
 	 * 初始化书架
 	 * @param arr 书的地址列表
 	 */
 	constructor(arr: vscode.Uri[]) {
 		this.list = this.parseArr(arr);
-		// console.warn("创建书架--", arr);
-		this._onDidChangeTreeData = new vscode.EventEmitter<Bookrack>();
-		// this.onDidChangeTreeData = this._onDidChangeTreeData.event;
 	}
+
+	/**
+	 * 刷新需要的
+	 */
+	private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | null> = new vscode.EventEmitter<TreeItem | null>();
+	readonly onDidChangeTreeData: vscode.Event<TreeItem | null> = this._onDidChangeTreeData.event;
+
 	// 书架列表
 	list: Book[];
-	//
-	_onDidChangeTreeData: vscode.EventEmitter<Bookrack>;
-	// onDidChangeTreeData: vscode.Event<Bookrack>;
 	/**
 	 * 根据书的地址列表,取出对应的信息,格式化
 	 * @param arr
@@ -31,22 +40,14 @@ export class Bookrack implements vscode.TreeDataProvider<Book | Chapter> {
 	 */
 	parseArr(arr: vscode.Uri[]): Book[] {
 		return arr.map(u => new Book(u));
-		// const res = [];
-		// for (var i = 0; i < arr.length; i++) {
-		// 	console.log(arr[i]);
-		// 	// 0不可折叠 	1折叠 	2展开
-		// 	res[i] = new Book(name, arr[i].fsPath);
-		// }
-		// return res;
 	}
-	// private _onDidChangeTreeData: vscode.EventEmitter<Dependency | undefined | null | void> = new vscode.EventEmitter<Dependency | undefined | null | void>();
-	// readonly onDidChangeTreeData: vscode.Event<Dependency | undefined | null | void> = this._onDidChangeTreeData.event;
+
 	/**
 	 *
 	 */
 	refresh(uris: vscode.Uri[]): void {
 		let arr = uris.map(e => e.fsPath);
-		console.warn('执行刷新', arr);
+		Log.warn('执行刷新', arr);
 		// 对比差异,目录顺序是固定的,所以返回的也应该是固定的
 		if (this.list.length) {
 			for (var i = 0; i < this.list.length; i++) {
@@ -64,34 +65,33 @@ export class Bookrack implements vscode.TreeDataProvider<Book | Chapter> {
 				}
 			}
 		} else {
-			console.warn('没有书,则直接使用新数据,不差量更新');
-			console.warn(arr);
+			Log.warn('没有书,则直接使用新数据,不差量更新');
+			Log.warn(arr);
 			this.list = this.parseArr(uris);
 		}
-		this._onDidChangeTreeData.fire(this);
+		Log.warn('新list', this.list);
+
+		this._onDidChangeTreeData.fire(null);
 	}
 
 	/**
 	 * 实现这个来返回在视图中显示的元素的UI表示形式(TreeItem)。
-	 * @param {Book} element
-	 * @return {vscode.TreeItem}
+	 * @param  element
+	 * @return 其实只会是book
 	 */
-	getTreeItem(element: Book): Book {
-		// console.log("getTreeItem", element);
-		// console.log(Object.prototype.toString.call(element));
+	getTreeItem(element: TreeItem): TreeItem {
 		return element;
 	}
+
 	/**
 	 * 实现这个以返回给定元素或根的子元素(如果没有传递元素)。
-	 * @param {Book} element 应该是一个书对象
-	 * @return {Promise<vscode.TreeItem[]>} 字类型(章节)数组
-	 * @_return {Thenable<vscode.TreeItem[]>} 字类型(章节)数组
-	 * 这两个应该是兼容的,
+	 * @param  element 应该是一个书对象
+	 * @return 字类型(章节)数组
 	 */
 	//
-	async getChildren(element: Book) {
+	async getChildren(element: Book): Promise<TreeItem[]> {
 		if (!this.list.length) {
-			// console.log("getChildren", this.list, element);
+			// Log.log("getChildren", this.list, element);
 			vscode.window.showInformationMessage('没有书');
 			return Promise.resolve([]);
 		}
@@ -101,7 +101,7 @@ export class Bookrack implements vscode.TreeDataProvider<Book | Chapter> {
 		} else {
 			// 返回某个元素的子元素,在这里必定的书的子元素,章节
 			// vscode.window.showInformationMessage("getChildren--获取章节");
-			// console.log(element);
+			// Log.log(element);
 			let t = await element.getChapterList();
 			return Promise.resolve(t);
 		}
@@ -124,15 +124,15 @@ class Book extends vscode.TreeItem {
 		this.tooltip = `${this.label}`;
 		this.collapsibleState = 1; // 可展开,未展开
 		// this.description = this.version;
-		this.iconPath = vscode.Uri.joinPath(getExtensionUri() ,'img/book.png')
+		this.iconPath = vscode.Uri.joinPath(getExtensionUri(), 'img/book.png');
 		// 自己用的
 		this.fullPath = uri.fsPath;
 		this.txt = ''; //文件内容,暂时留空
 
 		// 已读章节
 		this.readList = getStateDefault<number[]>('book_' + this.label, []);
-		console.warn(this.label);
-		console.warn(this.readList);
+		Log.warn(this.label);
+		Log.warn(this.readList);
 	}
 	label: string;
 	fullPath: string;
@@ -144,9 +144,9 @@ class Book extends vscode.TreeItem {
 	timer?: NodeJS.Timeout;
 	// 获取这本书的章节内容,这个是获取章节列表的最佳方式
 	async getChapterList() {
-		console.warn(`getChapterList==${this.label}`);
-		console.warn(this.readList);
-		// console.time('获取章节内容时间');
+		Log.warn(`getChapterList==${this.label}`);
+		Log.warn(this.readList);
+		// Log.time('获取章节内容时间');
 		await this.getContent();
 		let arr = split(this.txt);
 		//FIXME: 类型修改
@@ -163,10 +163,10 @@ class Book extends vscode.TreeItem {
 				return new Chapter(this, t.s, t.i, t.txtIndex, t.size, !!this.readList[i] || false);
 			}
 		);
-		// console.timeEnd('获取章节内容时间');
+		// Log.timeEnd('获取章节内容时间');
 
 		// 如果需要隐藏已读章节
-		console.warn('是否隐藏已读章节', !getStateDefault('isShowReadChapter', false));
+		Log.warn('是否隐藏已读章节', !getStateDefault('isShowReadChapter', false));
 		if (!getStateDefault('isShowReadChapter', false)) {
 			// 多筛选一遍,并不怎么消耗性能,但是可以提高可维护性
 			this.showList = this.chapterList.filter(e => !e.isRead);
@@ -191,12 +191,12 @@ class Book extends vscode.TreeItem {
 			if (this.txt) {
 				return;
 			}
-			// console.time();
+			// Log.time();
 			//TODO:
 			this.txt = await file.readFile(vscode.Uri.file(this.fullPath), true);
-			// console.timeEnd();
+			// Log.timeEnd();
 		} catch (error) {
-			console.error(error);
+			Log.error(error);
 			vscode.window.showInformationMessage('获取书内容失败,错误信息已打印到控制台');
 		}
 	}
@@ -208,7 +208,7 @@ class Book extends vscode.TreeItem {
 	setReadChapter(i: number) {
 		this.readList[i] = 1; //数据转化为json,所以1应该比true更合适
 		setState('book_' + this.label, this.readList);
-		// console.warn(this.readList);
+		// Log.warn(this.readList);
 		setSync('book_' + this.label);
 	}
 
@@ -218,7 +218,7 @@ class Book extends vscode.TreeItem {
 	}
 
 	clearTxt() {
-		console.error('清除txt', this.label);
+		Log.error('清除txt', this.label);
 		this.txt = '';
 	}
 }
@@ -272,7 +272,7 @@ class Chapter extends vscode.TreeItem {
 	 *
 	 */
 	async openThis() {
-		// console.log(this.i, this.txtIndex, this.size);
+		// Log.log(this.i, this.txtIndex, this.size);
 		curChapter = this;
 		await this.getTxt();
 		let lineList = this.parseChapterTxt_WebView();
@@ -306,15 +306,17 @@ class Chapter extends vscode.TreeItem {
 		this.book.setReadChapter(this.i);
 	}
 }
-async function showChapter(e: vscode.TreeItem): Promise<void> {
+async function showChapter(e: TreeItem | null | undefined): Promise<void> {
 	//是对章执行的命令
 	if (e && e instanceof Chapter) {
-		// console.log("showChapter---执行");
+		// Log.log("showChapter---执行");
 		// 打开章节
 		e.openThis();
 	} else if (e && e instanceof Book) {
 		// 对书执行
 		vscode.window.showInformationMessage('无法对书进行此操作');
+	} else {
+		vscode.window.showInformationMessage('未提供正确的参数,请点击某一章节打开');
 	}
 }
 export async function nextChapter() {
@@ -331,7 +333,8 @@ export async function prevChapter() {
  * @param {Boolean} isSave 是否保存当前章节为已读章节
  */
 async function changeChapter(n: number, s: string, isSave = false) {
-	console.log('changeChapter', n, s, isSave);
+	//TODO: 日志
+	// Log.log('changeChapter', n, s, isSave);
 	if (curChapter) {
 		if (isSave) {
 			//记录当前章节为已读
@@ -339,8 +342,8 @@ async function changeChapter(n: number, s: string, isSave = false) {
 		}
 		let curBook = curChapter.book;
 		let index = curChapter.i;
-		console.log(index + n);
-		console.log(curBook.chapterList[index + n]);
+		// Log.log(index + n);
+		// Log.log(curBook.chapterList[index + n]);
 		curBook.chapterList[index + n].openThis();
 	} else {
 		vscode.window.showInformationMessage(`未找到${s}一章`);
@@ -395,7 +398,7 @@ let treeView: vscode.TreeView<Bookrack>;
 let bookrack: Bookrack;
 
 export function createTreeView(fileList: vscode.Uri[]) {
-	// console.log("createTreeView 执行");
+	// Log.log("createTreeView 执行");
 	// vscode.window.registerTreeDataProvider("novelLookTreeView", new Bookrack(t));
 	bookrack = new Bookrack(fileList);
 	treeView = vscode.window.createTreeView<Bookrack>('novelLookTreeView', {
@@ -407,7 +410,7 @@ export function createTreeView(fileList: vscode.Uri[]) {
 	// treeView.reveal
 }
 async function refreshFile(isNotMsg = false) {
-	// console.log("执行刷新");
+	// Log.log("执行刷新");
 	let list = await file.getBookList();
 	bookrack.refresh(list);
 	if (!isNotMsg) {
@@ -426,7 +429,7 @@ async function hideReadChapter() {
 }
 async function clearReadChapter(e: vscode.TreeItem): Promise<void> {
 	//是对章执行的命令
-	console.log('clearReadChapter---执行');
+	Log.log('clearReadChapter---执行');
 	if (e && e instanceof Chapter) {
 		vscode.window.showInformationMessage('无法对章节进行此操作');
 	} else if (e && e instanceof Book) {

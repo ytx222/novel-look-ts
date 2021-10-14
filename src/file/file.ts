@@ -4,7 +4,8 @@
 
 import * as vscode from 'vscode';
 import * as util from './fileUtil';
-const config = require('../config');
+import * as config from '../config';
+import Log from '../util/log';
 
 let uri: vscode.Uri;
 
@@ -17,7 +18,7 @@ let context: vscode.ExtensionContext;
  * 初始化
  */
 export async function init(_context: vscode.ExtensionContext): Promise<vscode.Uri[]> {
-	// console.warn("init----file");
+	// Log.warn("init----file");
 	// 初始化变量
 	context = context || _context;
 	uri = uri || context.globalStorageUri;
@@ -44,7 +45,10 @@ export async function getWebViewHtml() {
 	// let file= vscode.Uri.file
 	const file = vscode.Uri.joinPath(dirSrc, 'webView.html');
 	// 测试环境的话,不使用拓展工作路径的
-	console.warn('isDev:', config.env);
+	Log.warn('isDev:', config.env);
+	Log.warn("=====================");
+	Log.warn(process.env.NODE_ENV);
+	Log.warn(process.env);
 	if (config.env === 'dev') {
 		await copyDir(vscode.Uri.joinPath(context.extensionUri, '/src/static/'), dirSrc);
 		return await util.readFile(file);
@@ -63,18 +67,18 @@ export async function getWebViewHtml() {
  * @param dist 目标
  */
 async function copyDir(src: vscode.Uri, dist: vscode.Uri) {
-	console.warn('复制文件夹',src,dist);
+	Log.warn('复制文件夹',src,dist);
 	// 复制文件夹的逻辑
 	let files = await util.readDir(src);
-	console.log('files',files);
+	Log.log('files',files);
 	// 这里文件不多,没有必要用多进程同步进行,for循环单进程读写文件即可
 	for (var i = 0; i < files.length; i++) {
 		const  fileName= util.getFileName(files[i],true)
-		console.log(fileName);
+		Log.log(fileName);
 		let toFileUrl = vscode.Uri.joinPath(dist, fileName);
-		console.log('toFileUrl',toFileUrl);
+		Log.log('toFileUrl',toFileUrl);
 		let s = await util.readFile(files[i]);
-		console.log(s);
+		Log.log(s);
 		await util.writeFile(toFileUrl, s, true);
 	}
 }

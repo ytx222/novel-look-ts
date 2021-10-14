@@ -1,5 +1,6 @@
 const chardet = require('chardet');
 const iconv = require('iconv-lite');
+import Log from '../../util/log';
 // const utf8 = require("./utf8").default;
 // const gb_18030 = require("./mbcs").gb_18030;
 
@@ -12,19 +13,19 @@ export default function (buffer:Uint8Array): string {
 	//Uint8Array
 	let det = { fRawInput: buffer, fRawLength: buffer.length };
 	if (det.fRawLength > 1024 * 128) {
-		console.warn(det.fRawLength);
+		Log.warn(det.fRawLength);
 		det.fRawLength = 1024 * 128;
 	}
 	/**		utf8 */
-	// console.time("utf8");
+	// Log.time("utf8");
 	// let isUTF8 = new utf8().match(det);
-	// console.timeEnd("utf8");
-	// console.warn("isUTF8", isUTF8);
+	// Log.timeEnd("utf8");
+	// Log.warn("isUTF8", isUTF8);
 	/**		GB18030 */
-	// console.time("GB18030");
+	// Log.time("GB18030");
 	// let isGB18030 = new gb_18030().match(det);
-	// console.timeEnd("GB18030");
-	// console.warn("isGB18030", isGB18030);
+	// Log.timeEnd("GB18030");
+	// Log.warn("isGB18030", isGB18030);
 	/*
 	速度对比
 	大小  	   GB18030		utf8
@@ -36,13 +37,13 @@ export default function (buffer:Uint8Array): string {
 	后期有需要的话,很有必要单独拿出来做判断
 	*/
 
-	console.time('判断编码耗时');
+	Log.time('判断编码耗时');
 	let t = chardet.detect(buffer.slice(0, 1024 * 128));
-	console.timeEnd('判断编码耗时');
-	// console.warn(t);
+	Log.timeEnd('判断编码耗时');
+	// Log.warn(t);
 	// 将buffer转换为指定编码格式
 	let s = iconv.decode(buffer, t);
-	// console.log(s.substring(0, 50));
+	// Log.log(s.substring(0, 50));
 	return s;
 	// resolve(s);
 }

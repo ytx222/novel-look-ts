@@ -1,7 +1,9 @@
+import './util/log'
 import * as vscode from 'vscode';
 import { createTreeView, command as viewCommand } from './TreeViewProvider';
-import { init as initUtil } from './util';
+import { init as initUtil } from './util/util';
 import { init as initFile, command as fileCommand } from './file/file';
+
 
 let content: vscode.ExtensionContext;
 
@@ -14,7 +16,7 @@ export async function init(_context: vscode.ExtensionContext) {
 	// 工具类,优先初始化,其他地方很有可能用
 	initUtil(content);
 	const fileList = await initFile(content);
-	// console.warn("全局init===fileList",fileList);
+
 	createTreeView(fileList);
 	// 这个数据是否需要被当前用户的其他设备同步
 	// content.globalState.setKeysForSync(["configuration", "extensions",""]);

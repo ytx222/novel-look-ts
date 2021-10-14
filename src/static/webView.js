@@ -1,4 +1,3 @@
-// @ts-nocheck
 window.addEventListener("DOMContentLoaded", function () {
 	// eslint-disable-next-line no-undef
 	const vscode = acquireVsCodeApi();

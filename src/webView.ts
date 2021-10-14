@@ -3,7 +3,8 @@ import * as file from './file/file';
 
 const path = require('path');
 import * as config from './config';
-import { getState, setState, getExtensionUri, getStateDefault } from './util';
+import { getState, setState, getExtensionUri, getStateDefault } from './util/util';
+import Log from './util/log';
 
 //FIXME: 机制需要测试!!
 const scroll = new Map<string, number>();
@@ -65,7 +66,7 @@ function initWebView() {
 	list.forEach(([k, v]) => {
 		scroll.set(k, v);
 	});
-	// console.warn("initWebView",saveScroll);
+	// Log.warn("initWebView",saveScroll);
 	// postMsg("readScroll", saveScroll);
 }
 
@@ -83,7 +84,7 @@ async function getWebviewContent(uri: vscode.Uri) {
 	});
 	// @ts-ignore
 	s = s.replace(/(@)(.+?)/g, (_m, _$1, $2) => {
-		console.warn(panel!.webview.cspSource);
+		Log.warn(panel!.webview.cspSource);
 		return panel!.webview.asWebviewUri(vscode.Uri.joinPath(uri, $2));
 		//vscode.Uri.file(path.join(url, $2))
 	});
@@ -120,7 +121,7 @@ async function postMsg(type: string, data: any) {
 async function onDidDispose() {
 	// 执行这个的时候webView已经不可用
 	panel = null;
-	console.log('已关闭panel');
+	Log.log('已关闭panel');
 }
 
 /**
@@ -138,10 +139,10 @@ type chapterToggleType = 'next' | 'prev';
 // 			try {
 // 				provider[type + 'Chapter']();
 // 			} catch (error) {
-// 				console.error(error);
-// 				console.log(type + 'Chapter');
-// 				console.log(provider);
-// 				console.log(provider[type + 'Chapter']);
+// 				Log.error(error);
+// 				Log.log(type + 'Chapter');
+// 				Log.log(provider);
+// 				Log.log(provider[type + 'Chapter']);
 // 				vscode.window.showInformationMessage(`切换章节操作${type}不存在`);
 // 			}
 // 		},
@@ -157,10 +158,10 @@ let fn: Function[] = [
 		try {
 			provider[type + 'Chapter']();
 		} catch (error) {
-			console.error(error);
-			console.log(type + 'Chapter');
-			console.log(provider);
-			console.log(provider[type + 'Chapter']);
+			Log.error(error);
+			Log.log(type + 'Chapter');
+			Log.log(provider);
+			Log.log(provider[type + 'Chapter']);
 			vscode.window.showInformationMessage(`切换章节操作${type}不存在`);
 		}
 	},
@@ -177,7 +178,8 @@ let fn: Function[] = [
 	},
 ];
 async function onMessage(e: messageType) {
-	console.warn('message:  ', e);
+	// TODO: 日志
+	// Log.warn('message:  ', e);
 
 	for (let index = 0; index < fn.length; index++) {
 		const element = fn[index];
