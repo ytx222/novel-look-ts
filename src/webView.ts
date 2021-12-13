@@ -3,7 +3,7 @@ import * as file from './file/file';
 
 import * as config from './config';
 import { getState, setState, getExtensionUri, getStateDefault } from './util/util';
-import Log from './util/log';
+import { command } from './TreeViewProvider';
 
 //FIXME: 机制需要测试!!
 const scroll = new Map<string, number>();
@@ -15,6 +15,23 @@ type messageType = {
 	type: string;
 	data: any;
 };
+
+/**
+ * 显示某一章
+ */
+export async function showChapter(title: string, list: string[]) {
+	if (!panel) {
+		// 初次显示webView,则需要初始化显示滚动高度
+		await createWebView();
+		initWebView(title, list);
+
+		return;
+	} else if (!panel.visible) {
+		// 如果当前webView存在,并且被隐藏了,则显示
+		panel.reveal();
+	}
+	await postMsg('showChapter', { title, list });
+}
 
 /**
  * 创建
@@ -50,21 +67,26 @@ export async function createWebView() {
 	// 消息事件
 	webview.onDidReceiveMessage(onMessage, null, content.subscriptions);
 	// 初始化完成后,设置style
-	initWebView();
+	// initWebView();
+	// 此方法结束后会继续执行showChapter
 }
 // 初始化样式设置
-function initWebView() {
+async function initWebView(title: string, list: string[]) {
+	let data = getStateDefault<scrollInfo>('saveScroll', { key: '', value: 0 });
+	console.warn('initWebView data',data);
+	scroll.set(data.key, data.value);
 	let t = config.get('readSetting', {});
+	console.warn('readSetting',t);
 	// config.set("readSetting.zoom", v);
 	// t.zoom = t.zoom;
 	//content.globalState.get("zoom", t.zoom);
-	postMsg('setting', t);
+	await postMsg('setting', t);
+	await postMsg('showChapter', { title, list });
+	await postMsg('readScroll', scroll.get('catch_'+title) || 0);
 
-	let list = getStateDefault<saveScrollItem[]>('saveScroll', []);
-	list.forEach(([k, v]) => {
-		scroll.set(k, v);
-	});
-	// Log.warn("initWebView",saveScroll);
+	//FIXME:
+
+	// console.warn("initWebView",saveScroll);
 	// postMsg("readScroll", saveScroll);
 }
 
@@ -82,28 +104,12 @@ async function getWebviewContent(uri: vscode.Uri) {
 	});
 	// @ts-ignore
 	s = s.replace(/(@)(.+?)/g, (_m, _$1, $2) => {
-		Log.warn(panel!.webview.cspSource);
+		// console.warn(panel!.webview.cspSource);
 		return panel!.webview.asWebviewUri(vscode.Uri.joinPath(uri, $2));
 	});
 	return s;
 }
 
-/**
- * 显示某一章
- */
-export async function showChapter(title: string, list: string[]) {
-	if (!panel) {
-		// 初次显示webView,则需要初始化显示滚动高度
-		await createWebView();
-		await postMsg('showChapter', { title, list });
-		await postMsg('readScroll', [...scroll.entries()]);
-		return;
-	} else if (!panel.visible) {
-		// 如果当前webView存在,并且被隐藏了,则显示
-		panel.reveal();
-	}
-	await postMsg('showChapter', { title, list });
-}
 /**
  * 发送消息
  * @param {String} type 操作类型
@@ -118,7 +124,7 @@ async function postMsg(type: string, data: any) {
 async function onDidDispose() {
 	// 执行这个的时候webView已经不可用
 	panel = null;
-	Log.log('已关闭panel');
+	console.log('已关闭panel');
 }
 
 /**
@@ -136,55 +142,58 @@ type chapterToggleType = 'next' | 'prev';
 // 			try {
 // 				provider[type + 'Chapter']();
 // 			} catch (error) {
-// 				Log.error(error);
-// 				Log.log(type + 'Chapter');
-// 				Log.log(provider);
-// 				Log.log(provider[type + 'Chapter']);
+// 				console.error(error);
+// 				console.log(type + 'Chapter');
+// 				console.log(provider);
+// 				console.log(provider[type + 'Chapter']);
 // 				vscode.window.showInformationMessage(`切换章节操作${type}不存在`);
 // 			}
 // 		},
 // 	],
 // ]);
+
 type scrollInfo = {
 	key: string;
 	value: number;
 };
-let fn: Function[] = [
-	function chapterToggle(type: chapterToggleType) {
-		const provider = require('./TreeViewProvider');
+let fn: {
+	[key in string]: Function;
+} = {
+	chapterToggle(type: chapterToggleType) {
+		console.log('chapterToggle执行', type);
 		try {
-			provider[type + 'Chapter']();
+			if (type === 'next') {
+				command.nextChapter();
+			} else {
+				command.prevChapter();
+			}
 		} catch (error) {
-			Log.error(error);
-			Log.log(type + 'Chapter');
-			Log.log(provider);
-			Log.log(provider[type + 'Chapter']);
+			console.error(error);
+			console.log(type + 'Chapter');
+			console.log(command);
+			// console.log(command[type + 'Chapter']);
 			vscode.window.showInformationMessage(`切换章节操作${type}不存在`);
 		}
 	},
-	function zoom(v: number) {
+	zoom(v: number) {
 		config.set('readSetting.zoom', v);
 	},
 	/**
 	 * 保存滚动高度
 	 */
-	function saveScroll(data: scrollInfo) {
-		//FIXME:为什么这里会是key和value 之前这里是如何工作的???
+	saveScroll(data: scrollInfo) {
+		// key之前是章名,现在改成书名,因为在一本书中切换章节没有意义保存
+		// scroll.set(data.key, data.value);
+
 		scroll.set(data.key, data.value);
-		setState('saveScroll', saveScroll);
+		setState('saveScroll', data);
 	},
-];
+};
 async function onMessage(e: messageType) {
 	// TODO: 日志
-	// Log.warn('message:  ', e);
-
-	for (let index = 0; index < fn.length; index++) {
-		const element = fn[index];
-		if (element.name === e.type) {
-			element(e.data);
-			break;
-		}
-	}
+	console.warn('收到webView message:  ', e);
+	console.log('是否找到=', !!fn[e.type], fn);
+	fn[e.type]?.(e.data);
 }
 export async function closeWebView() {
 	if (panel) {

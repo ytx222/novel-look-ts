@@ -1,4 +1,3 @@
-import './util/log'
 import * as vscode from 'vscode';
 import { createTreeView, command as viewCommand } from './TreeViewProvider';
 import { init as initUtil } from './util/util';

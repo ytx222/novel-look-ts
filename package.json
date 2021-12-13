@@ -2,7 +2,7 @@
 	"name": "novel-look-ts",
 	"displayName": "novel-look2",
 	"description": "高性能,支持高度自定义操作的看(mo)书(yu)插件",
-	"version": "0.1.0",
+	"version": "2.0.2",
 	"keywords": [
 		"novel",
 		"摸鱼",
@@ -31,84 +31,85 @@
 	"main": "./dist/extension.js",
 	"contributes": {
 		"title": "novel-look",
-		"properties": {
-			"novelLook.match.novelName": {
-				"type": "string",
-				"default": "^.*\\.txt$",
-				"description": "小说名的正则,'\\'不需要转义"
-			},
-			"novelLook.match.chapterName": {
-				"type": "string",
-				"default": "(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*",
-				"description": "匹配章节名称的正则,'\\'不需要转义"
-			},
-			"novelLook.ignoreDir": {
-				"type": "array",
-				"default": [
-					"tmp",
-					"static"
-				],
-				"description": "需要忽略的文件夹的名称"
-			},
-			"novelLook.ignoreFileName": {
-				"type": "array",
-				"default": [],
-				"description": "需要忽略的文件的名称"
-			},
-			"novelLook.readSetting.1": {
-				"type": "string",
-				"default": "说明",
-				"enum": [
-					"说明"
-				],
-				"description": "说明(此项无需修改)\n修改阅读设置后,需要重新打开webView以读取设置"
-			},
-			"novelLook.readSetting.lineIndent": {
-				"type": "number",
-				"minimum": 0,
-				"default": 2,
-				"description": "每一行开头的缩进量,em"
-			},
-			"novelLook.readSetting.rootFontSize": {
-				"type": "number",
-				"minimum": 1,
-				"default": 20,
-				"description": "字体大小(html字体大小,正文字体为1rem)"
-			},
-			"novelLook.readSetting.titleSize": {
-				"type": "number",
-				"minimum": 1,
-				"default": 1.6,
-				"description": "章节名称的字体大小,单位是rem"
-			},
-			"novelLook.readSetting.zoom": {
-				"type": "number",
-				"minimum": 0.1,
-				"maximum": 5,
-				"default": 1,
-				"scope": "application",
-				"description": "字体大小的缩放倍数,字体实际大小=root*zoom\n缩放这里只是一个默认值,如果你自己修改过缩放的值,那么这个值就永远不会生效"
-			},
-			"novelLook.readSetting.scrollSpeed": {
-				"type": "number",
-				"minimum": 0,
-				"default": 144,
-				"scope": "application",
-				"description": "自动滚动速度(每秒多少px)  推荐 72, 96, 120, 144, 168, 192\n这个值如果很低,会让人产生一卡一卡的感觉"
-			},
-			"novelLook.readSetting.scrollEndTime": {
-				"type": "number",
-				"minimum": 0,
-				"default": 3000,
-				"description": "滚动到章节底部的等待时间(ms)"
-			},
-			"novelLook.readSetting.scrollStartTime": {
-				"type": "number",
-				"minimum": 0,
-				"default": 3000,
-				"description": "自动切换到下一章之后,等待多少时间开始滚屏(ms)"
+		"configuration": {
+			"properties": {
+				"novelLook.match.novelName": {
+					"type": "string",
+					"default": "^.*\\.txt$",
+					"description": "小说名的正则,'\\'不需要转义"
+				},
+				"novelLook.match.chapterName": {
+					"type": "string",
+					"default": "(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*",
+					"description": "匹配章节名称的正则,'\\'不需要转义"
+				},
+				"novelLook.ignoreDir": {
+					"type": "array",
+					"default": [
+						"tmp",
+						"static"
+					],
+					"description": "需要忽略的文件夹的名称"
+				},
+				"novelLook.ignoreFileName": {
+					"type": "array",
+					"default": [],
+					"description": "需要忽略的文件的名称"
+				},
+				"novelLook.readSetting.1": {
+					"type": "string",
+					"default": "说明",
+					"enum": [
+						"说明"
+					],
+					"description": "说明(此项无需修改)\n修改阅读设置后,需要重新打开webView以读取设置"
+				},
+				"novelLook.readSetting.lineIndent": {
+					"type": "number",
+					"minimum": 0,
+					"default": 2,
+					"description": "每一行开头的缩进量,em"
+				},
+				"novelLook.readSetting.rootFontSize": {
+					"type": "number",
+					"minimum": 1,
+					"default": 20,
+					"description": "字体大小(html字体大小,正文字体为1rem)"
+				},
+				"novelLook.readSetting.titleSize": {
+					"type": "number",
+					"minimum": 1,
+					"default": 1.6,
+					"description": "章节名称的字体大小,单位是rem"
+				},
+				"novelLook.readSetting.zoom": {
+					"type": "number",
+					"minimum": 0.1,
+					"maximum": 5,
+					"default": 1,
+					"scope": "application",
+					"description": "字体大小的缩放倍数,字体实际大小=root*zoom\n缩放这里只是一个默认值,如果你自己修改过缩放的值,那么这个值就永远不会生效"
+				},
+				"novelLook.readSetting.scrollSpeed": {
+					"type": "number",
+					"minimum": 0,
+					"default": 144,
+					"scope": "application",
+					"description": "自动滚动速度(每秒多少px)  推荐 72, 96, 120, 144, 168, 192\n这个值如果很低,会让人产生一卡一卡的感觉"
+				},
+				"novelLook.readSetting.scrollEndTime": {
+					"type": "number",
+					"minimum": 0,
+					"default": 3000,
+					"description": "滚动到章节底部的等待时间(ms)"
+				},
+				"novelLook.readSetting.scrollStartTime": {
+					"type": "number",
+					"minimum": 0,
+					"default": 3000,
+					"description": "自动切换到下一章之后,等待多少时间开始滚屏(ms)"
+				}
 			}
-
 		},
 		"commands": [
 			{

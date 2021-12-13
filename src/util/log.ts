@@ -3,15 +3,24 @@
  */
 console.log('log 执行');
 
-const _log = console.log;
-const _warn = console.warn;
-const _error = console.error;
-const _time = console.time;
-const _timeEnd = console.timeEnd;
-console.log = () => void 0;
-console.warn = () => void 0;
-console.error = () => void 0;
+const defaultFn = (..._: any[]): any => void 0;
+let _log = defaultFn;
+let _warn = defaultFn;
+let _error = defaultFn;
+let _time = defaultFn;
+let _timeEnd = defaultFn;
 
+_log = console.log;
+_warn = console.warn;
+_error = console.error;
+_time = console.time;
+_timeEnd = console.timeEnd;
+// 覆盖旧方法
+// console.log = () => void 0;
+// console.warn = () => void 0;
+// console.error = () => void 0;
+// console.time = () => void 0;
+// console.timeEnd = () => void 0;
 export default class Log {
 	static log(...args: any) {
 		_log(...args);

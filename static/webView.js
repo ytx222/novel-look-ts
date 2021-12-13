@@ -1,12 +1,12 @@
-window.addEventListener("DOMContentLoaded", function () {
+window.addEventListener('DOMContentLoaded', function () {
 	// eslint-disable-next-line no-undef
 	const vscode = acquireVsCodeApi();
 	// 元素
 	const el = {
-		main: document.querySelector(".main"),
-		title: document.querySelector(".main .header .title"),
-		content: document.querySelector(".main .content"),
-		navTitle: document.querySelector(".nav .title"),
+		main: document.querySelector('.main'),
+		title: document.querySelector('.main .header .title'),
+		content: document.querySelector('.main .content'),
+		navTitle: document.querySelector('.nav .title'),
 	};
 
 	let getScroll = () => el.main.scrollTop;
@@ -15,22 +15,22 @@ window.addEventListener("DOMContentLoaded", function () {
 	let cache = {};
 	let setting = {};
 	// 当前章节的缓存名称
-	let chapterName = "";
+	let chapterName = '';
 	let fn = {
 		undefined() {
-			console.error("webView端找不到处理程序,无法执行");
+			console.error('webView端找不到处理程序,无法执行');
 		},
 		/*设置一些公共设置,如行高,行间隔,字体大小等*/
 		setting(data) {
-			setCache("setting", data);
+			setCache('setting', data);
 			setting = data;
-			let sheetEl = document.querySelector("style");
+			let sheetEl = document.querySelector('style');
 			// 这里多一个.body,以达到更高匹配级别
 			sheetEl.sheet.insertRule(`.body .main .content div{
 					text-indent: ${data.lineIndent}em;
 					font-size:1rem;
 			}`);
-			document.documentElement.style.fontSize = data.rootFontSize * data.zoom + "px";
+			document.documentElement.style.fontSize = data.rootFontSize * data.zoom + 'px';
 			// sheetEl.sheet.insertRule(`html{
 			// 	font-size:${data.rootFontSize * data.zoom}px !important;
 			// }`);
@@ -41,26 +41,33 @@ window.addEventListener("DOMContentLoaded", function () {
 			if (data.title === (cache.showChapter && cache.showChapter.title)) {
 				return;
 			}
-			chapterName = "catch_" + data.title;
-			setCache("showChapter", data);
+			chapterName = 'catch_' + data.title;
+			setCache('showChapter', data);
 			render(data.title, data.list);
 			setScroll(0);
 			// window.scrollTo(0, 0);
-			console.warn("开始显示章节", data.title, cache.showChapter.title);
+			console.warn('开始显示章节', data.title, cache.showChapter.title);
 		},
+		// 只会被插件层调用
 		readScroll(data) {
-			console.warn("readScroll");
-			let t = data[chapterName] || 0;
+			let t = data || 0;
+			console.warn('readScroll',data);
 			if (t) {
-				// window.scrollTo(0, t);
 				setScroll(t);
 				saveScroll(t, false);
 			}
 		},
+		// readCacheScroll (data) {
+		// 	console.warn('readCacheScroll', data);
+		// 	if()
+
+		// }
+
 	};
-	window.addEventListener("message", function (e) {
+	window.addEventListener('message', function (e) {
 		let data = e.data.data;
 		let type = e.data.type;
+		console.log('子页面-message', type, data);
 		fn[type](data);
 	});
 	/**********************************
@@ -68,6 +75,7 @@ window.addEventListener("DOMContentLoaded", function () {
 	 **********************************/
 	let data = vscode.getState();
 	if (data) {
+		console.warn('是隐藏后的',data);
 		for (var item in data) {
 			fn[item](data[item]);
 		}
@@ -91,7 +99,7 @@ window.addEventListener("DOMContentLoaded", function () {
 		el.title.innerText = title;
 		el.navTitle.innerText = title;
 		let list = el.content.children;
-		el.content.style.display = "none";
+		el.content.style.display = 'none';
 		if (list.length < lines.length) {
 			addLine(lines.length - list.length);
 		}
@@ -101,13 +109,13 @@ window.addEventListener("DOMContentLoaded", function () {
 		for (; i < list.length; i++) {
 			if (i < lines.length) {
 				list[i].innerText = lines[i];
-				list[i].style.display = "block";
+				list[i].style.display = 'block';
 			} else {
-				list[i].style.display = "none";
+				list[i].style.display = 'none';
 			}
 		}
 
-		el.content.style.display = "block";
+		el.content.style.display = 'block';
 	}
 	/**
 	 * 在行不够用的情况下添加行
@@ -115,7 +123,7 @@ window.addEventListener("DOMContentLoaded", function () {
 	function addLine(num) {
 		// 因为前期肯定隐藏过了dom,这里不在隐藏
 		for (var i = 0; i < num; i++) {
-			el.content.appendChild(document.createElement("div"));
+			el.content.appendChild(document.createElement('div'));
 		}
 	}
 
@@ -124,17 +132,17 @@ window.addEventListener("DOMContentLoaded", function () {
 	**********************************/
 	window.onkeydown = function (e) {
 		switch (e.key) {
-			case "ArrowRight": //下一章
-				postMsg("chapterToggle", "next");
+			case 'ArrowRight': //下一章
+				postMsg('chapterToggle', 'next');
 				break;
-			case "ArrowLeft": //上一章
-				postMsg("chapterToggle", "prev");
+			case 'ArrowLeft': //上一章
+				postMsg('chapterToggle', 'prev');
 				break;
-			case "ArrowDown": //向下翻页
-			case "Space":
+			case 'ArrowDown': //向下翻页
+			case 'Space':
 				scrollScreen(1, e);
 				break;
-			case "ArrowUp": //向上翻页
+			case 'ArrowUp': //向上翻页
 				scrollScreen(-1, e);
 				break;
 
@@ -153,11 +161,11 @@ window.addEventListener("DOMContentLoaded", function () {
 			case 1:
 			case 4:
 				// postMsg("chapterToggle", "next");
-				postMsg("chapterToggle", "prev");
+				postMsg('chapterToggle', 'prev');
 				break;
 			case 3:
 				// postMsg("chapterToggle", "prev");
-				postMsg("chapterToggle", "next");
+				postMsg('chapterToggle', 'next');
 				break;
 			default:
 				break;
@@ -168,15 +176,15 @@ window.addEventListener("DOMContentLoaded", function () {
 	window.oncontextmenu = function () {
 		var now = +Date.now();
 		if (rightBtnTime + 500 > now) {
-			postMsg("chapterToggle", "next");
+			postMsg('chapterToggle', 'next');
 		}
 		rightBtnTime = now;
 	};
-	document.querySelector(".footer .btn-box .prev").onclick = () => postMsg("chapterToggle", "prev");
-	document.querySelector(".footer .btn-box .next").onclick = () => postMsg("chapterToggle", "next");
-	document.querySelector(".nav button.prev").onclick = () => postMsg("chapterToggle", "prev");
-	document.querySelector(".nav button.next").onclick = () => postMsg("chapterToggle", "next");
-	document.querySelector(".nav").ondblclick = function (e) {
+	document.querySelector('.footer .btn-box .prev').onclick = () => postMsg('chapterToggle', 'prev');
+	document.querySelector('.footer .btn-box .next').onclick = () => postMsg('chapterToggle', 'next');
+	document.querySelector('.nav button.prev').onclick = () => postMsg('chapterToggle', 'prev');
+	document.querySelector('.nav button.next').onclick = () => postMsg('chapterToggle', 'next');
+	document.querySelector('.nav').ondblclick = function (e) {
 		console.log('nav---ondblclick');
 		e.stopPropagation();
 		return false;
@@ -253,7 +261,7 @@ window.addEventListener("DOMContentLoaded", function () {
 			timer.toggle = setTimeout(() => {
 				// 下一章
 				scrollType = 2;
-				postMsg("chapterToggle", "next");
+				postMsg('chapterToggle', 'next');
 				timer.toggle = setTimeout(() => {
 					// 开始滚屏
 					autoScrollScreen();
@@ -269,18 +277,18 @@ window.addEventListener("DOMContentLoaded", function () {
 		    监听滚动
 		****************/
 		{
-			let el = document.querySelector(".zoom");
+			let el = document.querySelector('.zoom');
 			let timer = 0;
 			let scrollEndTimer = 0;
 			function showZoom(size, zoom) {
 				el.innerText = `${size}px ${(zoom * 100).toFixed(0)}%`;
-				el.style.display = "flex";
+				el.style.display = 'flex';
 				el.style.opacity = 1;
 				clearTimeout(timer);
 				timer = setTimeout(() => {
 					el.style.opacity = 0;
 					timer = setTimeout(() => {
-						el.style.display = "none";
+						el.style.display = 'none';
 					}, 500);
 				}, 1500);
 			}
@@ -296,12 +304,12 @@ window.addEventListener("DOMContentLoaded", function () {
 					// 如果合法
 					if (zoom >= 0.2 && zoom <= 5) {
 						// 保存
-						postMsg("zoom", zoom);
+						postMsg('zoom', zoom);
 
 						setting.zoom = zoom;
-						setCache("setting", setting);
+						setCache('setting', setting);
 						// 应用
-						document.documentElement.style.fontSize = setting.rootFontSize * zoom + "px";
+						document.documentElement.style.fontSize = setting.rootFontSize * zoom + 'px';
 						// 显示
 						showZoom(setting.rootFontSize * zoom, zoom);
 					}
@@ -323,26 +331,23 @@ window.addEventListener("DOMContentLoaded", function () {
 	}
 
 	function saveScroll(scroll = getScroll(), isPostMsg = true) {
-		setCache("readScroll", { [chapterName]: scroll });
+		// setCache('saveScroll', { [chapterName]: scroll });
+		// 这里需要被调用,所以缓存的方法名是读取 readCacheScroll
+		setCache('readScroll', scroll);
+		// setCache('readCacheScroll', { [chapterName]: scroll });
 		// console.warn("save_Scroll", scroll);
 		if (isPostMsg) {
-			//
-			postMsg("saveScroll", { key: chapterName, value: scroll });
+			postMsg('saveScroll', { key: chapterName, value: scroll });
 		}
 	}
-	// function readScroll() {
-	// 	let t = window.localStorage.getItem(chapterName);
-	// 	console.warn("readScroll", t, chapterName);
-	// 	if (t) {
-	// 		window.scrollTo(0, t);
-	// 	}
-	// }
+
 
 	// 发送消息
 	function postMsg(type, data) {
+		console.log('子页面-postMsg', type, data);
 		//切换章节时,清除当前章节的缓存滚动高度
-		if (type === "chapterToggle") {
-			saveScroll(0);
+		if (type === 'chapterToggle') {
+			saveScroll(0, false);
 		}
 		vscode.postMessage({ type, data });
 	}

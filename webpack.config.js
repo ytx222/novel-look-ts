@@ -48,6 +48,8 @@ module.exports = (env, argv) => {
 
 	if (argv.mode === 'production') {
 		//压缩代码插件,用来清除console.log
+		// ↓↓↓ 请注释这里
+		// /*
 		config.plugins.push(
 			new ParallelUglifyPlugin({
 				// uglifyJS: { }, // es5用这个
@@ -64,6 +66,7 @@ module.exports = (env, argv) => {
 				},
 			})
 		);
+		/** */
 	}
 
 	return config;

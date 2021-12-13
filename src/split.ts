@@ -1,6 +1,5 @@
 // const config = require("./config");
 import { get } from './config';
-import Log from './util/log';
 
 /**
  * 章节信息
@@ -19,10 +18,10 @@ const reg2 = /第.+?章/;
  *
  */
 function getChapterTitle(s: string) {
-	// Log.log("getChapterTitle", s);
+	// console.log("getChapterTitle", s);
 	const t = reg2.exec(s);
 	if (t) {
-		// Log.log("成功", s.substring(t[0].length).trim());
+		// console.log("成功", s.substring(t[0].length).trim());
 		return s.substring(t[0].length).replace(/ /g, '');
 	}
 	return s;
@@ -32,7 +31,7 @@ function getChapterTitle(s: string) {
  * 判断是否是重复章节
  */
 function isRepeat(cur: splitChapterInfo, last: splitChapterInfo) {
-	// Log.warn(cur, last);
+	// console.warn(cur, last);
 	// 如果连续两章的章名相同,则不对后一章名进行分章
 	const curTitle = getChapterTitle(cur.s.trim());
 	const lastTitle = getChapterTitle(last.s.trim());
@@ -51,8 +50,8 @@ function isRepeat(cur: splitChapterInfo, last: splitChapterInfo) {
 export function split(s: string): splitChapterInfo[] {
 	const match = get('match.chapterName', '(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*');
 	const reg = new RegExp(match, 'g');
-	Log.warn('reg====',match);
-	Log.warn(reg);
+	console.warn('reg====',match);
+	console.warn(reg);
 	let t;
 	//第一章之前的
 	t = reg.exec(s);
@@ -85,6 +84,6 @@ export function split(s: string): splitChapterInfo[] {
 		//FIXME: 大结局可能需要额外的正则或处理
 		lastItem.size = s.length - lastItem.txtIndex;
 	}
-	Log.log(arr);
+	console.log(arr);
 	return arr;
 }

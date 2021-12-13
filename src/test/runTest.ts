@@ -1,7 +1,6 @@
 import * as path from 'path';
 
 import { runTests } from 'vscode-test';
-import Log from '../util/log';
 
 
 async function main() {
@@ -17,7 +16,7 @@ async function main() {
 		// Download VS Code, unzip it and run the integration test
 		await runTests({ extensionDevelopmentPath, extensionTestsPath });
 	} catch (err) {
-		Log.error('Failed to run tests');
+		console.error('Failed to run tests');
 		process.exit(1);
 	}
 }

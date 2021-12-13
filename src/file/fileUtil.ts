@@ -8,7 +8,6 @@ let _fs = vscode.workspace.fs;
 import * as config from './../config';
 
 import * as file from './file';
-import Log from '../util/log';
 
 import { fromString } from 'uint8arrays/from-string';
 import encoding from './encoding/index';
@@ -39,7 +38,7 @@ export async function readDir(uri: vscode.Uri, isFilter: boolean = false, root =
 	}
 	// 所有目录项
 	const items: dir[] = await getDir(uri);
-	Log.warn(items);
+	console.warn(items);
 	let arr: vscode.Uri[] = [];
 	for (let index = 0; index < items.length; index++) {
 		const [name, type] = items[index];
@@ -58,7 +57,7 @@ export async function readDir(uri: vscode.Uri, isFilter: boolean = false, root =
 			}
 		}
 	}
-	Log.warn(arr);
+	console.warn(arr);
 	return arr;
 	// 232
 }
@@ -76,7 +75,7 @@ export async function getDir(uri: vscode.Uri): Promise<dir[]> {
 		// 	resolve(dir);
 		// });
 	} catch (error) {
-		Log.error('读取文件夹失败');
+		console.error('读取文件夹失败');
 		throw error;
 	}
 }
@@ -88,9 +87,9 @@ export async function getDir(uri: vscode.Uri): Promise<dir[]> {
  */
 export async function readFile(uri: vscode.Uri, checkEncoding = false): Promise<string> {
 	//{ encoding: "gb2312" },
-	Log.log('开始读取文件', uri);
+	// console.log('开始读取文件', uri);
 	let buffer = await _fs.readFile(uri);
-	Log.log('读取buffer完成');
+	// console.log('读取buffer完成',checkEncoding);
 	if (checkEncoding) {
 		return encoding(buffer);
 	} else {
@@ -112,12 +111,12 @@ export async function writeFile(path: vscode.Uri, content: string | Uint8Array, 
 		//FIXME: 创建目录逻辑
 		await _fs.writeFile(path, content);
 	} catch (error) {
-		Log.error(error);
+		console.error(error);
 	}
 
 	// fs.writeFile(_path, content, async function (err) {
 	// 	if (err) {
-	// 		Log.warn(isCreateDir, err.code === 'ENOENT');
+	// 		console.warn(isCreateDir, err.code === 'ENOENT');
 	// 		if (isCreateDir && err.code === 'ENOENT') {
 	// 			await createDir(path.dirname(_path), true);
 	// 			// 返回重新调用自身的结果(但是不强制创建文件夹了)
@@ -141,7 +140,7 @@ export async function createDir(path: vscode.Uri, recursive: boolean): Promise<v
 		//FIXME: 创建目录逻辑
 		_fs.createDirectory(path);
 	} catch (error) {
-		Log.error(error);
+		console.error(error);
 	}
 	// return new Promise((resolve, reject) => {
 	// 	fs.mkdir(path, { recursive }, function (err) {

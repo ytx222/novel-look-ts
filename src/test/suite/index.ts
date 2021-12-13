@@ -3,7 +3,6 @@ import * as path from 'path';
 // import * as glob from 'glob';
 import Mocha from 'mocha';
 import glob from 'glob';
-import Log from '../../util/log';
 
 export function run(): Promise<void> {
 	// Create the mocha test
@@ -33,7 +32,7 @@ export function run(): Promise<void> {
 					}
 				});
 			} catch (err) {
-				Log.error(err);
+				console.error(err);
 				e(err);
 			}
 		});
