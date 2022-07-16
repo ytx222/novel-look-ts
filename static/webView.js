@@ -51,7 +51,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		// 只会被插件层调用
 		readScroll(data) {
 			let t = data || 0;
-			console.warn('readScroll',data);
+			console.warn('readScroll', data);
 			if (t) {
 				setScroll(t);
 				saveScroll(t, false);
@@ -62,7 +62,6 @@ window.addEventListener('DOMContentLoaded', function () {
 		// 	if()
 
 		// }
-
 	};
 	window.addEventListener('message', function (e) {
 		let data = e.data.data;
@@ -75,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	 **********************************/
 	let data = vscode.getState();
 	if (data) {
-		console.warn('是隐藏后的',data);
+		console.warn('是隐藏后的', data);
 		for (var item in data) {
 			fn[item](data[item]);
 		}
@@ -131,7 +130,12 @@ window.addEventListener('DOMContentLoaded', function () {
 		换章和其他需要和拓展交互的功能
 	**********************************/
 	window.onkeydown = function (e) {
+		// console.log(e);
 		switch (e.key) {
+			//FIXME:手动处理tab事件
+			// case 'Tab':
+			// 	e.stopPropagation()
+			// 	return false
 			case 'ArrowRight': //下一章
 				postMsg('chapterToggle', 'next');
 				break;
@@ -145,7 +149,27 @@ window.addEventListener('DOMContentLoaded', function () {
 			case 'ArrowUp': //向上翻页
 				scrollScreen(-1, e);
 				break;
+			case '.':
+				// 多判断一下是不是数字键盘的.
+				if (e.code === 'NumpadDecimal') {
+					let t = Date.now();
+					let count = 60;
+					let maxCount = count * 0.33;
+					const fn = () => {
+						let v = 5 * Math.min(count / maxCount, 1) * 1.05;
+						console.log(v,count / maxCount);
+						setScroll(getScroll() + v);
+						if (count--) {
+							requestAnimationFrame(fn);
+						} else {
+							console.log('动画完成,时间', Date.now() - t);
+							saveScroll()
+						}
+					};
+					fn();
+				}
 
+				break;
 			default:
 				break;
 		}
@@ -181,7 +205,12 @@ window.addEventListener('DOMContentLoaded', function () {
 		rightBtnTime = now;
 	};
 	document.querySelector('.footer .btn-box .prev').onclick = () => postMsg('chapterToggle', 'prev');
-	document.querySelector('.footer .btn-box .next').onclick = () => postMsg('chapterToggle', 'next');
+	document.querySelector('.footer .btn-box .next').onclick = function () {
+		// 操作后清除光标,好像没有意义
+		// console.log(this);
+		// this.blur()
+		postMsg('chapterToggle', 'next');
+	};
 	document.querySelector('.nav button.prev').onclick = () => postMsg('chapterToggle', 'prev');
 	document.querySelector('.nav button.next').onclick = () => postMsg('chapterToggle', 'next');
 	document.querySelector('.nav').ondblclick = function (e) {
@@ -190,7 +219,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		return false;
 	};
 	/**
-	 * 上线翻页(一个屏幕)
+	 * 上下翻页(一个屏幕)
 	 * @param {Number} direction 方向 1下 -1上
 	 * @param {Event} event  用来阻止默认行为
 	 */
@@ -340,7 +369,6 @@ window.addEventListener('DOMContentLoaded', function () {
 			postMsg('saveScroll', { key: chapterName, value: scroll });
 		}
 	}
-
 
 	// 发送消息
 	function postMsg(type, data) {

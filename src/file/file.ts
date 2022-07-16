@@ -67,10 +67,10 @@ async function copyDir(src: vscode.Uri, dist: vscode.Uri) {
 	// console.warn('复制文件夹',src,dist);
 	// 复制文件夹的逻辑
 	let files = await util.readDir(src);
-	console.log('files',files);
+	console.log('files', files);
 	// 这里文件不多,没有必要用多进程同步进行,for循环单进程读写文件即可
 	for (var i = 0; i < files.length; i++) {
-		const  fileName= util.getFileName(files[i],true)
+		const fileName = util.getFileName(files[i], true);
 		// console.log(fileName);
 		let toFileUrl = vscode.Uri.joinPath(dist, fileName);
 		// console.log('toFileUrl',toFileUrl);

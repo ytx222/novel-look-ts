@@ -15,6 +15,8 @@
 
 https://github.com/ytx222/novel-look-ts
 
+欢迎点☆star☆
+
 ## 功能
 
 -   左侧工具栏查看书

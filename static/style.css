@@ -1,7 +1,29 @@
 :root {
 	--navHeight: 2rem;
+	/* 黑色主题色 */
 	--bg: #272822;
 	--navBg: #272822;
+	--color: #fff;
+	--textColor: var(--color);
+	--btnColor: #e6e6e6;
+	--btnBg: #5c5c5c;
+	/* 这个好像没啥用的 */
+	/* --inverseColor: #FFF; */
+	/* 白色主题色 */
+	/* --bg: #FFF;
+	--navBg:var(--bg);
+	--color: #000;
+	--textColor: var(--color);
+	--btnColor: #333333;
+
+	--bg: #CBD9C0; */
+
+	/* 浅绿 */
+	/* --bg: #CBD9C0; */
+	/* 浅黄 */
+	/* --bg: #FFFAE8; */
+
+	/* FIXME: 后面使用系统主题? 或者支持用户自定义主题 */
 }
 html {
 	font-size: 16px;
@@ -12,14 +34,17 @@ body {
 	margin: 0;
 	/* background: linear-gradient(#c6e043, rgb(207, 87, 87)); */
 	flex-direction: column;
+	background: var(--bg);
+	color: var(--color);
 }
 .flex-center {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
-button,.button {
-	color: #e6e6e6;
+button,
+.button {
+	color: var(--btnColor);
 	cursor: pointer;
 	background: #5c5c5c;
 	border: 0;
@@ -29,12 +54,14 @@ button,.button {
 	box-sizing: border-box;
 }
 button:hover,
-.button:hover {
+.button:hover,
+button:focus,
+.button:focus {
 	background: #646464;
 	border-color: #969696;
 }
 button:active,
-.button:active  {
+.button:active {
 	background: #969696;
 }
 .nav {
@@ -85,7 +112,7 @@ button:active,
 .nav .content-container .zoom {
 	display: none;
 	font-size: 0.9rem;
-	color: #fff;
+	color: var(--inverseColor);
 	opacity: 1;
 	transition: opacity 300ms;
 	background: var(--navBg);
