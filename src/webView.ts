@@ -4,6 +4,7 @@ import * as file from './file/file';
 import * as config from './config';
 import { getState, setState, getExtensionUri, getStateDefault } from './util/util';
 import { command } from './TreeViewProvider';
+import { targetStaticDir } from './file/file';
 
 //FIXME: 机制需要测试!!
 const scroll = new Map<string, number>();
@@ -40,7 +41,7 @@ export async function createWebView() {
 	const index = require('./index');
 	content = index.getContent();
 	// 存储panel相关文件的目录
-	let uri = vscode.Uri.joinPath(content.globalStorageUri, 'static');
+	let uri = vscode.Uri.joinPath(content.globalStorageUri, targetStaticDir);
 
 	panel = vscode.window.createWebviewPanel(
 		'novel', // 标识webview的类型。在内部使用
@@ -73,16 +74,18 @@ export async function createWebView() {
 // 初始化样式设置
 async function initWebView(title: string, list: string[]) {
 	let data = getStateDefault<scrollInfo>('saveScroll', { key: '', value: 0 });
-	console.warn('initWebView data',data);
+	console.warn('initWebView data', data);
 	scroll.set(data.key, data.value);
 	let t = config.get('readSetting', {});
-	console.warn('readSetting',t);
+	console.warn('readSetting', t);
 	// config.set("readSetting.zoom", v);
 	// t.zoom = t.zoom;
 	//content.globalState.get("zoom", t.zoom);
+
+	// 具体表现应该是这个await一直卡着
 	await postMsg('setting', t);
 	await postMsg('showChapter', { title, list });
-	await postMsg('readScroll', scroll.get('catch_'+title) || 0);
+	await postMsg('readScroll', scroll.get('catch_' + title) || 0);
 
 	//FIXME:
 
@@ -116,7 +119,14 @@ async function getWebviewContent(uri: vscode.Uri) {
  * @param {Object} data  数据
  */
 async function postMsg(type: string, data: any) {
-	await panel!.webview.postMessage({ type, data });
+	console.log('postMsg---', type, data);
+	try {
+		//FIXME: 删除这里的await 或者限制最长50ms? ""
+		await panel!.webview.postMessage({ type, data });
+	} catch (error) {
+		console.log(1111);
+		console.error(error);
+	}
 }
 /**************************************
 			接收消息,以及处理

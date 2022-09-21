@@ -4,12 +4,12 @@ let config = {
 	// production dev
 	env: 'production',
 };
+// config.env = 'dev'
 // 因为vscode好像没有提供类似api,并且process.env.NODE_ENV也不可用
 // 利用打正式包会删除console语句的特性来模拟测试环境和正式环境
-console.count({
-	toString: () => (config.env = 'dev'),
-} as any);
-
+// console.count({
+// 	toString: () => (config.env = 'dev'),
+// } as any);
 //console['wa'+'rn']('config,,,,,,,,,,env='+config.env);
 let t = console.warn;
 t('config,,,,,,,,,12,env=' + config.env);

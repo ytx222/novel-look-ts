@@ -5,6 +5,11 @@
 import * as vscode from 'vscode';
 import * as util from './fileUtil';
 import * as config from '../config';
+import { getDir } from './fileUtil';
+
+
+const staticDir = '/static/'
+export const targetStaticDir = '/static/2.0.3/'
 
 let uri: vscode.Uri;
 
@@ -40,20 +45,25 @@ export async function getBookList(): Promise<vscode.Uri[]> {
  * @returns
  */
 export async function getWebViewHtml() {
-	const dirSrc = vscode.Uri.joinPath(uri, '/static/');
+	// 自己的源文件的目录
+	const dirSrc = vscode.Uri.joinPath(context.extensionUri, staticDir)
+	// 要拷贝到的地址的目录
+	const targetDirSrc = vscode.Uri.joinPath(uri, targetStaticDir);
 	// let file= vscode.Uri.file
 	const file = vscode.Uri.joinPath(dirSrc, 'webView.html');
 	// 测试环境的话,不使用拓展工作路径的
 	console['warn']('isDev:', config.env);
 
 	if (config.env === 'dev') {
-		await copyDir(vscode.Uri.joinPath(context.extensionUri, '/static/'), dirSrc);
+		await copyDir(dirSrc, targetDirSrc);
 		return await util.readFile(file);
 	}
 	try {
+		await getDir(targetDirSrc);
 		return await util.readFile(file);
 	} catch (error) {
-		await copyDir(vscode.Uri.joinPath(context.extensionUri, '/static/'), dirSrc);
+		console.error('getWebViewHtml error',error);
+		await copyDir(dirSrc, targetDirSrc);
 		return await util.readFile(file);
 	}
 }
@@ -67,7 +77,7 @@ async function copyDir(src: vscode.Uri, dist: vscode.Uri) {
 	// console.warn('复制文件夹',src,dist);
 	// 复制文件夹的逻辑
 	let files = await util.readDir(src);
-	console.log('files', files);
+	console.log('copyDir files', files);
 	// 这里文件不多,没有必要用多进程同步进行,for循环单进程读写文件即可
 	for (var i = 0; i < files.length; i++) {
 		const fileName = util.getFileName(files[i], true);
@@ -92,7 +102,7 @@ function openExplorer(url = uri.fsPath) {
  * 打开资源管理器-webView文件所在的目录
  */
 function openWebViewDir() {
-	let url = vscode.Uri.joinPath(uri, '/static/').fsPath;
+	let url = vscode.Uri.joinPath(uri, staticDir).fsPath;
 	var exec = require('child_process').exec;
 	exec('explorer.exe /e,"' + url + '"');
 }
