@@ -29,7 +29,6 @@ export function getState<T>(key: string): T | undefined {
  * @param {Object} def 默认值
  */
 export function getStateDefault<T>(key: string, def: T): T {
-
 	return content.globalState.get(key, def);
 }
 /**
@@ -47,11 +46,16 @@ export function getExtensionUri(): vscode.Uri {
 	return content.extensionUri;
 }
 
-
-export function fn<T>(this:T,...args:T[]): Promise<{this:T,args:T[]}> {
-	return new Promise<{this:T,args:T[]}>((resolve, reject) => {
+export function fn<T>(this: T, ...args: T[]): Promise<{ this: T; args: T[] }> {
+	return new Promise<{ this: T; args: T[] }>((resolve, reject) => {
 		setTimeout(() => {
-			resolve({this:this, args})
+			resolve({ this: this, args });
 		}, 1000);
+	});
+}
+
+export async function sleep(ms = 10) {
+	return new Promise<void>((resolve, reject) => {
+		setTimeout(resolve, ms);
 	});
 }

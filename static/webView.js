@@ -34,6 +34,8 @@ window.addEventListener('DOMContentLoaded', function () {
 			// sheetEl.sheet.insertRule(`html{
 			// 	font-size:${data.rootFontSize * data.zoom}px !important;
 			// }`);
+			document.body.classList.add('init')
+
 		},
 		/*显示章节*/
 		showChapter(data) {
@@ -68,6 +70,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		let type = e.data.type;
 		console.log('子页面-message', type, data);
 		fn[type](data);
+		// postMsg('type'+'_end')
 	});
 	/**********************************
 	 	判断是否是隐藏后重新显示
@@ -157,13 +160,13 @@ window.addEventListener('DOMContentLoaded', function () {
 					let maxCount = count * 0.33;
 					const fn = () => {
 						let v = 5 * Math.min(count / maxCount, 1) * 1.05;
-						console.log(v,count / maxCount);
+						console.log(v, count / maxCount);
 						setScroll(getScroll() + v);
 						if (count--) {
 							requestAnimationFrame(fn);
 						} else {
 							console.log('动画完成,时间', Date.now() - t);
-							saveScroll()
+							saveScroll();
 						}
 					};
 					fn();

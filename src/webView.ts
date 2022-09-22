@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as file from './file/file';
 
 import * as config from './config';
-import { getState, setState, getExtensionUri, getStateDefault } from './util/util';
+import { getState, setState, getExtensionUri, getStateDefault, sleep } from './util/util';
 import { command } from './TreeViewProvider';
 import { targetStaticDir } from './file/file';
 
@@ -83,9 +83,11 @@ async function initWebView(title: string, list: string[]) {
 	//content.globalState.get("zoom", t.zoom);
 
 	// 具体表现应该是这个await一直卡着
-	await postMsg('setting', t);
+
 	await postMsg('showChapter', { title, list });
 	await postMsg('readScroll', scroll.get('catch_' + title) || 0);
+
+	await postMsg('setting', t);
 
 	//FIXME:
 
@@ -122,7 +124,13 @@ async function postMsg(type: string, data: any) {
 	console.log('postMsg---', type, data);
 	try {
 		//FIXME: 删除这里的await 或者限制最长50ms? ""
-		await panel!.webview.postMessage({ type, data });
+		// FIXME: message id?
+		await Promise.race([
+			// 发送消息
+			panel!.webview.postMessage({ type, data }),
+			// 最多等待10ms
+			sleep(5),
+		]);
 	} catch (error) {
 		console.log(1111);
 		console.error(error);
