@@ -16,6 +16,8 @@ window.addEventListener('DOMContentLoaded', function () {
 	let setting = {};
 	// 当前章节的缓存名称
 	let chapterName = '';
+	// 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
+	let renderId = 0;
 	let fn = {
 		undefined() {
 			console.error('webView端找不到处理程序,无法执行');
@@ -34,8 +36,7 @@ window.addEventListener('DOMContentLoaded', function () {
 			// sheetEl.sheet.insertRule(`html{
 			// 	font-size:${data.rootFontSize * data.zoom}px !important;
 			// }`);
-			document.body.classList.add('init')
-
+			document.body.classList.add('init');
 		},
 		/*显示章节*/
 		showChapter(data) {
@@ -118,6 +119,8 @@ window.addEventListener('DOMContentLoaded', function () {
 		}
 
 		el.content.style.display = 'block';
+		// 修改渲染id,告诉其他人我重新渲染了
+		renderId++;
 	}
 	/**
 	 * 在行不够用的情况下添加行
@@ -245,6 +248,8 @@ window.addEventListener('DOMContentLoaded', function () {
 		let h = 0; // 窗口高度
 		let max = 0; // 窗口最大高度
 		let lastScrollY = 0;
+
+		let lastRenderId = -1;
 		window.ondblclick = function () {
 			// 用户手动触发的
 			autoScrollScreen();
@@ -257,8 +262,6 @@ window.addEventListener('DOMContentLoaded', function () {
 			clearInterval(timer.scroll);
 			// 如果当前非滚屏状态,则进入滚屏状态
 			if (scrollType === 0 || scrollType === 2) {
-				// 窗口高度哪怕是变化了,也影响不大,但是重复获取可能会影响性能,所以这里不重复获取
-				h = document.documentElement.clientHeight;
 				timer.scroll = setInterval(scroll, getIntervalTime());
 				scrollType = 3;
 				scroll(); // 直接执行一次,如果是触底时,可以直接初始化状态
@@ -269,13 +272,16 @@ window.addEventListener('DOMContentLoaded', function () {
 		// 问题是每多少时间向下移动1
 		// 这个时间如果高于10,则可能会产生滚动一卡一卡的感觉(视觉效果)
 		// 以人眼24帧为标准 72, 96, 120, 144, 168, 192
-		function scroll(v = 1) {
-			// max = document.body.scrollHeight;
-			// num = window.scrollY + v;
-			// window.scrollTo(0, num);
-			max = el.content.scrollHeight;
+		function scroll (v = 1) {
+			// 检查更新尺寸信息,仅在初始化和重新渲染后才更新尺寸信息
+			if (lastRenderId !== renderId) {
+				max = el.main.scrollHeight;
+				h = el.main.clientHeight
+			}
+
 			num = getScroll() + v;
 			setScroll(num);
+			console.warn({ max, num, h });
 			if (num > max - h) {
 				scrollEnd();
 			} else if (num > lastScrollY + 200) {
