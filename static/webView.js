@@ -112,7 +112,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		for (; i < list.length; i++) {
 			if (i < lines.length) {
 				list[i].innerText = lines[i];
-				list[i].style.display = 'block';
+				list[i].style.display = undefined;
 			} else {
 				list[i].style.display = 'none';
 			}

@@ -61,7 +61,7 @@ export async function createWebView() {
 		}
 	);
 	let webview = panel.webview;
-	panel.iconPath = vscode.Uri.joinPath(getExtensionUri(), '/src/img/fish2.png');
+	panel.iconPath = vscode.Uri.joinPath(getExtensionUri(), '/img/fish2.png');
 	webview.html = await getWebviewContent(uri);
 	// 关闭事件
 	panel.onDidDispose(onDidDispose, null, content.subscriptions);

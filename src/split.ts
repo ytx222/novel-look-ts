@@ -1,4 +1,3 @@
-// const config = require("./config");
 import { get } from './config';
 
 /**

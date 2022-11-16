@@ -43,6 +43,7 @@ export function setSync(...keys: string[]): void {
  * @returns {vscode.Uri}
  */
 export function getExtensionUri(): vscode.Uri {
+	console.warn('content.extensionUri',content.extensionUri);
 	return content.extensionUri;
 }
 

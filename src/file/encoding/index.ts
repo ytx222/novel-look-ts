@@ -1,7 +1,5 @@
 const chardet = require('chardet');
 const iconv = require('iconv-lite');
-// const utf8 = require("./utf8").default;
-// const gb_18030 = require("./mbcs").gb_18030;
 
 /**
  * 自动识别buffer内容的编码,并转换成对应字符串
