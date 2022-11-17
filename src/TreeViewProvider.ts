@@ -143,8 +143,7 @@ class Book extends vscode.TreeItem {
 	timer?: NodeJS.Timeout;
 	// 获取这本书的章节内容,这个是获取章节列表的最佳方式
 	async getChapterList() {
-		console.warn(`getChapterList==${this.label}`);
-		// console.warn(this.readList);
+		console.log(`getChapterList==${this.label}`);
 		// console.time('获取章节内容时间');
 		await this.getContent();
 		let arr = split(this.txt);

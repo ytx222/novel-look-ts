@@ -11,6 +11,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 	let getScroll = () => el.main.scrollTop;
 	let setScroll = h => el.main.scrollTo(0, h);
+
 	// 本地缓存最新章节和样式设置
 	let cache = {};
 	let setting = {};
@@ -47,24 +48,23 @@ window.addEventListener('DOMContentLoaded', function () {
 			chapterName = 'catch_' + data.title;
 			setCache('showChapter', data);
 			render(data.title, data.list);
-			setScroll(0);
-			// window.scrollTo(0, 0);
-			console.warn('开始显示章节', data.title, cache.showChapter.title);
+			// 初次渲染后,renderId 是1
+			if (renderId > 1) {
+				setScroll(0);
+			}
+			// console.warn(renderId);
+			// console.warn('开始显示章节', data.title, cache.showChapter.title);
 		},
 		// 只会被插件层调用
 		readScroll(data) {
-			let t = data || 0;
-			console.warn('readScroll', data);
-			if (t) {
-				setScroll(t);
-				saveScroll(t, false);
-			}
+			// console.warn('readScroll', data);
+			if (!data) return;
+			// 在刚刚调用render,还没有实际渲染的时候,
+			// 滚动到超出目前的高度,是不生效的
+			// 这里只需要一个渲染后的时机,settimeout和requestAnimationFrame是差不多的
+			requestAnimationFrame(setScroll.bind(null, data));
+			saveScroll(data, false);
 		},
-		// readCacheScroll (data) {
-		// 	console.warn('readCacheScroll', data);
-		// 	if()
-
-		// }
 	};
 	window.addEventListener('message', function (e) {
 		let data = e.data.data;
@@ -121,6 +121,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		el.content.style.display = 'block';
 		// 修改渲染id,告诉其他人我重新渲染了
 		renderId++;
+		console.log('子页面render', renderId);
 	}
 	/**
 	 * 在行不够用的情况下添加行
@@ -272,11 +273,11 @@ window.addEventListener('DOMContentLoaded', function () {
 		// 问题是每多少时间向下移动1
 		// 这个时间如果高于10,则可能会产生滚动一卡一卡的感觉(视觉效果)
 		// 以人眼24帧为标准 72, 96, 120, 144, 168, 192
-		function scroll (v = 1) {
+		function scroll(v = 1) {
 			// 检查更新尺寸信息,仅在初始化和重新渲染后才更新尺寸信息
 			if (lastRenderId !== renderId) {
 				max = el.main.scrollHeight;
-				h = el.main.clientHeight
+				h = el.main.clientHeight;
 			}
 
 			num = getScroll() + v;

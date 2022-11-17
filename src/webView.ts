@@ -74,10 +74,10 @@ export async function createWebView() {
 // 初始化样式设置
 async function initWebView(title: string, list: string[]) {
 	let data = getStateDefault<scrollInfo>('saveScroll', { key: '', value: 0 });
-	console.warn('initWebView data', data);
+	console.log('initWebView data', data);
 	scroll.set(data.key, data.value);
 	let t = config.get('readSetting', {});
-	console.warn('readSetting', t);
+	console.log('readSetting', t);
 	// config.set("readSetting.zoom", v);
 	// t.zoom = t.zoom;
 	//content.globalState.get("zoom", t.zoom);
@@ -209,8 +209,7 @@ let fn: {
 };
 async function onMessage(e: messageType) {
 	// TODO: 日志
-	console.warn('收到webView message:  ', e);
-	console.log('是否找到=', !!fn[e.type], fn);
+	console.log('收到webView message:  ', e);
 	fn[e.type]?.(e.data);
 }
 export async function closeWebView() {

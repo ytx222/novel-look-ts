@@ -49,8 +49,6 @@ function isRepeat(cur: splitChapterInfo, last: splitChapterInfo) {
 export function split(s: string): splitChapterInfo[] {
 	const match = get('match.chapterName', '(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*');
 	const reg = new RegExp(match, 'g');
-	console.warn('reg====',match);
-	console.warn(reg);
 	let t;
 	//第一章之前的
 	t = reg.exec(s);

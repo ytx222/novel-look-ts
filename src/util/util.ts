@@ -13,6 +13,7 @@ export function init(_content: vscode.ExtensionContext): void {
  * @param {Object} value 默认值
  */
 export function setState(key: string, value: any): void {
+	console.log('content.globalState',content.globalState);
 	content.globalState.update(key, value);
 }
 /**
@@ -43,7 +44,7 @@ export function setSync(...keys: string[]): void {
  * @returns {vscode.Uri}
  */
 export function getExtensionUri(): vscode.Uri {
-	console.warn('content.extensionUri',content.extensionUri);
+	// console.warn('content.extensionUri',content.extensionUri);
 	return content.extensionUri;
 }
 
