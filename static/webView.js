@@ -5,13 +5,16 @@ window.addEventListener('DOMContentLoaded', function () {
 	const el = {
 		main: document.querySelector('.main'),
 		title: document.querySelector('.main .header .title'),
-		content: document.querySelector('.main .content'),
+		// content: document.querySelector('.main .content'),
+		get content() {
+			return document.querySelector('.main .content');
+		},
 		navTitle: document.querySelector('.nav .title'),
 	};
+	addLine(200);
 
 	let getScroll = () => el.main.scrollTop;
 	let setScroll = h => el.main.scrollTo(0, h);
-
 	// 本地缓存最新章节和样式设置
 	let cache = {};
 	let setting = {};
@@ -38,6 +41,8 @@ window.addEventListener('DOMContentLoaded', function () {
 			// 	font-size:${data.rootFontSize * data.zoom}px !important;
 			// }`);
 			document.body.classList.add('init');
+
+			// window.focus()
 		},
 		/*显示章节*/
 		showChapter(data) {
@@ -45,6 +50,7 @@ window.addEventListener('DOMContentLoaded', function () {
 			if (data.title === (cache.showChapter && cache.showChapter.title)) {
 				return;
 			}
+			console.warn('开始显示章节', data.title, cache?.showChapter?.title, data);
 			chapterName = 'catch_' + data.title;
 			setCache('showChapter', data);
 			render(data.title, data.list);
@@ -112,7 +118,8 @@ window.addEventListener('DOMContentLoaded', function () {
 		for (; i < list.length; i++) {
 			if (i < lines.length) {
 				list[i].innerText = lines[i];
-				list[i].style.display = undefined;
+				list[i].dataset.i = i;
+				list[i].style = '';
 			} else {
 				list[i].style.display = 'none';
 			}
@@ -390,3 +397,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		vscode.postMessage({ type, data });
 	}
 });
+
+function copy(obj) {
+	return JSON.parse(JSON.stringify(obj));
+}

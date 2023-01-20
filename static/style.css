@@ -561,25 +561,28 @@
 	/* 黑色主题色 */
 	--bg: #272822;
 	/* --navBg: #272822; */
-	--color: #FFF;
-	--btnColor: #E6E6E6;
-	--btnBg: #5C5C5C;
+	--color: #fff;
+	--btnColor: #e6e6e6;
+	--btnBg: #5c5c5c;
 
 	/* 使用vscode主题 **/
 	--bg: var(--vscode-editor-background);
 	--color: var(--vscode-editor-foreground);
 
 	/* --btnColor: var(--vscode-input-foreground); */
-	--btnColor:var(--color);
+	--btnColor: var(--color);
 	--btnBg: var(--vscode-input-background);
 	--btnActive: var(--vscode-inputOption-activeBackground);
-	--btnActiveBorder:var(--vscode-inputValidation-infoBorder);
+	--btnActiveBorder: var(--vscode-inputValidation-infoBorder);
 	/* --btnActive: var(--vscode-inputOption-hoverBackground); */
 	/* --btnDefaultBorder:var(--vscode-input-placeholderForeground); */
 
-
 	--navBg: var(--bg);
 	--textColor: var(--color);
+
+	/* 绿色主题 */
+	/* --bg: #cbd9c0;
+	--color: #303b33; */
 }
 html {
 	font-size: 16px;
@@ -622,13 +625,12 @@ button:focus,
 	background: #646464;
 	border-color: #969696;
 
-	background:  var(--btnActive);
+	background: var(--btnActive);
 	border-color: var(--btnActive);
-
 }
 button:active,
 .button:active {
-	background:  var(--btnActive);
+	background: var(--btnActive);
 	border-color: var(--btnActiveBorder);
 }
 .nav {
