@@ -4,9 +4,13 @@ import { get } from './config';
  * 章节信息
  */
 type splitChapterInfo = {
+	/** 章节名称 */
 	s: string;
+	/**章节在数组中的下标(分章之后的第几章) */
 	i: number;
+	/** 章节正文开始位置 */
 	txtIndex: number;
+	/**章节正文长度 */
 	size: number;
 };
 
@@ -78,7 +82,7 @@ export function split(s: string): splitChapterInfo[] {
 			}
 			i++;
 		} while ((t = reg.exec(s)) && t);
-		//FIXME: 大结局可能需要额外的正则或处理
+		// 最后一章的结尾
 		lastItem.size = s.length - lastItem.txtIndex;
 	}
 	console.log(arr);

@@ -9,6 +9,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		get content() {
 			return document.querySelector('.main .content');
 		},
+		nav: document.querySelector('.nav'),
 		navTitle: document.querySelector('.nav .title'),
 	};
 	addLine(200);
@@ -143,25 +144,43 @@ window.addEventListener('DOMContentLoaded', function () {
 	/*********************************
 		换章和其他需要和拓展交互的功能
 	**********************************/
-	window.onkeydown = function (e) {
-		// console.log(e);
-		switch (e.key) {
+	window.onkeyup = function (e) {
+		console.log('KEY onkeyup ', e.key);
+		switch (e.key.toLowerCase()) {
 			//FIXME:手动处理tab事件
 			// case 'Tab':
 			// 	e.stopPropagation()
 			// 	return false
-			case 'ArrowRight': //下一章
+			case 'arrowright': //下一章
+			case !e.altKey && 'd':
 				postMsg('chapterToggle', 'next');
 				break;
-			case 'ArrowLeft': //上一章
+			case 'arrowleft': //上一章
+			case !e.altKey && 'a':
 				postMsg('chapterToggle', 'prev');
 				break;
-			case 'ArrowDown': //向下翻页
-			case 'Space':
+			case 'arrowdown': //向下翻页
+
+			case !e.altKey && 's':
 				scrollScreen(1, e);
 				break;
-			case 'ArrowUp': //向上翻页
+			case 'arrowup': //向上翻页
+			case !e.altKey && 'w':
 				scrollScreen(-1, e);
+				break;
+			//检查是否触底,如果触底,下一章,没有则向下
+			// 空格是向下翻页,
+			case ' ':
+				if (isPageEnd()) {
+					postMsg('chapterToggle', 'next');
+				} else {
+					// 空格自带翻页效果
+					// scrollScreen(1, e);
+					e.stopPropagation();
+					e.preventDefault()
+					console.log('preventDefault');
+					return false
+				}
 				break;
 			case '.':
 				// 多判断一下是不是数字键盘的.
@@ -211,13 +230,16 @@ window.addEventListener('DOMContentLoaded', function () {
 	};
 	// 双击右键下一章
 	var rightBtnTime = 0;
-	window.oncontextmenu = function () {
+	document.oncontextmenu = function (e) {
 		var now = +Date.now();
 		if (rightBtnTime + 500 > now) {
+			// 500ms内连续两次鼠标右键点击,关闭右键弹窗并且下一章
 			postMsg('chapterToggle', 'next');
+			return false;
 		}
 		rightBtnTime = now;
 	};
+
 	document.querySelector('.footer .btn-box .prev').onclick = () => postMsg('chapterToggle', 'prev');
 	document.querySelector('.footer .btn-box .next').onclick = function () {
 		// 操作后清除光标,好像没有意义
@@ -241,9 +263,19 @@ window.addEventListener('DOMContentLoaded', function () {
 		event.preventDefault();
 		// let cur = window.scrollY;
 		let cur = getScroll();
-		let h = document.documentElement.clientHeight - 60;
+		let h = document.documentElement.clientHeight - el.nav.clientHeight - 50 * (setting?.zoom || 1);
 		setScroll(cur + h * direction);
 		// window.scrollTo(0, cur + h * direction);
+	}
+
+	/**
+	 * 页面是否触底
+	 */
+	function isPageEnd() {
+		const h = el.main.scrollHeight;
+		const curH = getScroll() + el.main.clientHeight;
+		// 如果距离小于10.就认为触底了
+		return h - curH < 10;
 	}
 	// 滚屏,滚轮相关
 	{
