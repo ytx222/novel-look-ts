@@ -9,7 +9,7 @@ import { getDir } from './fileUtil';
 
 
 const staticDir = '/static/'
-export const targetStaticDir = '/static/2.0.3/'
+export const targetStaticDir = '/static/2.0.5/'
 
 let uri: vscode.Uri;
 
