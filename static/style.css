@@ -582,7 +582,11 @@
 
 	/* 绿色主题 */
 	/* --bg: #cbd9c0;
-	--color: #303b33; */
+	--color: #303b33;
+	--btnBg: #cbd9c0;
+	--btnColor: #303b33;
+	--btnActive: rgba(0, 0, 0, 0.2);
+	--btnActiveBorder:#303b33; */
 }
 html {
 	font-size: 16px;
@@ -653,11 +657,11 @@ button:active,
 	flex: 0 0 auto;
 }
 .nav button:hover {
-	background: #646464;
-	border-color: #969696;
+	/* background: #646464;
+	border-color: #969696; */
 }
 .nav button:active {
-	background: #969696;
+	/* background: #969696; */
 }
 .nav .content-container {
 	position: relative;
@@ -725,7 +729,7 @@ button:active,
 	text-indent: 2em;
 }
 
-.footer {
+.footer.footer {
 	display: flex;
 	width: 100%;
 	padding-bottom: 40px;
