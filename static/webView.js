@@ -144,7 +144,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	/*********************************
 		换章和其他需要和拓展交互的功能
 	**********************************/
-	window.onkeyup = function (e) {
+	window.onkeydown = function (e) {
 		console.log('KEY onkeyup ', e.key);
 		switch (e.key.toLowerCase()) {
 			//FIXME:手动处理tab事件
