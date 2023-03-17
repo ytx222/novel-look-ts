@@ -1,28 +1,27 @@
-window.addEventListener('DOMContentLoaded', function () {
-	// eslint-disable-next-line no-undef
-	const vscode = acquireVsCodeApi();
-	// 元素
-	const el = {
-		main: document.querySelector('.main'),
-		title: document.querySelector('.main .header .title'),
-		// content: document.querySelector('.main .content'),
-		get content() {
-			return document.querySelector('.main .content');
-		},
-		nav: document.querySelector('.nav'),
-		navTitle: document.querySelector('.nav .title'),
-	};
-	addLine(200);
+/* eslint-env browser */
+import { log } from './util.js';
 
-	let getScroll = () => el.main.scrollTop;
-	let setScroll = h => el.main.scrollTo(0, h);
-	// 本地缓存最新章节和样式设置
-	let cache = {};
+import {
+	//
+	getState,
+	setCache,
+	cache,
+	postCodeMessage,
+} from './vscodeApi.js';
+import {
+	//
+	el,
+	getScroll,
+	setScroll,
+} from './dom.js';
+
+window.addEventListener('DOMContentLoaded', function () {
 	let setting = {};
 	// 当前章节的缓存名称
 	let chapterName = '';
 	// 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
 	let renderId = 0;
+
 	let fn = {
 		undefined() {
 			console.error('webView端找不到处理程序,无法执行');
@@ -65,7 +64,9 @@ window.addEventListener('DOMContentLoaded', function () {
 		// 只会被插件层调用
 		readScroll(data) {
 			// console.warn('readScroll', data);
-			if (!data) return;
+			if (!data) {
+				return;
+			}
 			// 在刚刚调用render,还没有实际渲染的时候,
 			// 滚动到超出目前的高度,是不生效的
 			// 这里只需要一个渲染后的时机,settimeout和requestAnimationFrame是差不多的
@@ -83,22 +84,12 @@ window.addEventListener('DOMContentLoaded', function () {
 	/**********************************
 	 	判断是否是隐藏后重新显示
 	 **********************************/
-	let data = vscode.getState();
+	let data = getState();
 	if (data) {
 		console.warn('是隐藏后的', data);
 		for (var item in data) {
 			fn[item](data[item]);
 		}
-	}
-	/**
-	 * 设置缓存 ,本来的vscode.setState是简单的对象.我自己封装一下成键值对
-	 * 既然官方说了高性能,那么这样损耗应该不大(性价比高)
-	 * @param {String} key 键
-	 * @param {Object} value  值
-	 */
-	function setCache(key, value) {
-		cache[key] = value;
-		vscode.setState(cache);
 	}
 
 	/**
@@ -177,9 +168,9 @@ window.addEventListener('DOMContentLoaded', function () {
 					// 空格自带翻页效果
 					// scrollScreen(1, e);
 					e.stopPropagation();
-					e.preventDefault()
+					e.preventDefault();
 					console.log('preventDefault');
-					return false
+					return false;
 				}
 				break;
 			case '.':
@@ -426,7 +417,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		if (type === 'chapterToggle') {
 			saveScroll(0, false);
 		}
-		vscode.postMessage({ type, data });
+		postCodeMessage({ type, data });
 	}
 });
 

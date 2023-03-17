@@ -8,15 +8,19 @@
 		],
 		"sourceMap": true,
 		"rootDir": "src",
-		"esModuleInterop":true,
-		"strict": true ,  /* enable all strict type-checking options */
+		"esModuleInterop": true,
+		"strict": true, /* enable all strict type-checking options */
 		/* Additional Checks */
-		 "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
+		"noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
 		// "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
 	},
 	"exclude": [
 		"node_modules",
 		".vscode-test"
-	]
+	],
+	// 自己加的,不加的话不会包含自己写的dts
+	"include": [
+		"src/**/*",
+	],
 }
