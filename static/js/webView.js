@@ -6,19 +6,20 @@ import {
 	getState,
 	setCache,
 	cache,
-	postCodeMessage,
+	saveScroll,
+	postMsg,
 } from './vscodeApi.js';
 import {
 	//
 	el,
 	getScroll,
 	setScroll,
+	isPageEnd,
+	scrollScreen,
 } from './dom.js';
 
 window.addEventListener('DOMContentLoaded', function () {
 	let setting = {};
-	// 当前章节的缓存名称
-	let chapterName = '';
 	// 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
 	let renderId = 0;
 
@@ -51,7 +52,6 @@ window.addEventListener('DOMContentLoaded', function () {
 				return;
 			}
 			console.warn('开始显示章节', data.title, cache?.showChapter?.title, data);
-			chapterName = 'catch_' + data.title;
 			setCache('showChapter', data);
 			render(data.title, data.list);
 			// 初次渲染后,renderId 是1
@@ -166,7 +166,7 @@ window.addEventListener('DOMContentLoaded', function () {
 					postMsg('chapterToggle', 'next');
 				} else {
 					// 空格自带翻页效果
-					// scrollScreen(1, e);
+					scrollScreen(1, e);
 					e.stopPropagation();
 					e.preventDefault();
 					console.log('preventDefault');
@@ -245,29 +245,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		e.stopPropagation();
 		return false;
 	};
-	/**
-	 * 上下翻页(一个屏幕)
-	 * @param {Number} direction 方向 1下 -1上
-	 * @param {Event} event  用来阻止默认行为
-	 */
-	function scrollScreen(direction = 1, event) {
-		event.preventDefault();
-		// let cur = window.scrollY;
-		let cur = getScroll();
-		let h = document.documentElement.clientHeight - el.nav.clientHeight - 50 * (setting?.zoom || 1);
-		setScroll(cur + h * direction);
-		// window.scrollTo(0, cur + h * direction);
-	}
 
-	/**
-	 * 页面是否触底
-	 */
-	function isPageEnd() {
-		const h = el.main.scrollHeight;
-		const curH = getScroll() + el.main.clientHeight;
-		// 如果距离小于10.就认为触底了
-		return h - curH < 10;
-	}
 	// 滚屏,滚轮相关
 	{
 		let scrollType = 0; // 0未滚动 1等待结束  2等待开始  3正在滚动
@@ -312,11 +290,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
 			num = getScroll() + v;
 			setScroll(num);
-			console.warn({ max, num, h });
+			// console.warn({ max, num, h });
 			if (num > max - h) {
 				scrollEnd();
 			} else if (num > lastScrollY + 200) {
 				// 每200高度,保存一次当前滚动高度
+				console.warn('保存高度');
 				lastScrollY = num;
 				saveScroll(num);
 			}
@@ -336,6 +315,7 @@ window.addEventListener('DOMContentLoaded', function () {
 					autoScrollScreen();
 				}, setting.scrollStartTime);
 			}, setting.scrollEndTime);
+
 		}
 		// 获取间隔时间
 		function getIntervalTime() {
@@ -343,7 +323,7 @@ window.addEventListener('DOMContentLoaded', function () {
 			return Math.round(1000 / scrollSpeed);
 		}
 		/***************
-		    监听滚动
+		    缩放逻辑
 		****************/
 		{
 			let el = document.querySelector('.zoom');
@@ -374,7 +354,6 @@ window.addEventListener('DOMContentLoaded', function () {
 					if (zoom >= 0.2 && zoom <= 5) {
 						// 保存
 						postMsg('zoom', zoom);
-
 						setting.zoom = zoom;
 						setCache('setting', setting);
 						// 应用
@@ -384,40 +363,20 @@ window.addEventListener('DOMContentLoaded', function () {
 					}
 					return;
 				} else if (scrollType !== 0) {
+					console.log('e.wheelDelta',e.wheelDelta);
 					// 如果处于自动滚屏状态,则可以用这个进行滚屏,
 					// 如果不处于自动滚屏状态,这样滚动会使其进入自动滚屏状态,也有可能与当前计时器逻辑相冲突
 					scroll(e.wheelDelta * -1);
+
+
 				} else {
 					// 记录当前滚动高度,并存储
+					// 这里的防抖,其实可以,但是没有太大的必要,因为性能损耗应该也没多少
 					clearTimeout(scrollEndTimer);
 					scrollEndTimer = setTimeout(saveScroll, 300);
 				}
-				// if (e.wheelDelta > 0) { }
-				// if (e.wheelDelta < 0) { }
 			}
-			// function scrollEnd() { saveScroll(); }
 		}
-	}
-
-	function saveScroll(scroll = getScroll(), isPostMsg = true) {
-		// setCache('saveScroll', { [chapterName]: scroll });
-		// 这里需要被调用,所以缓存的方法名是读取 readCacheScroll
-		setCache('readScroll', scroll);
-		// setCache('readCacheScroll', { [chapterName]: scroll });
-		// console.warn("save_Scroll", scroll);
-		if (isPostMsg) {
-			postMsg('saveScroll', { key: chapterName, value: scroll });
-		}
-	}
-
-	// 发送消息
-	function postMsg(type, data) {
-		console.log('子页面-postMsg', type, data);
-		//切换章节时,清除当前章节的缓存滚动高度
-		if (type === 'chapterToggle') {
-			saveScroll(0, false);
-		}
-		postCodeMessage({ type, data });
 	}
 });
 

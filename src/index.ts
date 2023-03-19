@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { createTreeView, command as viewCommand } from './TreeViewProvider';
 import { init as initUtil } from './util/util';
 import { init as initFile, command as fileCommand } from './file/file';
-
+import { setEnv } from './config';
 
 let content: vscode.ExtensionContext;
 
@@ -12,6 +12,10 @@ let content: vscode.ExtensionContext;
  */
 export async function init(_context: vscode.ExtensionContext) {
 	content = _context;
+
+	let isDev = content.extension.packageJSON.isUnderDevelopment;
+	console.log('setEnv', isDev ? 'dev' : 'production');
+	setEnv(isDev ? 'dev' : 'production');
 	// 工具类,优先初始化,其他地方很有可能用
 	initUtil(content);
 	const fileList = await initFile(content);

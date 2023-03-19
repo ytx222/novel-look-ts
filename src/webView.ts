@@ -4,7 +4,7 @@ import * as file from './file/file';
 import * as config from './config';
 import { getState, setState, getExtensionUri, getStateDefault, sleep } from './util/util';
 import { command } from './TreeViewProvider';
-import { targetStaticDir } from './file/file';
+import { getTargetStaticDir } from './file/file';
 
 //FIXME: 机制需要测试!!
 const scroll = new Map<string, number>();
@@ -38,10 +38,10 @@ export async function showChapter(title: string, list: string[]) {
  * 创建
  */
 export async function createWebView() {
-	const index = require('./index');
-	content = index.getContent();
+	const { getContent } = await import('./index');
+	content = getContent();
 	// 存储panel相关文件的目录
-	let uri = vscode.Uri.joinPath(content.globalStorageUri, targetStaticDir);
+	let uri = vscode.Uri.joinPath(content.globalStorageUri, getTargetStaticDir());
 
 	panel = vscode.window.createWebviewPanel(
 		'novel', // 标识webview的类型。在内部使用

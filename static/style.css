@@ -685,10 +685,11 @@ button:active,
 .nav .content-container .zoom {
 	display: none;
 	font-size: 0.9rem;
-	color: var(--inverseColor);
+	color: var(--color);
 	opacity: 1;
 	transition: opacity 300ms;
 	background: var(--navBg);
+	box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, var(--color) 0px 0px 0px 3px inset;
 }
 
 .main {
@@ -739,14 +740,16 @@ button:active,
 	display: flex;
 	width: 100%;
 	justify-content: space-around;
+	/* justify-content: center;
+	gap: 10vw; */
 }
 .footer .btn-box button {
-	height: 3.6rem;
-	max-width: 12rem;
-	min-width: 9rem;
-	font-size: 1.6rem;
+	height: min(3.6rem, 10.8vw);
+	max-width: min(12rem, 36vw);
+	min-width: min(9rem, 27vw);
+	font-size: min(1.6rem, 4.5vw);
 	flex: 1 1 auto;
 }
-.footer .btn-box button:first-child {
+/* .footer .btn-box button:first-child {
 	margin-right: 1px;
-}
+} */

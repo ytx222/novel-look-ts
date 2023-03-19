@@ -7,9 +7,12 @@ import * as util from './fileUtil';
 import * as config from '../config';
 import { getDir } from './fileUtil';
 
-
-const staticDir = '/static/'
-export const targetStaticDir = '/static/2.0.6'
+const staticDir = '/static/';
+// export const targetStaticDir = '/static/2.0.7';
+export const getTargetStaticDir = () => {
+	// 动态获取当前版本号
+	return `/static/${context.extension.packageJSON.version}`;
+};
 
 let uri: vscode.Uri;
 
@@ -45,27 +48,19 @@ export async function getBookList(): Promise<vscode.Uri[]> {
  * @returns
  */
 export async function getWebViewHtml() {
-	// 自己的源文件的目录
-	const dirSrc = vscode.Uri.joinPath(context.extensionUri, staticDir)
+	// 拓展安装目录()
+	const dirSrc = vscode.Uri.joinPath(context.extensionUri, staticDir);
 	// 要拷贝到的地址的目录
-	const targetDirSrc = vscode.Uri.joinPath(uri, targetStaticDir);
+	const targetDirSrc = vscode.Uri.joinPath(uri, getTargetStaticDir());
 	// let file= vscode.Uri.file
 	const file = vscode.Uri.joinPath(dirSrc, 'webView.html');
-	// 测试环境的话,不使用拓展工作路径的
-	console['warn']('isDev:', config.env);
+	// 开发环境,始终从拓展目录(开发目录)拷贝一份最新的文件
+	// 正式环境,则判断文件不存在时拷贝一份
+	if (config.env === 'dev' || !(await util.isDir(targetDirSrc))) {
+		await copyDir(dirSrc, targetDirSrc);
+	}
 
-	if (config.env === 'dev') {
-		await copyDir(dirSrc, targetDirSrc);
-		return await util.readFile(file);
-	}
-	try {
-		await getDir(targetDirSrc);
-		return await util.readFile(file);
-	} catch (error) {
-		console.error('getWebViewHtml error',error);
-		await copyDir(dirSrc, targetDirSrc);
-		return await util.readFile(file);
-	}
+	return await util.readFile(file);
 }
 
 /**
@@ -78,12 +73,13 @@ async function copyDir(src: vscode.Uri, dist: vscode.Uri) {
 	// 复制文件夹的逻辑
 	let files = await util.readDir(src);
 	console.log('copyDir files', files);
+	console.warn('=========');
 	// 这里文件不多,没有必要用多进程同步进行,for循环单进程读写文件即可
 	for (var i = 0; i < files.length; i++) {
-		const fileName = util.getFileName(files[i], true);
-		// console.log(fileName);
-		let toFileUrl = vscode.Uri.joinPath(dist, fileName);
-		// console.log('toFileUrl',toFileUrl);
+		console.log(files[i].with);
+		// 目标文件的路径,可能是文件名(index.html),或者相对地址(/js/a.js)
+		const filePath = files[i].path.replace(src.path, '');
+		let toFileUrl = vscode.Uri.joinPath(dist, filePath);
 		let s = await util.readFile(files[i]);
 		// console.log(s);
 		await util.writeFile(toFileUrl, s, true);

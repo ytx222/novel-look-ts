@@ -10,19 +10,14 @@ import { init, command } from './index';
  * 拓展激活的事件,激活拓展时执行,拓展激活事件只会执行一次
  */
 export function activate(context: vscode.ExtensionContext) {
-	console.log('拓展初始化');
+	let t = console.warn;
+	t('novel-look-ts 拓展初始化');
+	// t('novel-look-ts packageJSON', context.extension.packageJSON);
 	// console.log(context.globalState);
 	// console.log(context.globalStoragePath);
 	// console.log(context.globalStorageUri);
 	// 初始化自己的文件夹
-	// C:\Users\Administrator\AppData\Roaming\Code\User\globalStorage\ytx.novel-look
-	// let uri = context.globalStorageUri;
-	// let fs = vscode.workspace.fs;
-	// let t=fs.createDirectory(uri).then(function (e,e2) {
-	// 	console.warn("createDirectory");
-	// 	console.warn(e,e2);
-	// 	console.warn(t);
-	// })
+
 	init(context);
 
 	interface CommandList {

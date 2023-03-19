@@ -32,13 +32,13 @@ export async function readDir(uri: vscode.Uri, isFilter: boolean = false, root =
 	// 每次递归调用时只获取一次
 	if (root) {
 		// FIXME:这里默认有两个是否合适
-		ignoreDir = config.get<String[]>('ignoreDir', ["tmp", "static"]);
+		ignoreDir = config.get<String[]>('ignoreDir', ['tmp', 'static']);
 		ignoreFileName = config.get<String[]>('ignoreFileName', []);
 		novelName = new RegExp(config.get('match.novelName', ''));
 	}
 	// 所有目录项
 	const items: dir[] = await getDir(uri);
-	console.warn(items);
+	// console.warn(items);
 	let arr: vscode.Uri[] = [];
 	for (let index = 0; index < items.length; index++) {
 		const [name, type] = items[index];
@@ -57,7 +57,7 @@ export async function readDir(uri: vscode.Uri, isFilter: boolean = false, root =
 			}
 		}
 	}
-	console.warn(arr);
+	// console.warn(arr);
 	return arr;
 	// 232
 }
@@ -68,15 +68,21 @@ export async function getDir(uri: vscode.Uri): Promise<dir[]> {
 	try {
 		const dir: dir[] = await _fs.readDirectory(uri);
 		return dir;
-		// fs.opendir(url, (err, dir) => {
-		// 	if (err) {
-		// 		reject(err);
-		// 	}
-		// 	resolve(dir);
-		// });
 	} catch (error) {
 		console.error('读取文件夹失败');
 		throw error;
+	}
+}
+
+/**
+ * 打开文件夹,获取dir对象
+ */
+export async function isDir(uri: vscode.Uri): Promise<dir[] | false> {
+	try {
+		const dir: dir[] = await _fs.readDirectory(uri);
+		return dir;
+	} catch (error) {
+		return false;
 	}
 }
 /**
@@ -107,6 +113,7 @@ export async function writeFile(path: vscode.Uri, content: string | Uint8Array, 
 	if (typeof content === 'string') {
 		content = fromString(content);
 	}
+
 	try {
 		//FIXME: 创建目录逻辑
 		await _fs.writeFile(path, content);
@@ -142,15 +149,6 @@ export async function createDir(path: vscode.Uri, recursive: boolean): Promise<v
 	} catch (error) {
 		console.error(error);
 	}
-	// return new Promise((resolve, reject) => {
-	// 	fs.mkdir(path, { recursive }, function (err) {
-	// 		if (err) {
-	// 			reject(err);
-	// 		} else {
-	// 			resolve();
-	// 		}
-	// 	});
-	// });
 }
 
 /**
@@ -162,7 +160,9 @@ export function getFileName(uri: vscode.Uri, isSuffix = false): string {
 	const path = uri.path;
 	let tArr = path.split('/');
 	let name = tArr[tArr.length - 1];
-	if (isSuffix) return name;
+	if (isSuffix) {
+		return name;
+	}
 	let index = name.lastIndexOf('.');
 	if (index != -1) {
 		name = name.substring(0, index);

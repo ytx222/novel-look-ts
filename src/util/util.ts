@@ -13,8 +13,10 @@ export function init(_content: vscode.ExtensionContext): void {
  * @param {Object} value 默认值
  */
 export function setState(key: string, value: any): void {
-	console.log('content.globalState',content.globalState);
+	console.warn('content.globalState',content.globalState);
 	content.globalState.update(key, value);
+
+
 }
 /**
  * 读取存储数据
