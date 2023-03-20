@@ -3,3 +3,10 @@
 export function log () {
 	console.log('========log被调用');
 }
+
+
+export async function sleep (ms = 10) {
+	return new Promise((resolve, reject) => {
+		setTimeout(resolve, ms);
+	});
+}

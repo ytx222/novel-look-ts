@@ -111,6 +111,7 @@ async function getWebviewContent(uri: vscode.Uri) {
 	s = s.replace(/(@)(.+?)/g, (_m, _$1, $2) => {
 		// console.warn(panel!.webview.cspSource);
 		return panel!.webview.asWebviewUri(vscode.Uri.joinPath(uri, $2));
+
 	});
 	return s;
 }
@@ -217,4 +218,5 @@ export async function closeWebView() {
 		panel.dispose();
 		panel = null;
 	}
+
 }

@@ -2,7 +2,10 @@
 	"root": true,
 	"parser": "@typescript-eslint/parser",
 	"globals": {
-		"console":true
+		"console": true,
+		"clearInterval": "readonly",
+		"setTimeout": "readonly",
+		"NodeJS": "readonly",
 	},
 	"parserOptions": {
 		"ecmaVersion": 6,
@@ -14,7 +17,7 @@
 	"rules": {
 		"@typescript-eslint/naming-convention": "warn",
 		"@typescript-eslint/semi": "warn",
-		"curly": "warn",
+		"curly": 0,
 		"eqeqeq": "warn",
 		"no-throw-literal": "warn",
 		"semi": "off",

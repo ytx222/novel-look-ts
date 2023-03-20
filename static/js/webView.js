@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { log } from './util.js';
+import { log, sleep } from './util.js';
 
 import {
 	//
@@ -16,21 +16,24 @@ import {
 	setScroll,
 	isPageEnd,
 	scrollScreen,
+	nextPageOrChapter
 } from './dom.js';
+import { autoScrollScreen } from './scroll.js';
+
+/** 每次重新渲染(调用render方法)加1 */
+export let renderId = 0;
 
 window.addEventListener('DOMContentLoaded', function () {
-	let setting = {};
 	// 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
-	let renderId = 0;
+
 
 	let fn = {
-		undefined() {
+		undefined () {
 			console.error('webView端找不到处理程序,无法执行');
 		},
 		/*设置一些公共设置,如行高,行间隔,字体大小等*/
-		setting(data) {
+		setting (data) {
 			setCache('setting', data);
-			setting = data;
 			let sheetEl = document.querySelector('style');
 			// 这里多一个.body,以达到更高匹配级别
 			sheetEl.sheet.insertRule(`.body .main .content div{
@@ -46,7 +49,7 @@ window.addEventListener('DOMContentLoaded', function () {
 			// window.focus()
 		},
 		/*显示章节*/
-		showChapter(data) {
+		showChapter (data) {
 			// 拦截重复的显示
 			if (data.title === (cache.showChapter && cache.showChapter.title)) {
 				return;
@@ -62,7 +65,7 @@ window.addEventListener('DOMContentLoaded', function () {
 			// console.warn('开始显示章节', data.title, cache.showChapter.title);
 		},
 		// 只会被插件层调用
-		readScroll(data) {
+		readScroll (data) {
 			// console.warn('readScroll', data);
 			if (!data) {
 				return;
@@ -82,7 +85,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		// postMsg('type'+'_end')
 	});
 	/**********************************
-	 	判断是否是隐藏后重新显示
+		  判断是否是隐藏后重新显示
 	 **********************************/
 	let data = getState();
 	if (data) {
@@ -96,7 +99,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	 * @param {String} title
 	 * @param {Array<String>} lines
 	 */
-	function render(title, lines) {
+	function render (title, lines) {
 		el.title.innerText = title;
 		el.navTitle.innerText = title;
 		let list = el.content.children;
@@ -125,7 +128,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	/**
 	 * 在行不够用的情况下添加行
 	 */
-	function addLine(num) {
+	function addLine (num) {
 		// 因为前期肯定隐藏过了dom,这里不在隐藏
 		for (var i = 0; i < num; i++) {
 			el.content.appendChild(document.createElement('div'));
@@ -136,6 +139,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		换章和其他需要和拓展交互的功能
 	**********************************/
 	window.onkeydown = function (e) {
+
 		console.log('KEY onkeyup ', e.key);
 		switch (e.key.toLowerCase()) {
 			//FIXME:手动处理tab事件
@@ -162,16 +166,9 @@ window.addEventListener('DOMContentLoaded', function () {
 			//检查是否触底,如果触底,下一章,没有则向下
 			// 空格是向下翻页,
 			case ' ':
-				if (isPageEnd()) {
-					postMsg('chapterToggle', 'next');
-				} else {
-					// 空格自带翻页效果
-					scrollScreen(1, e);
-					e.stopPropagation();
-					e.preventDefault();
-					console.log('preventDefault');
-					return false;
-				}
+				// e.preventDefault();
+				// console.log('preventDefault');
+				nextPageOrChapter(e)
 				break;
 			case '.':
 				// 多判断一下是不是数字键盘的.
@@ -208,11 +205,9 @@ window.addEventListener('DOMContentLoaded', function () {
 		switch (e.button) {
 			case 1:
 			case 4:
-				// postMsg("chapterToggle", "next");
 				postMsg('chapterToggle', 'prev');
 				break;
 			case 3:
-				// postMsg("chapterToggle", "prev");
 				postMsg('chapterToggle', 'next');
 				break;
 			default:
@@ -245,141 +240,30 @@ window.addEventListener('DOMContentLoaded', function () {
 		e.stopPropagation();
 		return false;
 	};
-
-	// 滚屏,滚轮相关
-	{
-		let scrollType = 0; // 0未滚动 1等待结束  2等待开始  3正在滚动
-		let timer = {
-			scroll: 0, // 滚屏用的计时器
-			toggle: 0, // 换章用的计时器
-		};
-		let num = 0; // 当前滚动高度
-		let h = 0; // 窗口高度
-		let max = 0; // 窗口最大高度
-		let lastScrollY = 0;
-
-		let lastRenderId = -1;
-		window.ondblclick = function () {
-			// 用户手动触发的
-			autoScrollScreen();
-		};
-		/**
-		 * 自动滚屏
-		 */
-		function autoScrollScreen() {
-			clearTimeout(timer.toggle);
-			clearInterval(timer.scroll);
-			// 如果当前非滚屏状态,则进入滚屏状态
-			if (scrollType === 0 || scrollType === 2) {
-				timer.scroll = setInterval(scroll, getIntervalTime());
-				scrollType = 3;
-				scroll(); // 直接执行一次,如果是触底时,可以直接初始化状态
-			} else {
-				scrollType = 0;
-			}
-		}
-		// 问题是每多少时间向下移动1
-		// 这个时间如果高于10,则可能会产生滚动一卡一卡的感觉(视觉效果)
-		// 以人眼24帧为标准 72, 96, 120, 144, 168, 192
-		function scroll(v = 1) {
-			// 检查更新尺寸信息,仅在初始化和重新渲染后才更新尺寸信息
-			if (lastRenderId !== renderId) {
-				max = el.main.scrollHeight;
-				h = el.main.clientHeight;
-			}
-
-			num = getScroll() + v;
-			setScroll(num);
-			// console.warn({ max, num, h });
-			if (num > max - h) {
-				scrollEnd();
-			} else if (num > lastScrollY + 200) {
-				// 每200高度,保存一次当前滚动高度
-				console.warn('保存高度');
-				lastScrollY = num;
-				saveScroll(num);
-			}
-		}
-		function scrollEnd() {
-			// 章节结束
-			// 直接执行方法使其取消自动滚屏
-			clearInterval(timer.scroll);
-			clearTimeout(timer.toggle);
-			scrollType = 1;
-			timer.toggle = setTimeout(() => {
-				// 下一章
-				scrollType = 2;
-				postMsg('chapterToggle', 'next');
-				timer.toggle = setTimeout(() => {
-					// 开始滚屏
-					autoScrollScreen();
-				}, setting.scrollStartTime);
-			}, setting.scrollEndTime);
-
-		}
-		// 获取间隔时间
-		function getIntervalTime() {
-			let scrollSpeed = setting.scrollSpeed || 96;
-			return Math.round(1000 / scrollSpeed);
-		}
-		/***************
-		    缩放逻辑
-		****************/
-		{
-			let el = document.querySelector('.zoom');
-			let timer = 0;
-			let scrollEndTimer = 0;
-			function showZoom(size, zoom) {
-				el.innerText = `${size}px ${(zoom * 100).toFixed(0)}%`;
-				el.style.display = 'flex';
-				el.style.opacity = 1;
-				clearTimeout(timer);
-				timer = setTimeout(() => {
-					el.style.opacity = 0;
-					timer = setTimeout(() => {
-						el.style.display = 'none';
-					}, 500);
-				}, 1500);
-			}
-			//滚动滑轮触发scrollFunc方法
-			document.onmousewheel = scrollFunc;
-			function scrollFunc(e) {
-				// 如果是ctrl+滚轮,则放大或缩小显示
-				if (e.ctrlKey) {
-					// 先计算出新的缩放比例
-					let zoom = setting.zoom;
-					let n = e.wheelDelta > 0 ? 0.1 : -0.1;
-					zoom = +(zoom + n).toFixed(1);
-					// 如果合法
-					if (zoom >= 0.2 && zoom <= 5) {
-						// 保存
-						postMsg('zoom', zoom);
-						setting.zoom = zoom;
-						setCache('setting', setting);
-						// 应用
-						document.documentElement.style.fontSize = setting.rootFontSize * zoom + 'px';
-						// 显示
-						showZoom(setting.rootFontSize * zoom, zoom);
-					}
-					return;
-				} else if (scrollType !== 0) {
-					console.log('e.wheelDelta',e.wheelDelta);
-					// 如果处于自动滚屏状态,则可以用这个进行滚屏,
-					// 如果不处于自动滚屏状态,这样滚动会使其进入自动滚屏状态,也有可能与当前计时器逻辑相冲突
-					scroll(e.wheelDelta * -1);
+	el.content.ondblclick = autoScrollScreen
 
 
-				} else {
-					// 记录当前滚动高度,并存储
-					// 这里的防抖,其实可以,但是没有太大的必要,因为性能损耗应该也没多少
-					clearTimeout(scrollEndTimer);
-					scrollEndTimer = setTimeout(saveScroll, 300);
-				}
-			}
+	el.sideNextBtns.forEach(e => e.onclick = clickSizeNextBtn)
+
+	async function clickSizeNextBtn (e) {
+		e.stopPropagation()
+		// console.log('clickSizeNextBtn',e);
+		let is = nextPageOrChapter()
+		// 翻页完成后检测是否到达页面底部,如果到了,将按钮修改为下一章的状态(样式)
+		console.log('翻页完成后检测是否到达页面底部', is);
+		if (is) await sleep()
+		if (isPageEnd()) {
+			console.log('pageEnd');
+			el.sideNextBtns.forEach(e => e.classList.add('right'))
+		} else {
+			el.sideNextBtns.forEach(e => {
+				e.classList.remove('right')
+			})
 		}
 	}
+
 });
 
-function copy(obj) {
+function copy (obj) {
 	return JSON.parse(JSON.stringify(obj));
 }

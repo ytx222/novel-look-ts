@@ -7,6 +7,9 @@ import * as util from './fileUtil';
 import * as config from '../config';
 import { getDir } from './fileUtil';
 
+import { exec } from 'child_process';
+import { closeWebView, showChapter } from '../webView';
+
 const staticDir = '/static/';
 // export const targetStaticDir = '/static/2.0.7';
 export const getTargetStaticDir = () => {
@@ -48,11 +51,10 @@ export async function getBookList(): Promise<vscode.Uri[]> {
  * @returns
  */
 export async function getWebViewHtml() {
-	// 拓展安装目录()
+	// 拓展安装目录 里的静态文件目录()
 	const dirSrc = vscode.Uri.joinPath(context.extensionUri, staticDir);
 	// 要拷贝到的地址的目录
 	const targetDirSrc = vscode.Uri.joinPath(uri, getTargetStaticDir());
-	// let file= vscode.Uri.file
 	const file = vscode.Uri.joinPath(dirSrc, 'webView.html');
 	// 开发环境,始终从拓展目录(开发目录)拷贝一份最新的文件
 	// 正式环境,则判断文件不存在时拷贝一份
@@ -63,20 +65,33 @@ export async function getWebViewHtml() {
 	return await util.readFile(file);
 }
 
+async function refreshStaticFile() {
+	// 拓展安装目录()
+	const dirSrc = vscode.Uri.joinPath(context.extensionUri, staticDir);
+	// 要拷贝到的地址的目录
+	const targetDirSrc = vscode.Uri.joinPath(uri, getTargetStaticDir());
+	await copyDir(dirSrc, targetDirSrc);
+	// vscode.window.showInformationMessage('刷新完成');
+	console.log('刷新完成');
+
+	// 重启视图
+	closeWebView();
+	vscode.commands.executeCommand('novel-look.openWebView')
+}
+
 /**
  * 复制文件夹
  * @param src 源
  * @param dist 目标
  */
 async function copyDir(src: vscode.Uri, dist: vscode.Uri) {
-	// console.warn('复制文件夹',src,dist);
 	// 复制文件夹的逻辑
 	let files = await util.readDir(src);
-	console.log('copyDir files', files);
-	console.warn('=========');
+	// console.log('copyDir files', files);
+	// console.warn('=========');
 	// 这里文件不多,没有必要用多进程同步进行,for循环单进程读写文件即可
 	for (var i = 0; i < files.length; i++) {
-		console.log(files[i].with);
+		// console.log(files[i]);
 		// 目标文件的路径,可能是文件名(index.html),或者相对地址(/js/a.js)
 		const filePath = files[i].path.replace(src.path, '');
 		let toFileUrl = vscode.Uri.joinPath(dist, filePath);
@@ -90,7 +105,6 @@ async function copyDir(src: vscode.Uri, dist: vscode.Uri) {
  * @param {*} url
  */
 function openExplorer(url = uri.fsPath) {
-	var exec = require('child_process').exec;
 	exec('explorer.exe /e,"' + url + '"');
 }
 
@@ -99,13 +113,13 @@ function openExplorer(url = uri.fsPath) {
  */
 function openWebViewDir() {
 	let url = vscode.Uri.joinPath(uri, staticDir).fsPath;
-	var exec = require('child_process').exec;
 	exec('explorer.exe /e,"' + url + '"');
 }
 
 export const command = {
 	openWebViewDir,
 	openExplorer,
+	refreshStaticFile,
 };
 
 export function getUrl() {

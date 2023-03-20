@@ -90,7 +90,6 @@ export class Bookrack implements vscode.TreeDataProvider<TreeItem> {
 	//
 	async getChildren(element: Book): Promise<TreeItem[]> {
 		if (!this.list.length) {
-			// console.log("getChildren", this.list, element);
 			vscode.window.showInformationMessage('没有书');
 			return Promise.resolve([]);
 		}
@@ -99,8 +98,6 @@ export class Bookrack implements vscode.TreeDataProvider<TreeItem> {
 			return Promise.resolve(this.list);
 		} else {
 			// 返回某个元素的子元素,在这里必定的书的子元素,章节
-			// vscode.window.showInformationMessage("getChildren--获取章节");
-			// console.log(element);
 			let t = await element.getChapterList();
 			return Promise.resolve(t);
 		}
@@ -181,7 +178,9 @@ class Book extends vscode.TreeItem {
 	 */
 	async getContent() {
 		try {
-			if (this.timer) clearInterval(this.timer);
+			if (this.timer) {
+				clearInterval(this.timer);
+			}
 			//10分钟后清除这本书
 			this.timer = setTimeout(() => {
 				this.clearTxt();

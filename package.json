@@ -56,12 +56,14 @@
 					"default": [],
 					"description": "需要忽略的文件的名称"
 				},
-				"novelLook.readSetting.1": {
+				"novelLook.showRefreshStaticFile": {
+					"type": "boolean",
+					"default": false,
+					"description": "是否显示刷新静态文件按钮,开发时比较好用的一个功能"
+				},
+				"novelLook.readSetting._": {
 					"type": "string",
 					"default": "说明",
-					"enum": [
-						"说明"
-					],
 					"description": "说明(此项无需修改)\n修改阅读设置后,需要重新打开webView以读取设置"
 				},
 				"novelLook.readSetting.lineIndent": {
@@ -129,9 +131,14 @@
 				"title": "刷新"
 			},
 			{
+				"command": "novel-look.refreshStaticFile",
+				"icon": "img/swap.png",
+				"title": "刷新static文件"
+			},
+			{
 				"command": "novel-look.openExplorer",
 				"category": "小说阅读",
-				"icon": "img/add.png",
+				"icon": "img/folder-open.png",
 				"title": "打开文件目录"
 			},
 			{
@@ -205,6 +212,11 @@
 				{
 					"command": "novel-look.refreshFile",
 					"when": "view == novelLookTreeView",
+					"group": "navigation"
+				},
+				{
+					"command": "novel-look.refreshStaticFile",
+					"when": "view == novelLookTreeView && config.novelLook.showRefreshStaticFile",
 					"group": "navigation"
 				},
 				{
