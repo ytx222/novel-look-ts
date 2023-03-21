@@ -253,6 +253,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
 
+	/**
+	 * 这个东西,放哪里合适呢,
+	 * scrollAntiShake里面包含了业务逻辑
+	 */
 	let scrollTimer
 	el.main.addEventListener('scroll', () => {
 		clearTimeout(scrollTimer)

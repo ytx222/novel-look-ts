@@ -576,12 +576,12 @@
 	--textColor: var(--color);
 
 	/* 绿色主题 */
-	/* --bg: #cbd9c0;
+	--bg: #cbd9c0;
 	--color: #303b33;
 	--btnBg: #cbd9c0;
 	--btnColor: #303b33;
 	--btnActive: rgba(0, 0, 0, 0.2);
-	--btnActiveBorder:#303b33; */
+	--btnActiveBorder:#303b33;
 }
 html {
 	font-size: 16px;
@@ -715,6 +715,7 @@ button:active,
 }
 .content {
 	flex: 1 1 auto;
+	color: var(--textColor);
 }
 .content div {
 	/* FIXME: 这个距离,如果修改成2rem 则无法保持当前滚动位置,需要解决办法 */
@@ -758,7 +759,7 @@ button:active,
 	margin-top: calc(var(--size) * -0.54);
 	border: max(calc(var(--size) * 0.06), 2px) solid;
 	background: var(--bg);
-	transition: 300ms;
+	transition:transform 300ms  ;
 }
 .side-next-btn svg {
 	width: 80%;

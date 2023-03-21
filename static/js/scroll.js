@@ -145,30 +145,3 @@ function scrollFunc (e) {
 		scrollEndTimer = setTimeout(saveScroll.bind(null, undefined, true, false), 300);
 	}
 }
-
-
-/**
- * 当前页面是否触底的状态
- */
-// let isPageEndStatus = false;
-
-/**
- * 当页面发生有效的滚动高度变化()
- */
-export function onMainScrollChange (newScroll) {
-	// let flag = isPageEnd();
-	// console.warn('当页面发生有效的滚动高度变化', flag);
-	// if (flag !== isPageEndStatus) {
-	// 	isPageEndStatus = flag;
-	// 	let event = new Event('PageEndStatusChange', {
-	// 		bubbles: false,
-	// 	})
-	// 	event.isPageEndStatus = isPageEndStatus
-	// 	window.dispatchEvent(event);
-	// }
-}
-
-
-// window.addEventListener('PageEndStatusChange', ({ isPageEndStatus }) => {
-// 	console.log('PageEndStatusChange', isPageEndStatus);
-// })

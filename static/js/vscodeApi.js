@@ -1,7 +1,6 @@
 /* eslint-env browser */
 
 import { getScroll } from './dom.js';
-import { onMainScrollChange } from './scroll.js'
 
 // eslint-disable-next-line no-undef
 const vscode = acquireVsCodeApi();
@@ -38,7 +37,7 @@ export function setCache (key, value) {
  * @param {number} scroll
  * @param {boolean} isPostMsg
  */
-export function saveScroll (scroll = getScroll(), isPostMsg = true, isSendEvent = true) {
+export function saveScroll (scroll = getScroll(), isPostMsg = true) {
 	// 如果滚动高度未变化,则无意义
 	if (scroll === cache.readScroll) return
 	// TODO: 未来保存更多的信息,如段落index,pageWidth,以实现页面宽度变化时的自适应
@@ -48,7 +47,6 @@ export function saveScroll (scroll = getScroll(), isPostMsg = true, isSendEvent 
 	if (isPostMsg) {
 		postMsg('saveScroll', { key: 'catch_' + cache?.showChapter?.title, value: scroll });
 	}
-	onMainScrollChange(scroll)
 }
 
 // 发送消息

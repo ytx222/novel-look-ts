@@ -89,14 +89,14 @@
 					"minimum": 0.1,
 					"maximum": 5,
 					"default": 1,
-					"scope": "application",
-					"description": "字体大小的缩放倍数,字体实际大小=root*zoom\n缩放这里只是一个默认值,如果你自己修改过缩放的值,那么这个值就永远不会生效"
+					"scope": "machine",
+					"description": "字体大小的缩放倍数,字体实际大小=root*zoom,与页面内Ctrl+滚轮缩放的值一致"
 				},
 				"novelLook.readSetting.scrollSpeed": {
 					"type": "number",
 					"minimum": 0,
 					"default": 144,
-					"scope": "application",
+					"scope": "machine",
 					"description": "自动滚动速度(每秒多少px)  推荐 72, 96, 120, 144, 168, 192\n这个值如果很低,会让人产生一卡一卡的感觉"
 				},
 				"novelLook.readSetting.scrollEndTime": {
@@ -110,6 +110,87 @@
 					"minimum": 0,
 					"default": 3000,
 					"description": "自动切换到下一章之后,等待多少时间开始滚屏(ms)"
+				},
+				"novelLook.theme.use": {
+					"type": "number",
+					"default": 0,
+					"scope": "application",
+					"description": "使用几号主题,0为系统默认,其他的就是设置中的"
+				},
+				"novelLook.theme.custom": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string",
+								"default": "新主题",
+								"title": "主题名称"
+							},
+							"bg": {
+								"type": "string",
+								"default": "#000",
+								"title": "主题名称"
+							},
+							"color": {
+								"type": "string",
+								"default": "#FFF",
+								"title": "主题名称"
+							},
+							"btnBg": {
+								"type": "string",
+								"default": "#000",
+								"title": "按钮背景颜色"
+							},
+							"btnColor": {
+								"type": "string",
+								"default": "#FFF",
+								"title": "按钮文字颜色"
+							},
+							"btnActive": {
+								"type": "string",
+								"default": "#000",
+								"title": "按钮悬浮或聚焦时的背景颜色"
+							},
+							"btnActiveBorder": {
+								"type": "string",
+								"default": "#FFF",
+								"title": "按钮按下时的边框颜色"
+							},
+							"navBg": {
+								"type": "string",
+								"default": "#000",
+								"title": "可选属性,标题栏背景颜色,默认=bg"
+							},
+							"textColor": {
+								"type": "string",
+								"default": "#FFF",
+								"title": "可选属性,正文文字文字颜色,默认=color,建议不要修改,直接改color即可"
+							}
+						},
+						"required": [
+							"name",
+							"bg",
+							"color",
+							"btnBg",
+							"btnColor",
+							"btnActive",
+							"btnActiveBorder"
+						]
+					},
+					"default": [
+						{
+							"name": "主题名称",
+							"bg": "#000",
+							"color": "#FFF",
+							"btnBg": "#000",
+							"btnColor": "#FFF",
+							"btnActive": "#000",
+							"btnActiveBorder": "#FFF"
+						}
+					],
+					"scope": "application",
+					"description": "用户自定义主题,格式\n{name:'名称',bg:'#000', color:'#000', btnBg:'#000', btnColor:'#000', btnActive:'#000', btnActiveBorder:'#000',navBg?:'#000',textColor?:'#000',}[]"
 				}
 			}
 		},
