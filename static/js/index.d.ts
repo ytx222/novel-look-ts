@@ -16,7 +16,10 @@ declare global {
 	// type WebviewElements = {
 	// 	[k in keyof ReturnType<typeof initEl>]: Element;
 	// };
-
+	interface PostMessageType {
+		chapterToggle: 'next' | 'prev';
+		zoom: number;
+	}
 	/** 缓存数据 */
 	interface WebviewCache {
 		setting: {
@@ -28,6 +31,7 @@ declare global {
 			title: string;
 			list: string[];
 		};
+		readScroll: number;
 	}
 }
 export {};

@@ -11,7 +11,7 @@ import {
 	saveScroll,
 	postMsg,
 } from './vscodeApi.js';
-import { el, getScroll, setScroll } from './dom.js';
+import { el, getScroll, isPageEnd, setScroll } from './dom.js';
 import { renderId } from './webView.js';
 
 let scrollType = 0; // 0未滚动 1等待结束  2等待开始  3正在滚动
@@ -22,7 +22,6 @@ let timer = {
 let num = 0; // 当前滚动高度
 let h = 0; // 窗口高度
 let max = 0; // 窗口最大高度
-let lastScrollY = 0;
 
 let lastRenderId = -1;
 // window.ondblclick = function () {
@@ -32,7 +31,7 @@ let lastRenderId = -1;
 /**
  * 自动滚屏
  */
-export function autoScrollScreen() {
+export function autoScrollScreen () {
 	clearTimeout(timer.toggle);
 	clearInterval(timer.scroll);
 	// 如果当前非滚屏状态,则进入滚屏状态
@@ -47,7 +46,7 @@ export function autoScrollScreen() {
 // 问题是每多少时间向下移动1
 // 这个时间如果高于10,则可能会产生滚动一卡一卡的感觉(视觉效果)
 // 以人眼24帧为标准 72, 96, 120, 144, 168, 192
-function scroll(v = 1) {
+function scroll (v = 1) {
 	// 检查更新尺寸信息,仅在初始化和重新渲染后才更新尺寸信息
 	if (lastRenderId !== renderId) {
 		max = el.main.scrollHeight;
@@ -59,14 +58,13 @@ function scroll(v = 1) {
 	// console.warn({ max, num, h });
 	if (num > max - h) {
 		scrollEnd();
-	} else if (num > lastScrollY + 200) {
+	} else if (num > cache.readScroll + 200) {
 		// 每200高度,保存一次当前滚动高度
 		console.warn('保存高度');
-		lastScrollY = num;
 		saveScroll(num);
 	}
 }
-function scrollEnd() {
+function scrollEnd () {
 	// 章节结束
 	// 直接执行方法使其取消自动滚屏
 	clearInterval(timer.scroll);
@@ -83,7 +81,7 @@ function scrollEnd() {
 	}, cache.setting.scrollEndTime);
 }
 // 获取间隔时间
-function getIntervalTime() {
+function getIntervalTime () {
 	let scrollSpeed = cache.setting.scrollSpeed || 96;
 	return Math.round(1000 / scrollSpeed);
 }
@@ -102,7 +100,7 @@ const hideZoom = () => {
 	zoomEl.style.opacity = 0;
 
 };
-function showZoom(size, zoom) {
+function showZoom (size, zoom) {
 	zoomEl.innerText = `${size}px ${(zoom * 100).toFixed(0)}%`;
 	zoomEl.style = 'display:flex;opacity:1;';
 	zoomEl.classList.add('on');
@@ -114,7 +112,7 @@ function showZoom(size, zoom) {
 }
 //滚动滑轮触发scrollFunc方法
 document.onmousewheel = scrollFunc;
-function scrollFunc(e) {
+function scrollFunc (e) {
 	// 如果是ctrl+滚轮,则放大或缩小显示
 	if (e.ctrlKey) {
 		// 先计算出新的缩放比例
@@ -135,13 +133,42 @@ function scrollFunc(e) {
 		return;
 	} else if (scrollType !== 0) {
 		console.log('e.wheelDelta', e.wheelDelta);
-		// 如果处于自动滚屏状态,则可以用这个进行滚屏,
-		// 如果不处于自动滚屏状态,这样滚动会使其进入自动滚屏状态,也有可能与当前计时器逻辑相冲突
+		// 如果处于自动滚屏状态,需要用这个进行滚屏,以
 		scroll(e.wheelDelta * -1);
 	} else {
 		// 记录当前滚动高度,并存储
 		// 这里的防抖,其实可以,但是没有太大的必要,因为性能损耗应该也没多少
 		clearTimeout(scrollEndTimer);
-		scrollEndTimer = setTimeout(saveScroll, 300);
+		// setTimeout(() => {
+		// 	console.log('滚轮事件-',isPageEnd());
+		// }, 50);
+		scrollEndTimer = setTimeout(saveScroll.bind(null, undefined, true, false), 300);
 	}
 }
+
+
+/**
+ * 当前页面是否触底的状态
+ */
+// let isPageEndStatus = false;
+
+/**
+ * 当页面发生有效的滚动高度变化()
+ */
+export function onMainScrollChange (newScroll) {
+	// let flag = isPageEnd();
+	// console.warn('当页面发生有效的滚动高度变化', flag);
+	// if (flag !== isPageEndStatus) {
+	// 	isPageEndStatus = flag;
+	// 	let event = new Event('PageEndStatusChange', {
+	// 		bubbles: false,
+	// 	})
+	// 	event.isPageEndStatus = isPageEndStatus
+	// 	window.dispatchEvent(event);
+	// }
+}
+
+
+// window.addEventListener('PageEndStatusChange', ({ isPageEndStatus }) => {
+// 	console.log('PageEndStatusChange', isPageEndStatus);
+// })

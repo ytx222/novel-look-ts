@@ -32,6 +32,8 @@ export async function showChapter(title: string, list: string[]) {
 		panel.reveal();
 	}
 	await postMsg('showChapter', { title, list });
+
+
 }
 
 /**
@@ -46,7 +48,7 @@ export async function createWebView() {
 	panel = vscode.window.createWebviewPanel(
 		'novel', // 标识webview的类型。在内部使用
 		'阅读', // 标题
-		vscode.ViewColumn.One, // 编辑器列以显示新的webview面板。
+		vscode.ViewColumn.Active, // 编辑器列以显示新的webview面板。
 		{
 			// enableCommandUris: true,
 			// // 可以加载资源的路径
@@ -111,7 +113,6 @@ async function getWebviewContent(uri: vscode.Uri) {
 	s = s.replace(/(@)(.+?)/g, (_m, _$1, $2) => {
 		// console.warn(panel!.webview.cspSource);
 		return panel!.webview.asWebviewUri(vscode.Uri.joinPath(uri, $2));
-
 	});
 	return s;
 }
@@ -218,5 +219,4 @@ export async function closeWebView() {
 		panel.dispose();
 		panel = null;
 	}
-
 }

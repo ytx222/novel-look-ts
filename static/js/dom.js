@@ -31,15 +31,19 @@ export function initEl () {
 	return _el
 }
 
+/** @returns {number} 获取主滚动区域的滚动高度 */
 export let getScroll = () => el.main.scrollTop;
 export let setScroll = h => el.main.scrollTo(0, h);
 
 /**
  * 页面是否触底
+ * @param {number} 用来判断的滚动高度,一般是不传,默认用当前页面滚动高度
  */
-export function isPageEnd () {
+export function isPageEnd (curScroll = getScroll()) {
+	// 总滚动高度
 	const h = el.main.scrollHeight;
-	const curH = getScroll() + el.main.clientHeight;
+	// 当前滚动top+元素可视大小(元素大小)
+	const curH = curScroll + el.main.clientHeight;
 	// 如果距离小于10.就认为触底了
 	return h - curH < 10;
 }
@@ -76,4 +80,6 @@ export function nextPageOrChapter (event) {
 
 window.addEventListener('DOMContentLoaded', function () {
 	initEl()
+
+
 });

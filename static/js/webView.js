@@ -25,8 +25,6 @@ export let renderId = 0;
 
 window.addEventListener('DOMContentLoaded', function () {
 	// 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
-
-
 	let fn = {
 		undefined () {
 			console.error('webView端找不到处理程序,无法执行');
@@ -45,7 +43,6 @@ window.addEventListener('DOMContentLoaded', function () {
 			// 	font-size:${data.rootFontSize * data.zoom}px !important;
 			// }`);
 			document.body.classList.add('init');
-
 			// window.focus()
 		},
 		/*显示章节*/
@@ -100,6 +97,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	 * @param {Array<String>} lines
 	 */
 	function render (title, lines) {
+		console.log('render111', lines);
 		el.title.innerText = title;
 		el.navTitle.innerText = title;
 		let list = el.content.children;
@@ -107,10 +105,10 @@ window.addEventListener('DOMContentLoaded', function () {
 		if (list.length < lines.length) {
 			addLine(lines.length - list.length);
 		}
-		var i = 0;
+
 		// 比如不能再设置时获取属性,否则必须刷新(回流)
 		// 循环添加数据
-		for (; i < list.length; i++) {
+		for (let i = 0; i < list.length; i++) {
 			if (i < lines.length) {
 				list[i].innerText = lines[i];
 				list[i].dataset.i = i;
@@ -168,6 +166,7 @@ window.addEventListener('DOMContentLoaded', function () {
 			case ' ':
 				// e.preventDefault();
 				// console.log('preventDefault');
+
 				nextPageOrChapter(e)
 				break;
 			case '.':
@@ -190,6 +189,11 @@ window.addEventListener('DOMContentLoaded', function () {
 					fn();
 				}
 
+				break;
+			case 'PageUp':
+			case 'PageDown':
+			case 'Home':
+			case 'End':
 				break;
 			default:
 				break;
@@ -243,17 +247,21 @@ window.addEventListener('DOMContentLoaded', function () {
 	el.content.ondblclick = autoScrollScreen
 
 
-	el.sideNextBtns.forEach(e => e.onclick = clickSizeNextBtn)
+	el.sideNextBtns.forEach(e => e.onclick = nextPageOrChapter)
 
-	async function clickSizeNextBtn (e) {
-		e.stopPropagation()
-		// console.log('clickSizeNextBtn',e);
-		let is = nextPageOrChapter()
-		// 翻页完成后检测是否到达页面底部,如果到了,将按钮修改为下一章的状态(样式)
-		console.log('翻页完成后检测是否到达页面底部', is);
-		if (is) await sleep()
+
+
+
+
+	let scrollTimer
+	el.main.addEventListener('scroll', () => {
+		clearTimeout(scrollTimer)
+		scrollTimer = setTimeout(scrollAntiShake, 50);
+	})
+	function scrollAntiShake () {
+		console.log('scroll=====');
+
 		if (isPageEnd()) {
-			console.log('pageEnd');
 			el.sideNextBtns.forEach(e => e.classList.add('right'))
 		} else {
 			el.sideNextBtns.forEach(e => {
