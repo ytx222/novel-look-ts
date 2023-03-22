@@ -23,57 +23,105 @@ import { autoScrollScreen } from './scroll.js';
 /** 每次重新渲染(调用render方法)加1 */
 export let renderId = 0;
 
+const nextChapter = () => postMsg('chapterToggle', 'next')
+const prevChapter = () => postMsg('chapterToggle', 'prev')
+
+
+
+// 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
+let fn = {
+	undefined () {
+		console.error('webView端找不到处理程序,无法执行');
+	},
+	/*设置一些公共设置,如行高,行间隔,字体大小等*/
+	setting (data) {
+		setCache('setting', data);
+		let sheetEl = document.querySelector('style');
+		// 这里多一个.body,以达到更高匹配级别
+		sheetEl.sheet.insertRule(`.body .main .content div{
+				text-indent: ${data.lineIndent}em;
+				font-size:1rem;
+		}`);
+		document.documentElement.style.fontSize = data.rootFontSize * data.zoom + 'px';
+		// sheetEl.sheet.insertRule(`html{
+		// 	font-size:${data.rootFontSize * data.zoom}px !important;
+		// }`);
+		document.body.classList.add('init');
+		// window.focus()
+	},
+	/*显示章节*/
+	showChapter (data) {
+		// 拦截重复的显示
+		if (data.title === (cache.showChapter && cache.showChapter.title)) {
+			return;
+		}
+		console.warn('开始显示章节', data.title, cache?.showChapter?.title, data);
+		setCache('showChapter', data);
+		render(data.title, data.list);
+		// 初次渲染后,renderId 是1
+		if (renderId > 1) {
+			setScroll(0);
+		}
+		// console.warn(renderId);
+		// console.warn('开始显示章节', data.title, cache.showChapter.title);
+	},
+	// 只会被插件层调用
+	readScroll (data) {
+		// console.warn('readScroll', data);
+		if (!data) {
+			return;
+		}
+		// 在刚刚调用render,还没有实际渲染的时候,
+		// 滚动到超出目前的高度,是不生效的
+		// 这里只需要一个渲染后的时机,settimeout和requestAnimationFrame是差不多的
+		requestAnimationFrame(setScroll.bind(null, data));
+		saveScroll(data, false);
+	},
+
+};
+/**
+ * @param {String} title
+ * @param {Array<String>} lines
+ */
+function render (title, lines) {
+	console.log('render111', lines);
+	el.title.innerText = title;
+	el.navTitle.innerText = title;
+	let list = el.content.children;
+	el.content.style.display = 'none';
+	if (list.length < lines.length) {
+		addLine(lines.length - list.length);
+	}
+
+	// 比如不能再设置时获取属性,否则必须刷新(回流)
+	// 循环添加数据
+	for (let i = 0; i < list.length; i++) {
+		if (i < lines.length) {
+			list[i].innerText = lines[i];
+			list[i].dataset.i = i;
+			list[i].style = '';
+		} else {
+			list[i].style.display = 'none';
+		}
+	}
+
+	el.content.style.display = 'block';
+	// 修改渲染id,告诉其他人我重新渲染了
+	renderId++;
+	console.log('子页面render', renderId);
+}
+
+/**
+ * 在行不够用的情况下添加行
+ */
+function addLine (num) {
+	// 因为前期肯定隐藏过了dom,这里不在隐藏
+	for (var i = 0; i < num; i++) {
+		el.content.appendChild(document.createElement('div'));
+	}
+}
 window.addEventListener('DOMContentLoaded', function () {
-	// 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
-	let fn = {
-		undefined () {
-			console.error('webView端找不到处理程序,无法执行');
-		},
-		/*设置一些公共设置,如行高,行间隔,字体大小等*/
-		setting (data) {
-			setCache('setting', data);
-			let sheetEl = document.querySelector('style');
-			// 这里多一个.body,以达到更高匹配级别
-			sheetEl.sheet.insertRule(`.body .main .content div{
-					text-indent: ${data.lineIndent}em;
-					font-size:1rem;
-			}`);
-			document.documentElement.style.fontSize = data.rootFontSize * data.zoom + 'px';
-			// sheetEl.sheet.insertRule(`html{
-			// 	font-size:${data.rootFontSize * data.zoom}px !important;
-			// }`);
-			document.body.classList.add('init');
-			// window.focus()
-		},
-		/*显示章节*/
-		showChapter (data) {
-			// 拦截重复的显示
-			if (data.title === (cache.showChapter && cache.showChapter.title)) {
-				return;
-			}
-			console.warn('开始显示章节', data.title, cache?.showChapter?.title, data);
-			setCache('showChapter', data);
-			render(data.title, data.list);
-			// 初次渲染后,renderId 是1
-			if (renderId > 1) {
-				setScroll(0);
-			}
-			// console.warn(renderId);
-			// console.warn('开始显示章节', data.title, cache.showChapter.title);
-		},
-		// 只会被插件层调用
-		readScroll (data) {
-			// console.warn('readScroll', data);
-			if (!data) {
-				return;
-			}
-			// 在刚刚调用render,还没有实际渲染的时候,
-			// 滚动到超出目前的高度,是不生效的
-			// 这里只需要一个渲染后的时机,settimeout和requestAnimationFrame是差不多的
-			requestAnimationFrame(setScroll.bind(null, data));
-			saveScroll(data, false);
-		},
-	};
+
 	window.addEventListener('message', function (e) {
 		let data = e.data.data;
 		let type = e.data.type;
@@ -92,46 +140,8 @@ window.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	/**
-	 * @param {String} title
-	 * @param {Array<String>} lines
-	 */
-	function render (title, lines) {
-		console.log('render111', lines);
-		el.title.innerText = title;
-		el.navTitle.innerText = title;
-		let list = el.content.children;
-		el.content.style.display = 'none';
-		if (list.length < lines.length) {
-			addLine(lines.length - list.length);
-		}
 
-		// 比如不能再设置时获取属性,否则必须刷新(回流)
-		// 循环添加数据
-		for (let i = 0; i < list.length; i++) {
-			if (i < lines.length) {
-				list[i].innerText = lines[i];
-				list[i].dataset.i = i;
-				list[i].style = '';
-			} else {
-				list[i].style.display = 'none';
-			}
-		}
 
-		el.content.style.display = 'block';
-		// 修改渲染id,告诉其他人我重新渲染了
-		renderId++;
-		console.log('子页面render', renderId);
-	}
-	/**
-	 * 在行不够用的情况下添加行
-	 */
-	function addLine (num) {
-		// 因为前期肯定隐藏过了dom,这里不在隐藏
-		for (var i = 0; i < num; i++) {
-			el.content.appendChild(document.createElement('div'));
-		}
-	}
 
 	/*********************************
 		换章和其他需要和拓展交互的功能
@@ -146,29 +156,20 @@ window.addEventListener('DOMContentLoaded', function () {
 			// 	return false
 			case 'arrowright': //下一章
 			case !e.altKey && 'd':
-				postMsg('chapterToggle', 'next');
-				break;
+				return nextChapter()
 			case 'arrowleft': //上一章
 			case !e.altKey && 'a':
-				postMsg('chapterToggle', 'prev');
-				break;
+				return prevChapter()
 			case 'arrowdown': //向下翻页
-
 			case !e.altKey && 's':
-				scrollScreen(1, e);
-				break;
+				return scrollScreen(1, e);
 			case 'arrowup': //向上翻页
 			case !e.altKey && 'w':
-				scrollScreen(-1, e);
-				break;
+				return scrollScreen(-1, e);
 			//检查是否触底,如果触底,下一章,没有则向下
 			// 空格是向下翻页,
 			case ' ':
-				// e.preventDefault();
-				// console.log('preventDefault');
-
-				nextPageOrChapter(e)
-				break;
+				return nextPageOrChapter(e)
 			case '.':
 				// 多判断一下是不是数字键盘的.
 				if (e.code === 'NumpadDecimal') {
@@ -188,14 +189,6 @@ window.addEventListener('DOMContentLoaded', function () {
 					};
 					fn();
 				}
-
-				break;
-			case 'PageUp':
-			case 'PageDown':
-			case 'Home':
-			case 'End':
-				break;
-			default:
 				break;
 		}
 	};
@@ -209,48 +202,32 @@ window.addEventListener('DOMContentLoaded', function () {
 		switch (e.button) {
 			case 1:
 			case 4:
-				postMsg('chapterToggle', 'prev');
-				break;
+				return prevChapter()
 			case 3:
-				postMsg('chapterToggle', 'next');
-				break;
-			default:
-				break;
+				return nextChapter()
 		}
 	};
 	// 双击右键下一章
 	var rightBtnTime = 0;
 	document.oncontextmenu = function (e) {
+		console.log(e);
 		var now = +Date.now();
 		if (rightBtnTime + 500 > now) {
+			e.preventDefault()
 			// 500ms内连续两次鼠标右键点击,关闭右键弹窗并且下一章
-			postMsg('chapterToggle', 'next');
+			nextChapter()
+			rightBtnTime = 0
 			return false;
 		}
 		rightBtnTime = now;
 	};
 
-	document.querySelector('.footer .btn-box .prev').onclick = () => postMsg('chapterToggle', 'prev');
-	document.querySelector('.footer .btn-box .next').onclick = function () {
-		// 操作后清除光标,好像没有意义
-		// console.log(this);
-		// this.blur()
-		postMsg('chapterToggle', 'next');
-	};
-	document.querySelector('.nav button.prev').onclick = () => postMsg('chapterToggle', 'prev');
-	document.querySelector('.nav button.next').onclick = () => postMsg('chapterToggle', 'next');
-	document.querySelector('.nav').ondblclick = function (e) {
-		console.log('nav---ondblclick');
-		e.stopPropagation();
-		return false;
-	};
+	document.querySelector('.footer .btn-box .prev').onclick = prevChapter
+	document.querySelector('.footer .btn-box .next').onclick = nextChapter
+	document.querySelector('.nav button.prev').onclick = prevChapter
+	document.querySelector('.nav button.next').onclick = nextChapter
 	el.content.ondblclick = autoScrollScreen
-
-
 	el.sideNextBtns.forEach(e => e.onclick = nextPageOrChapter)
-
-
-
 
 
 	/**
