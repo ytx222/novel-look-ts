@@ -552,13 +552,10 @@
 	--vscode-gitDecoration-submoduleResourceForeground: #8db9e2;
 }
 :root {
-	--navHeight: 2rem;
-	/* 黑色主题色 */
-	--bg: #272822;
-	/* --navBg: #272822; */
-	--color: #fff;
-	--btnColor: #e6e6e6;
-	--btnBg: #5c5c5c;
+	--vscode-badge-background: #75715e;
+	--vscode-badge-foreground: #f8f8f2;
+	--vscode-editorWidget-background: #1e1f1c;
+	--vscode-editorWidget-foreground: #cccccc;
 
 	/* 使用vscode主题 **/
 	--bg: var(--vscode-editor-background);
@@ -572,6 +569,7 @@
 	/* --btnActive: var(--vscode-inputOption-hoverBackground); */
 	/* --btnDefaultBorder:var(--vscode-input-placeholderForeground); */
 
+	/* 默认继承的 */
 	--navBg: var(--bg);
 	--textColor: var(--color);
 
@@ -582,7 +580,12 @@
 	--btnColor: #303b33;
 	--btnActive: rgba(0, 0, 0, 0.2);
 	--btnActiveBorder:#303b33; */
+
+	/* 一些非主题的参数 */
+	--scroll-bar-size: 10px;
+	--navHeight: 2rem;
 }
+
 html {
 	font-size: 16px;
 }
@@ -597,6 +600,19 @@ body {
 body.init {
 	display: flex;
 }
+
+/********************
+ *		一些参数
+ ********************/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+
+/********************
+ *		工具类
+ ********************/
 .flex-center {
 	display: flex;
 	justify-content: center;
@@ -626,6 +642,22 @@ button:active,
 	background: var(--btnActive);
 	border-color: var(--btnActiveBorder);
 }
+
+.after-shadow::after {
+	display: block;
+	content: ' ';
+	box-shadow: 0px 0px 0px var(--shadow-size, 2px) var(--color) inset;
+	opacity: 0.5;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+}
+
+/********************
+ *	   业务逻辑
+ ********************/
 .nav {
 	display: flex;
 	height: var(--navHeight);
@@ -674,16 +706,7 @@ button:active,
 }
 
 .nav .content-container .zoom::after {
-	display: block;
-	content: ' ';
-	box-shadow: 0px 0px 0px 2px var(--color) inset;
 	border-radius: 5px;
-	opacity: 0.5;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	left: 0;
-	top: 0;
 }
 .nav .content-container .zoom.on + .title {
 	display: none;
@@ -744,10 +767,6 @@ button:active,
 	flex: 1 1 auto;
 }
 
-/* .function-box {
-	position: fixed;
-} */
-
 .side-next-btn {
 	position: fixed;
 	right: 20px;
@@ -759,7 +778,7 @@ button:active,
 	margin-top: calc(var(--size) * -0.54);
 	border: max(calc(var(--size) * 0.06), 2px) solid;
 	background: var(--bg);
-	transition:transform 300ms  ;
+	transition: transform 300ms;
 }
 .side-next-btn svg {
 	width: 80%;
@@ -767,9 +786,7 @@ button:active,
 	fill: var(--color);
 }
 
-.side-next-btn.down {
-
-}
+/* .side-next-btn.down { } */
 .side-next-btn.right {
 	transform: rotateZ(-90deg);
 }
@@ -780,4 +797,72 @@ button:active,
 
 .symbol-box {
 	display: none;
+}
+
+.custom-contextmenu {
+	position: fixed;
+	left: 30vw;
+	top: 40vw;
+
+	background: var(--bg);
+
+	width: 6rem;
+	/* border: ; */
+	border-radius: 0.4rem;
+	--shadow-size: 5px;
+	border: max(1px,0.06rem) solid var(--color);
+	/* --color:#000;
+	--color: inherit; */
+	font-size: 0.45rem;
+
+
+	box-shadow: 0px 0px 6px 2px var(--bg);
+}
+/* .custom-contextmenu::after {
+	border-radius: inherit;
+	content: '123123';
+	font-size: 40px;
+	color: var(--color);
+	color: inherit;
+	box-shadow: 0px 0px 3px 2px var(--color) ;
+} */
+
+.contextmenu-item {
+	color: #000;
+	color: inherit;
+	padding: 0.2rem 0.8rem;
+	position: relative;
+}
+.contextmenu-item.title{
+	padding: 0.1rem 0.3rem;
+	font-size: 0.3rem;
+}
+.contextmenu-item.title::after{
+	content: ' ';
+
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: #FFF;
+	left: 0;
+	top: 0;
+}
+.contextmenu-hr{
+	width: 100%;
+	height: 3px;
+	background: var(--color);
+	opacity: 0.3;
+}
+.contextmenu-item input{
+	border: none;
+	outline: none;
+	background: var(--btnBg);
+	color: var(--color);
+	width: 3em;
+}
+
+.contextmenu-item label{
+	display: flex;
+	justify-content: space-between;
+
 }

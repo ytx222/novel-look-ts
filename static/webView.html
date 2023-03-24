@@ -22,7 +22,7 @@
 	<div class="nav">
 		<button class="button prev">上一章</button>
 		<div class="content-container flex-center">
-			<div class="zoom flex-center">20px 500%</div>
+			<div class="zoom flex-center after-shadow">20px 500%</div>
 			<div class="title flex-center">章节标题</div>
 		</div>
 		<button class="button next">下一章
@@ -46,6 +46,7 @@
 	</div>
 	<!-- 附加功能 -->
 	<div class="function-box">
+		<!-- 在加载时将这个按钮显示为loading? -->
 		<div class="side-next-btn button flex-center">
 			<svg>
 				<use xlink:href="#arrow" />
@@ -57,8 +58,8 @@
 				<use xlink:href="#arrow" />
 			</svg>
 		</div>
-		<div class="custom-contextmenu">
-			<!--
+
+		<!--
 				参考antd
 				5.7142857142857135px
 				9.142857142857142px
@@ -80,21 +81,58 @@
     			transition: all 0.1s cubic-bezier(0.71, -0.46, 0.88, 0.6),opacity 0.1s;
 				使用web组件写吧
 			 -->
+		<!-- <div class="contextmenu-view-main">
+				<div class="contextmenu-item" id="setTheme">
+					主题
+				</div>
+
+			 </div> -->
+		<!-- after-shadow" -->
+		<div class="custom-contextmenu">
+			<div class="contextmenu-item title" id="setTheme">
+				主题
+			</div>
+			<!-- <div class="contextmenu-hr "> </div> -->
+			<div class="" id="themeContainer">
+
+				<div class="contextmenu-item theme-item">
+					系统主题
+				</div>
+
+				<div class="contextmenu-item theme-item">
+					用户主题
+				</div>
+				<div class="contextmenu-item theme-item">
+					创建主题
+				</div>
+			</div>
+			<div class="contextmenu-hr "> </div>
+			<div class="contextmenu-item">
+				<label for="scroll-speed-input">
+					滚动速度:  <input type="number" id="scroll-speed-input">
+				</label>
+			</div>
+			<div class="contextmenu-item">
+				<label for="zoom-input">
+					缩放:  <input type="number" id="zoom-input">
+				</label>
+			</div>
 		</div>
 	</div>
 
 
 	<div class="symbol-box">
+		<!-- 箭头 -->
 		<svg>
 			<symbol id="arrow" viewBox="0 0 1024 1024">
 				<path
 					d="M862 465.3h-81c-4.6 0-9 2-12.1 5.5L550 723.1V160c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8v563.1L255.1 470.8c-3-3.5-7.4-5.5-12.1-5.5h-81c-6.8 0-10.5 8.1-6 13.2L487.9 861c12.7 14.7 35.5 14.7 48.3 0L868 478.5c4.5-5.2 0.8-13.2-6-13.2z">
 				</path>
-				<!-- <path
-					d="M819.09127 511.999488a31.840764 31.840764 0 0 0-10.545333-23.547832L316.703393 10.328284a33.78602 33.78602 0 0 0-48.631392 0L215.345333 61.621605A31.943146 31.943146 0 0 0 204.8 85.169437c0 8.907223 3.480984 16.790628 10.545333 23.650214L630.196705 511.999488 215.345333 915.179325a31.943146 31.943146 0 0 0-10.545333 23.547832c0 8.907223 3.480984 16.790628 10.545333 23.547832l52.726668 51.395703a33.78602 33.78602 0 0 0 48.631392 0l491.842544-478.123372A32.045528 32.045528 0 0 0 819.09127 511.999488z">
-				</path> -->
 			</symbol>
 		</svg>
+		<!-- 编辑 -->
+		<!-- 错,删除 -->
+
 	</div>
 
 </body>

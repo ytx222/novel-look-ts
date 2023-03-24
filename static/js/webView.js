@@ -55,15 +55,13 @@ let fn = {
 		if (data.title === (cache.showChapter && cache.showChapter.title)) {
 			return;
 		}
-		console.warn('开始显示章节', data.title, cache?.showChapter?.title, data);
+		console.warn('开始显示章节', data.title, cache, data);
 		setCache('showChapter', data);
 		render(data.title, data.list);
 		// 初次渲染后,renderId 是1
 		if (renderId > 1) {
 			setScroll(0);
 		}
-		// console.warn(renderId);
-		// console.warn('开始显示章节', data.title, cache.showChapter.title);
 	},
 	// 只会被插件层调用
 	readScroll (data) {
@@ -84,9 +82,10 @@ let fn = {
  * @param {Array<String>} lines
  */
 function render (title, lines) {
-	console.log('render111', lines);
+	// console.log('render111', lines);
 	el.title.innerText = title;
 	el.navTitle.innerText = title;
+	el.navTitle.title = title;
 	let list = el.content.children;
 	el.content.style.display = 'none';
 	if (list.length < lines.length) {
@@ -149,22 +148,23 @@ window.addEventListener('DOMContentLoaded', function () {
 	window.onkeydown = function (e) {
 
 		console.log('KEY onkeyup ', e.key);
+		const flag = e.altKey || e.shiftKey || e.ctrlKey;
 		switch (e.key.toLowerCase()) {
 			//FIXME:手动处理tab事件
 			// case 'Tab':
 			// 	e.stopPropagation()
 			// 	return false
 			case 'arrowright': //下一章
-			case !e.altKey && 'd':
+			case !flag && 'd':
 				return nextChapter()
 			case 'arrowleft': //上一章
-			case !e.altKey && 'a':
+			case !flag && 'a':
 				return prevChapter()
 			case 'arrowdown': //向下翻页
-			case !e.altKey && 's':
+			case !flag && 's':
 				return scrollScreen(1, e);
 			case 'arrowup': //向上翻页
-			case !e.altKey && 'w':
+			case !flag && 'w':
 				return scrollScreen(-1, e);
 			//检查是否触底,如果触底,下一章,没有则向下
 			// 空格是向下翻页,

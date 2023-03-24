@@ -108,7 +108,7 @@ function showZoom (size, zoom) {
 		zoomEl.style.display = 'none';
 	};
 	clearTimeout(zoomTimer);
-	zoomTimer = setTimeout(hideZoom, 1500);
+	zoomTimer = setTimeout(hideZoom, 150000);
 }
 //滚动滑轮触发scrollFunc方法
 document.onmousewheel = scrollFunc;
