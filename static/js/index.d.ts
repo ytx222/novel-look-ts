@@ -26,6 +26,20 @@ declare global {
 			zoom: number;
 			rootFontSize: number;
 			lineIndent: number;
+			theme: {
+				use: number;
+				custom: {
+					name: string;
+					bg: string;
+					color: string;
+					btnBg: string;
+					btnColor: string;
+					btnActive: string;
+					btnActiveBorder: string;
+					navBg?: string;
+					textColor?: string;
+				}[];
+			};
 		};
 		showChapter: {
 			title: string;

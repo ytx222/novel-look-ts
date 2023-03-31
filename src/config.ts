@@ -18,7 +18,8 @@ let configuration: WorkspaceConfiguration;
  * 获取vscode设置
  */
 export function get<T>(key: string, defaultValue: T): T {
-	configuration ??= vscode.workspace.getConfiguration('novelLook');
+	// 这里必须每次重新获取,否则拿到的不是最新的数据
+	configuration = vscode.workspace.getConfiguration('novelLook');
 	// let _=console.log
 	// _('获取设置',key, t.get(key));
 	return configuration.get<T>(key, defaultValue);

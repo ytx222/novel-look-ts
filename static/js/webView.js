@@ -27,6 +27,7 @@ const nextChapter = () => postMsg('chapterToggle', 'next')
 const prevChapter = () => postMsg('chapterToggle', 'prev')
 
 
+let themeSheetRuleIndex;
 
 // 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
 let fn = {
@@ -43,9 +44,7 @@ let fn = {
 				font-size:1rem;
 		}`);
 		document.documentElement.style.fontSize = data.rootFontSize * data.zoom + 'px';
-		// sheetEl.sheet.insertRule(`html{
-		// 	font-size:${data.rootFontSize * data.zoom}px !important;
-		// }`);
+		this.changeTheme(data.theme.use)
 		document.body.classList.add('init');
 		// window.focus()
 	},
@@ -75,6 +74,36 @@ let fn = {
 		requestAnimationFrame(setScroll.bind(null, data));
 		saveScroll(data, false);
 	},
+	changeTheme (index) {
+		const sheet = el.sheet.sheet;
+
+		// data.theme.use
+		// 使用系统默认主题
+		if (index === 0) {
+			sheet[themeSheetRuleIndex] = 'body.body{}'
+		} else {
+			const themes = cache.setting.theme.custom;
+			const theme = themes[index - 1]
+			console.log('使用主题', theme);
+			const ruleContent = `body.body{
+--bg: ${theme.bg};
+--color: ${theme.color};
+--btnBg: ${theme.btnBg};
+--btnColor: ${theme.btnColor};
+--btnActive: ${theme.btnActive};
+--btnActiveBorder:${theme.btnActiveBorder};
+
+--navBg: ${theme.navBg || 'var(--bg)'} ;
+--textColor:  ${theme.textColor || 'var(--color)'} ;
+			}`
+			console.log(ruleContent);
+			// 使用自定义主题
+			if (themeSheetRuleIndex) sheet[themeSheetRuleIndex] = ruleContent
+			else {
+				themeSheetRuleIndex = sheet.insertRule(ruleContent);
+			}
+		}
+	}
 
 };
 /**

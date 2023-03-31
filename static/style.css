@@ -808,12 +808,15 @@ button:active,
 
 	width: 6rem;
 	/* border: ; */
-	border-radius: 0.4rem;
+	--radius:  0.2rem;
+	border-radius: 0.2rem;
 	--shadow-size: 5px;
+
 	border: max(1px,0.06rem) solid var(--color);
 	/* --color:#000;
 	--color: inherit; */
 	font-size: 0.45rem;
+	/* overflow: hidden; */
 
 
 	box-shadow: 0px 0px 6px 2px var(--bg);
@@ -835,17 +838,24 @@ button:active,
 }
 .contextmenu-item.title{
 	padding: 0.1rem 0.3rem;
-	font-size: 0.3rem;
-}
-.contextmenu-item.title::after{
-	content: ' ';
+	font-size: 0.36rem;
+	margin: -1px;
 
+}
+.contextmenu-item.title:first-child .after{
+	border-top-right-radius: calc(var(--radius) * 0.8);
+	border-top-left-radius: calc(var(--radius) * 0.8);
+}
+.contextmenu-item.title .after{
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background: #FFF;
+	color: #000;
+	background: var(--color);
 	left: 0;
 	top: 0;
+	opacity: 0.3;
+
 }
 .contextmenu-hr{
 	width: 100%;
@@ -859,10 +869,27 @@ button:active,
 	background: var(--btnBg);
 	color: var(--color);
 	width: 3em;
+	text-align: center;
 }
 
 .contextmenu-item label{
 	display: flex;
 	justify-content: space-between;
 
+}
+
+.contextmenu-item.title:hover::after{
+	content: none;
+}
+.contextmenu-item:hover::after{
+	content: ' ';
+
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	color: #000;
+	background: var(--color);
+	left: 0;
+	top: 0;
+	opacity: 0.1;
 }

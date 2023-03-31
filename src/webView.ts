@@ -32,8 +32,6 @@ export async function showChapter(title: string, list: string[]) {
 		panel.reveal();
 	}
 	await postMsg('showChapter', { title, list });
-
-
 }
 
 /**
@@ -78,18 +76,17 @@ async function initWebView(title: string, list: string[]) {
 	let data = getStateDefault<scrollInfo>('saveScroll', { key: '', value: 0 });
 	console.log('initWebView data', data);
 	scroll.set(data.key, data.value);
-	let t = config.get('readSetting', {});
-	console.log('readSetting', t);
-	// config.set("readSetting.zoom", v);
-	// t.zoom = t.zoom;
-	//content.globalState.get("zoom", t.zoom);
 
-	// 具体表现应该是这个await一直卡着
-
+	let readSetting = config.get('readSetting', {});
+	let themeSetting = config.get('theme', {});
+	let setting = {
+		...readSetting,
+		theme: themeSetting,
+	};
+	console.log('setting', setting);
 	await postMsg('showChapter', { title, list });
 	await postMsg('readScroll', scroll.get('catch_' + title) || 0);
-
-	await postMsg('setting', t);
+	await postMsg('setting', setting);
 
 	//FIXME:
 

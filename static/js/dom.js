@@ -25,7 +25,8 @@ export function initEl () {
 		},
 		nav: document.querySelector('.nav'),
 		navTitle: document.querySelector('.nav .title'),
-		sideNextBtns: document.querySelectorAll(".function-box .side-next-btn")
+		sideNextBtns: document.querySelectorAll(".function-box .side-next-btn"),
+		sheet: document.querySelector('style')
 	}
 	el = _el;
 	return _el
