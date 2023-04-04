@@ -49,7 +49,11 @@ export function saveScroll (scroll = getScroll(), isPostMsg = true) {
 	}
 }
 
-// 发送消息
+/**
+ * 发送消息
+ * @param {'saveScroll'|'chapterToggle'|'zoom'|'changeUseTheme'|'editTheme'} type
+ * @param {*} data
+ */
 export function postMsg (type, data) {
 	console.log('子页面-postMsg', type, data);
 	//切换章节时,清除当前章节的缓存滚动高度

@@ -46,7 +46,7 @@ export class Bookrack implements vscode.TreeDataProvider<TreeItem> {
 	 */
 	refresh(uris: vscode.Uri[]): void {
 		let arr = uris.map(e => e.fsPath);
-		console.warn('执行刷新', arr);
+		// console.warn('执行刷新', arr);
 		// 对比差异,目录顺序是固定的,所以返回的也应该是固定的
 		if (this.list.length) {
 			for (var i = 0; i < this.list.length; i++) {
@@ -68,8 +68,8 @@ export class Bookrack implements vscode.TreeDataProvider<TreeItem> {
 			console.warn(arr);
 			this.list = this.parseArr(uris);
 		}
-		console.warn('新list', this.list);
-
+		// console.warn('新list', this.list);
+		// 通知更新
 		this._onDidChangeTreeData.fire(null);
 	}
 
@@ -215,7 +215,7 @@ class Book extends vscode.TreeItem {
 	}
 
 	clearTxt() {
-		console.error('清除txt', this.label);
+		console.log('清除txt', this.label);
 		this.txt = '';
 	}
 }

@@ -606,9 +606,8 @@ body.init {
  ********************/
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
+	-webkit-appearance: none;
 }
-
 
 /********************
  *		工具类
@@ -801,23 +800,23 @@ button:active,
 
 .custom-contextmenu {
 	position: fixed;
-	left: 30vw;
-	top: 40vw;
+	/* left: 30vw;
+	top: 40vw; */
+	display: none;
 
 	background: var(--bg);
 
 	width: 6rem;
 	/* border: ; */
-	--radius:  0.2rem;
+	--radius: 0.2rem;
 	border-radius: 0.2rem;
 	--shadow-size: 5px;
 
-	border: max(1px,0.06rem) solid var(--color);
+	border: max(1px, 0.06rem) solid var(--color);
 	/* --color:#000;
 	--color: inherit; */
 	font-size: 0.45rem;
 	/* overflow: hidden; */
-
 
 	box-shadow: 0px 0px 6px 2px var(--bg);
 }
@@ -835,18 +834,18 @@ button:active,
 	color: inherit;
 	padding: 0.2rem 0.8rem;
 	position: relative;
+	user-select: none;
 }
-.contextmenu-item.title{
+.contextmenu-item.title {
 	padding: 0.1rem 0.3rem;
 	font-size: 0.36rem;
 	margin: -1px;
-
 }
-.contextmenu-item.title:first-child .after{
+.contextmenu-item.title:first-child .after {
 	border-top-right-radius: calc(var(--radius) * 0.8);
 	border-top-left-radius: calc(var(--radius) * 0.8);
 }
-.contextmenu-item.title .after{
+.contextmenu-item.title .after {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -855,15 +854,14 @@ button:active,
 	left: 0;
 	top: 0;
 	opacity: 0.3;
-
 }
-.contextmenu-hr{
+.contextmenu-hr {
 	width: 100%;
 	height: 3px;
 	background: var(--color);
 	opacity: 0.3;
 }
-.contextmenu-item input{
+.contextmenu-item input {
 	border: none;
 	outline: none;
 	background: var(--btnBg);
@@ -872,16 +870,15 @@ button:active,
 	text-align: center;
 }
 
-.contextmenu-item label{
+.contextmenu-item label {
 	display: flex;
 	justify-content: space-between;
-
 }
 
-.contextmenu-item.title:hover::after{
+.contextmenu-item.title:hover::after {
 	content: none;
 }
-.contextmenu-item:hover::after{
+.contextmenu-item:hover::after {
 	content: ' ';
 
 	position: absolute;
@@ -892,4 +889,51 @@ button:active,
 	left: 0;
 	top: 0;
 	opacity: 0.1;
+}
+
+.theme-item {
+	padding-left: 1.1rem;
+	background: var(--bg);
+	color: var(--textColor);
+	display: flex;
+	align-items: center;
+}
+
+.theme-item.system-theme {
+	--bg: var(--vscode-editor-background);
+	--color: var(--vscode-editor-foreground);
+	--textColor: var(--color);
+}
+.theme-item .icon {
+	--iconSize: 0.5rem;
+	width: var(--iconSize);
+	height: var(--iconSize);
+	position: absolute;
+	/* background: var(--bg);
+	border: 0.16rem solid var(--color); */
+	background: var(--color);
+	color: var(--bg);
+	left: 0.3rem;
+	border-radius: var(--iconSize);
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.theme-item .icon.on::after {
+	display: block;
+	content: ' ';
+
+
+	/* 1.60倍 */
+	--size: 25%;
+	width: var(--size);
+	height: calc(var(--size) * 1.7);
+	border: 0.06rem solid;
+	transform: translate(-10%, -10%);
+	transform: rotate(45deg) ;
+	transform: rotate(45deg) translate(-18%, -8%);
+
+	border-left: 0;
+	border-top: 0;
 }

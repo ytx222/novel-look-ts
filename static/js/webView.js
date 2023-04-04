@@ -16,26 +16,26 @@ import {
 	setScroll,
 	isPageEnd,
 	scrollScreen,
-	nextPageOrChapter
+	nextPageOrChapter,
 } from './dom.js';
 import { autoScrollScreen } from './scroll.js';
-
+import './contextmenu.js';
+import { getThemeStyleRule } from './contextmenu.js';
 /** 每次重新渲染(调用render方法)加1 */
 export let renderId = 0;
 
-const nextChapter = () => postMsg('chapterToggle', 'next')
-const prevChapter = () => postMsg('chapterToggle', 'prev')
-
+const nextChapter = () => postMsg('chapterToggle', 'next');
+const prevChapter = () => postMsg('chapterToggle', 'prev');
 
 let themeSheetRuleIndex;
 
 // 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
 let fn = {
-	undefined () {
+	undefined() {
 		console.error('webView端找不到处理程序,无法执行');
 	},
 	/*设置一些公共设置,如行高,行间隔,字体大小等*/
-	setting (data) {
+	setting(data) {
 		setCache('setting', data);
 		let sheetEl = document.querySelector('style');
 		// 这里多一个.body,以达到更高匹配级别
@@ -44,12 +44,12 @@ let fn = {
 				font-size:1rem;
 		}`);
 		document.documentElement.style.fontSize = data.rootFontSize * data.zoom + 'px';
-		this.changeTheme(data.theme.use)
+		this.changeTheme(data.theme.use);
 		document.body.classList.add('init');
 		// window.focus()
 	},
 	/*显示章节*/
-	showChapter (data) {
+	showChapter(data) {
 		// 拦截重复的显示
 		if (data.title === (cache.showChapter && cache.showChapter.title)) {
 			return;
@@ -63,7 +63,7 @@ let fn = {
 		}
 	},
 	// 只会被插件层调用
-	readScroll (data) {
+	readScroll(data) {
 		// console.warn('readScroll', data);
 		if (!data) {
 			return;
@@ -75,42 +75,38 @@ let fn = {
 		saveScroll(data, false);
 	},
 	changeTheme (index) {
+		cache.setting.theme.use = index;
 		const sheet = el.sheet.sheet;
-
+		console.log({
+			sheet,
+			themeSheetRuleIndex,
+			index,
+		});
 		// data.theme.use
 		// 使用系统默认主题
-		if (index === 0) {
-			sheet[themeSheetRuleIndex] = 'body.body{}'
-		} else {
+		if (index !== 0) {
 			const themes = cache.setting.theme.custom;
-			const theme = themes[index - 1]
+			const theme = themes[index - 1];
 			console.log('使用主题', theme);
-			const ruleContent = `body.body{
---bg: ${theme.bg};
---color: ${theme.color};
---btnBg: ${theme.btnBg};
---btnColor: ${theme.btnColor};
---btnActive: ${theme.btnActive};
---btnActiveBorder:${theme.btnActiveBorder};
 
---navBg: ${theme.navBg || 'var(--bg)'} ;
---textColor:  ${theme.textColor || 'var(--color)'} ;
-			}`
+			const ruleContent = getThemeStyleRule(theme);
 			console.log(ruleContent);
 			// 使用自定义主题
-			if (themeSheetRuleIndex) sheet[themeSheetRuleIndex] = ruleContent
+			if (themeSheetRuleIndex !== undefined) sheet.cssRules[themeSheetRuleIndex].style = ruleContent;
 			else {
-				themeSheetRuleIndex = sheet.insertRule(ruleContent);
+				themeSheetRuleIndex = sheet.insertRule(`body.body{${ruleContent}}`);
+				console.log(sheet.cssRules[themeSheetRuleIndex]);
 			}
+		} else if (themeSheetRuleIndex !== undefined) {
+			sheet.cssRules[themeSheetRuleIndex].style = '';
 		}
-	}
-
+	},
 };
 /**
  * @param {String} title
  * @param {Array<String>} lines
  */
-function render (title, lines) {
+function render(title, lines) {
 	// console.log('render111', lines);
 	el.title.innerText = title;
 	el.navTitle.innerText = title;
@@ -142,14 +138,13 @@ function render (title, lines) {
 /**
  * 在行不够用的情况下添加行
  */
-function addLine (num) {
+function addLine(num) {
 	// 因为前期肯定隐藏过了dom,这里不在隐藏
 	for (var i = 0; i < num; i++) {
 		el.content.appendChild(document.createElement('div'));
 	}
 }
 window.addEventListener('DOMContentLoaded', function () {
-
 	window.addEventListener('message', function (e) {
 		let data = e.data.data;
 		let type = e.data.type;
@@ -168,14 +163,10 @@ window.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-
-
-
 	/*********************************
 		换章和其他需要和拓展交互的功能
 	**********************************/
 	window.onkeydown = function (e) {
-
 		console.log('KEY onkeyup ', e.key);
 		const flag = e.altKey || e.shiftKey || e.ctrlKey;
 		switch (e.key.toLowerCase()) {
@@ -185,10 +176,10 @@ window.addEventListener('DOMContentLoaded', function () {
 			// 	return false
 			case 'arrowright': //下一章
 			case !flag && 'd':
-				return nextChapter()
+				return nextChapter();
 			case 'arrowleft': //上一章
 			case !flag && 'a':
-				return prevChapter()
+				return prevChapter();
 			case 'arrowdown': //向下翻页
 			case !flag && 's':
 				return scrollScreen(1, e);
@@ -198,7 +189,7 @@ window.addEventListener('DOMContentLoaded', function () {
 			//检查是否触底,如果触底,下一章,没有则向下
 			// 空格是向下翻页,
 			case ' ':
-				return nextPageOrChapter(e)
+				return nextPageOrChapter(e);
 			case '.':
 				// 多判断一下是不是数字键盘的.
 				if (e.code === 'NumpadDecimal') {
@@ -231,57 +222,41 @@ window.addEventListener('DOMContentLoaded', function () {
 		switch (e.button) {
 			case 1:
 			case 4:
-				return prevChapter()
+				return prevChapter();
 			case 3:
-				return nextChapter()
+				return nextChapter();
 		}
 	};
-	// 双击右键下一章
-	var rightBtnTime = 0;
-	document.oncontextmenu = function (e) {
-		console.log(e);
-		var now = +Date.now();
-		if (rightBtnTime + 500 > now) {
-			e.preventDefault()
-			// 500ms内连续两次鼠标右键点击,关闭右键弹窗并且下一章
-			nextChapter()
-			rightBtnTime = 0
-			return false;
-		}
-		rightBtnTime = now;
-	};
 
-	document.querySelector('.footer .btn-box .prev').onclick = prevChapter
-	document.querySelector('.footer .btn-box .next').onclick = nextChapter
-	document.querySelector('.nav button.prev').onclick = prevChapter
-	document.querySelector('.nav button.next').onclick = nextChapter
-	el.content.ondblclick = autoScrollScreen
-	el.sideNextBtns.forEach(e => e.onclick = nextPageOrChapter)
-
+	document.querySelector('.footer .btn-box .prev').onclick = prevChapter;
+	document.querySelector('.footer .btn-box .next').onclick = nextChapter;
+	document.querySelector('.nav button.prev').onclick = prevChapter;
+	document.querySelector('.nav button.next').onclick = nextChapter;
+	el.content.ondblclick = autoScrollScreen;
+	el.sideNextBtns.forEach(e => (e.onclick = nextPageOrChapter));
 
 	/**
 	 * 这个东西,放哪里合适呢,
 	 * scrollAntiShake里面包含了业务逻辑
 	 */
-	let scrollTimer
+	let scrollTimer;
 	el.main.addEventListener('scroll', () => {
-		clearTimeout(scrollTimer)
+		clearTimeout(scrollTimer);
 		scrollTimer = setTimeout(scrollAntiShake, 50);
-	})
-	function scrollAntiShake () {
+	});
+	function scrollAntiShake() {
 		console.log('scroll=====');
 
 		if (isPageEnd()) {
-			el.sideNextBtns.forEach(e => e.classList.add('right'))
+			el.sideNextBtns.forEach(e => e.classList.add('right'));
 		} else {
 			el.sideNextBtns.forEach(e => {
-				e.classList.remove('right')
-			})
+				e.classList.remove('right');
+			});
 		}
 	}
-
 });
 
-function copy (obj) {
+function copy(obj) {
 	return JSON.parse(JSON.stringify(obj));
 }

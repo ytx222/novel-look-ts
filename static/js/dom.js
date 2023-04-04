@@ -26,7 +26,7 @@ export function initEl () {
 		nav: document.querySelector('.nav'),
 		navTitle: document.querySelector('.nav .title'),
 		sideNextBtns: document.querySelectorAll(".function-box .side-next-btn"),
-		sheet: document.querySelector('style')
+		sheet: document.querySelector('style'),
 	}
 	el = _el;
 	return _el
@@ -77,6 +77,21 @@ export function nextPageOrChapter (event) {
 		scrollScreen(1, event);
 	}
 	return flag
+}
+
+
+/**
+ * 迭代元素的所有父元素
+ * @param {Element} el
+ * @returns {Iterable<Element>} 父元素
+ */
+export function* ElementParentIterator(el) {
+    let curEl = el;
+    while (curEl) {
+        yield curEl;
+        curEl = curEl?.parentElement;
+    }
+    return null;
 }
 
 window.addEventListener('DOMContentLoaded', function () {

@@ -20,6 +20,19 @@ declare global {
 		chapterToggle: 'next' | 'prev';
 		zoom: number;
 	}
+
+	interface ThemeItem {
+		name: string;
+		bg: string;
+		color: string;
+		btnBg: string;
+		btnColor: string;
+		btnActive: string;
+		btnActiveBorder: string;
+		navBg?: string;
+		textColor?: string;
+	}
+
 	/** 缓存数据 */
 	interface WebviewCache {
 		setting: {
@@ -28,17 +41,7 @@ declare global {
 			lineIndent: number;
 			theme: {
 				use: number;
-				custom: {
-					name: string;
-					bg: string;
-					color: string;
-					btnBg: string;
-					btnColor: string;
-					btnActive: string;
-					btnActiveBorder: string;
-					navBg?: string;
-					textColor?: string;
-				}[];
+				custom: ThemeItem[];
 			};
 		};
 		showChapter: {

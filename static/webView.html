@@ -11,7 +11,7 @@
 	<meta charset="UTF-8" />
 	<title>阅读</title>
 	<!-- 控制引用权限 -->
-	<meta http-equiv="Content-Security-Policy" content="script-src #csp; style-src #csp" />
+	<!-- <meta http-equiv="Content-Security-Policy" content="script-src #csp; style-src #csp" /> -->
 	<link rel="stylesheet" href="@./style.css" />
 	<script src="@./js/webView.js" type="module"></script>
 
@@ -93,30 +93,29 @@
 				<div class="after"></div>
 				主题
 			</div>
-
-			<!-- <div class="contextmenu-hr "> </div> -->
 			<div class="" id="themeContainer">
-
-				<div class="contextmenu-item theme-item">
+				<div class="contextmenu-item theme-item system-theme" data-id="0">
+					<div class="icon"></div>
 					系统主题
 				</div>
-
-				<div class="contextmenu-item theme-item">
-					用户主题
+				<div class="" id="customThemeContainer">
+					<div class="contextmenu-item theme-item">
+						用户主题
+					</div>
 				</div>
-				<div class="contextmenu-item theme-item">
+				<div class="contextmenu-item theme-item add-theme">
 					创建主题
 				</div>
 			</div>
 			<div class="contextmenu-hr "> </div>
 			<div class="contextmenu-item">
 				<label for="scroll-speed-input">
-					滚动速度:  <input type="number" id="scroll-speed-input">
+					滚动速度: <input type="number" id="scroll-speed-input">
 				</label>
 			</div>
 			<div class="contextmenu-item">
 				<label for="zoom-input">
-					缩放:  <input type="number" id="zoom-input">
+					缩放: <input type="number" id="zoom-input">
 				</label>
 			</div>
 		</div>
