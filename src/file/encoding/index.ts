@@ -1,12 +1,12 @@
-const chardet = require('chardet');
-const iconv = require('iconv-lite');
+import chardet from 'chardet';
+import iconv from 'iconv-lite';
 
 /**
  * 自动识别buffer内容的编码,并转换成对应字符串
  * @return {String}
  */
 //buffer: Buffer
-export default function (buffer:Uint8Array): string {
+export default function (buffer: Uint8Array): string {
 	//Uint8Array
 	let det = { fRawInput: buffer, fRawLength: buffer.length };
 	if (det.fRawLength > 1024 * 128) {
@@ -34,11 +34,11 @@ export default function (buffer:Uint8Array): string {
 	*/
 
 	console.time('判断编码耗时');
-	let t = chardet.detect(buffer.slice(0, 1024 * 128));
+	let t = chardet.detect(buffer.slice(0, 1024 * 128)) || 'UTF-8';
 	console.timeEnd('判断编码耗时');
 	// console.warn(t);
 	// 将buffer转换为指定编码格式
-	let s = iconv.decode(buffer, t);
+	let s = iconv.decode(Buffer.from(buffer), t);
 	// console.log(s.substring(0, 50));
 	return s;
 	// resolve(s);
