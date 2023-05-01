@@ -14,7 +14,7 @@ const staticDir = '/static/';
 // export const targetStaticDir = '/static/2.0.7';
 export const getTargetStaticDir = () => {
 	// 动态获取当前版本号
-	return `/static/${context.extension.packageJSON.version}`;
+	return `/static/${context.extension.packageJSON.version}${config.env === 'dev' ? '.dev' : ''}`;
 };
 
 let uri: vscode.Uri;
@@ -76,7 +76,7 @@ async function refreshStaticFile() {
 
 	// 重启视图
 	closeWebView();
-	vscode.commands.executeCommand('novel-look.openWebView')
+	vscode.commands.executeCommand('novel-look.openWebView');
 }
 
 /**
