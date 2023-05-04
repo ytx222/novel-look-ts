@@ -8,6 +8,8 @@ import {
 	cache,
 	saveScroll,
 	postMsg,
+	nextChapter,
+	prevChapter,
 } from './vscodeApi.js';
 import {
 	//
@@ -17,15 +19,14 @@ import {
 	isPageEnd,
 	scrollScreen,
 	nextPageOrChapter,
+	dispatchCustomEvent,
 } from './dom.js';
 import { autoScrollScreen } from './scroll.js';
 import './contextmenu.js';
-import { getThemeStyleRule } from './contextmenu.js';
+import { getThemeStyleRule, showContextMenu } from './contextmenu.js';
 /** 每次重新渲染(调用render方法)加1 */
 export let renderId = 0;
-
-const nextChapter = () => postMsg('chapterToggle', 'next');
-const prevChapter = () => postMsg('chapterToggle', 'prev');
+export const isFirstRender = () => renderId <= 1;
 
 let themeSheetRuleIndex;
 
@@ -58,7 +59,7 @@ let fn = {
 		setCache('showChapter', data);
 		render(data.title, data.list);
 		// 初次渲染后,renderId 是1
-		if (renderId > 1) {
+		if (!isFirstRender()) {
 			setScroll(0);
 		}
 	},
@@ -74,15 +75,16 @@ let fn = {
 		requestAnimationFrame(setScroll.bind(null, data));
 		saveScroll(data, false);
 	},
-	changeTheme (index) {
+	changeTheme(index) {
 		cache.setting.theme.use = index;
 		const sheet = el.sheet.sheet;
 		console.log({
 			sheet,
 			themeSheetRuleIndex,
 			index,
+			renderId,
 		});
-		// data.theme.use
+		if (!isFirstRender()) showContextMenu();
 		// 使用系统默认主题
 		if (index !== 0) {
 			const themes = cache.setting.theme.custom;

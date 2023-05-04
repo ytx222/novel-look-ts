@@ -205,6 +205,10 @@ let fn: {
 		scroll.set(data.key, data.value);
 		setState('saveScroll', data);
 	},
+	/** 切换禅模式 */
+	toggleZenMode() {
+		vscode.commands.executeCommand('workbench.action.toggleZenMode');
+	},
 	/**
 	 * 更改使用的主题
 	 */
@@ -215,7 +219,7 @@ let fn: {
 		// scroll.set(data.key, data.value);
 		// setState('saveScroll', data);
 		config.set('theme.use', data);
-		postMsg('changeTheme',data)
+		postMsg('changeTheme', data);
 	},
 	/**
 	 * 编辑主题
@@ -223,11 +227,9 @@ let fn: {
 	editTheme(data: scrollInfo) {
 		// key之前是章名,现在改成书名,因为在一本书中切换章节没有意义保存
 		// scroll.set(data.key, data.value);
-
 		// scroll.set(data.key, data.value);
 		// setState('saveScroll', data);
 	},
-
 };
 async function onMessage(e: messageType) {
 	// TODO: 日志

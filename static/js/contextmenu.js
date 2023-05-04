@@ -1,5 +1,5 @@
 import { ElementParentIterator } from './dom.js';
-import { cache, postMsg } from './vscodeApi.js';
+import { cache, nextChapter, postMsg } from './vscodeApi.js';
 
 let isShow = false;
 /**
@@ -12,6 +12,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		contextmenu: document.querySelector('.custom-contextmenu'),
 		customThemeContainer: document.getElementById('customThemeContainer'),
 		themeContainer: document.getElementById('themeContainer'),
+		zenModeButton: document.querySelector('.contextmenu-item.zen-mode'),
 	};
 	// document.querySelector('.custom-contextmenu');
 
@@ -19,11 +20,11 @@ window.addEventListener('DOMContentLoaded', function () {
 	var rightBtnTime = 0;
 	document.oncontextmenu = function (e) {
 		console.log(e);
-		var now = +Date.now();
+		var now = Date.now();
 		// 300ms内连续两次鼠标右键点击,关闭右键弹窗并且下一章
 		if (rightBtnTime + 300 > now) {
 			e.preventDefault();
-			postMsg('chapterToggle', 'next');
+			nextChapter();
 			rightBtnTime = 0;
 		} else if (isShow) {
 			// 在显示状态中,则隐藏
@@ -40,19 +41,24 @@ window.addEventListener('DOMContentLoaded', function () {
 	 * @param {number} x
 	 * @param {number} y
 	 */
-	function showContextMenu(x, y) {
-		let w = el.contextmenu.offsetWidth;
-		let h = el.contextmenu.offsetHeight;
-		let pageW = document.body.clientWidth;
-		let pageH = document.body.clientWidth;
-		// 如果右(下)方位置不足,并且左(上)方有足够的位置,则移动
-		if (pageW < x + w && x > w) x -= w;
-		if (pageH < y + h && y > h) y -= h;
-		el.contextmenu.style = `display: block;top:${y}px;left:${x}px;`;
-
-		isShow = true;
+	showContextMenu = (x, y) => {
+		console.log('showContextMenu', { isShow, x });
+		// 如果当前ContextMenu处于显示状态,则允许通过不传递x,y(坐标)来实现重新渲染
+		if (!isShow && x !== undefined) {
+			el.contextmenu.style = `display: block;`;
+			let w = el.contextmenu.offsetWidth;
+			let h = el.contextmenu.offsetHeight;
+			let pageW = document.body.clientWidth;
+			let pageH = document.body.clientWidth;
+			// console.log({x,y,w,h,pageW,pageH});
+			// 如果右(下)方位置不足,并且左(上)方有足够的位置,则移动
+			if (pageW < x + w && x > w) x -= w;
+			if (pageH < y + h && y > h) y -= h;
+			el.contextmenu.style = `display: block;top:${y || 0}px;left:${x || 0}px;`;
+			isShow = true;
+		}
 		renderThemeContent();
-	}
+	};
 
 	function renderThemeContent() {
 		let s = cache.setting?.theme?.custom
@@ -62,12 +68,12 @@ window.addEventListener('DOMContentLoaded', function () {
 		style="${getThemeStyleRule(theme)}"
 		data-id="${i + 1}"
 		>
-		<div class="icon ${cache.setting?.theme.use === i+1?'on':''}"></div>
+		<div class="icon ${cache.setting?.theme.use === i + 1 ? 'on' : ''}"></div>
 		${theme.name}</div>`
 			)
 			?.join('');
 		el.customThemeContainer.innerHTML = s;
-		console.log(s);
+		// console.log(s);
 	}
 
 	el.themeContainer.onclick = function (e) {
@@ -96,6 +102,14 @@ window.addEventListener('DOMContentLoaded', function () {
 		postMsg('changeUseTheme', +i || 0);
 	}
 
+	/**
+	 * 主题之外的其他项目的处理
+	 */
+	el.zenModeButton.onclick = function () {
+		// 进入禅模式
+		postMsg('toggleZenMode');
+	};
+
 	/** 隐藏menu相关逻辑 */
 	function hideContextMenu() {
 		if (!isShow) return;
@@ -108,6 +122,10 @@ window.addEventListener('DOMContentLoaded', function () {
 	});
 	// window.addEventListener('blur', hideContextMenu);
 });
+
+export let showContextMenu = (x, y) => {
+	throw new Error('webview=>contextMenu=>showContextMenu uninitialized ');
+};
 
 /**
  *获取主题的css样式,用于设置

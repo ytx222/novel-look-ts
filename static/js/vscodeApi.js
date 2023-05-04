@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { getScroll } from './dom.js';
+import { dispatchCustomEvent, getScroll } from './dom.js';
 
 // eslint-disable-next-line no-undef
 const vscode = acquireVsCodeApi();
@@ -15,7 +15,7 @@ export let cache = {
 	showChapter: {},
 };
 
-export function getState () {
+export function getState() {
 	return vscode.getState();
 }
 
@@ -26,7 +26,7 @@ export function getState () {
  * @param {keyof WebviewCache} key 键
  * @param {Object} value  值
  */
-export function setCache (key, value) {
+export function setCache(key, value) {
 	cache[key] = value;
 	vscode.setState(cache);
 }
@@ -37,9 +37,9 @@ export function setCache (key, value) {
  * @param {number} scroll
  * @param {boolean} isPostMsg
  */
-export function saveScroll (scroll = getScroll(), isPostMsg = true) {
+export function saveScroll(scroll = getScroll(), isPostMsg = true) {
 	// 如果滚动高度未变化,则无意义
-	if (scroll === cache.readScroll) return
+	if (scroll === cache.readScroll) return;
 	// TODO: 未来保存更多的信息,如段落index,pageWidth,以实现页面宽度变化时的自适应
 	// 这里需要被调用,所以缓存的方法名是读取 readCacheScroll
 	setCache('readScroll', scroll);
@@ -51,14 +51,27 @@ export function saveScroll (scroll = getScroll(), isPostMsg = true) {
 
 /**
  * 发送消息
- * @param {'saveScroll'|'chapterToggle'|'zoom'|'changeUseTheme'|'editTheme'} type
+ * @param {'saveScroll'|'chapterToggle'|'zoom'|'changeUseTheme'|'editTheme'|'toggleZenMode'} type
  * @param {*} data
  */
-export function postMsg (type, data) {
+export function postMsg(type, data) {
 	console.log('子页面-postMsg', type, data);
-	//切换章节时,清除当前章节的缓存滚动高度
-	if (type === 'chapterToggle') {
-		saveScroll(0, false);
-	}
 	vscode.postMessage({ type, data });
 }
+
+/**
+ * 切换章节必须走的方法
+ * @param {'next' | 'prev'} type
+ */
+export const chapterToggle = type => {
+	postMsg('chapterToggle', type);
+	//切换章节时,清除当前章节的缓存滚动高度
+	saveScroll(0, false);
+	// 清空选择
+	document.getSelection()?.empty();
+	dispatchCustomEvent('chapterToggle', { toggleType: type });
+};
+/** 下一章 */
+export const nextChapter = () => void chapterToggle('next');
+/** 上一章 */
+export const prevChapter = () => void chapterToggle('prev');

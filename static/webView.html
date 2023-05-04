@@ -89,6 +89,7 @@
 			 </div> -->
 		<!-- after-shadow" -->
 		<div class="custom-contextmenu">
+			<div class="custom-contextmenu-bg"></div>
 			<div class="contextmenu-item title" id="setTheme">
 				<div class="after"></div>
 				主题
@@ -108,14 +109,19 @@
 				</div>
 			</div>
 			<div class="contextmenu-hr "> </div>
+			<div class="contextmenu-item zen-mode">
+				切换禅模式(全屏)
+			</div>
 			<div class="contextmenu-item">
-				<label for="scroll-speed-input">
-					滚动速度: <input type="number" id="scroll-speed-input">
+				<label class="contextmenu-item-input" for="scroll-speed-input">
+					<span class="contextmenu-item-input-label">滚动速度: </span>
+					<input type="text" id="scroll-speed-input">
 				</label>
 			</div>
 			<div class="contextmenu-item">
-				<label for="zoom-input">
-					缩放: <input type="number" id="zoom-input">
+				<label class="contextmenu-item-input" for="zoom-input">
+					<span class="contextmenu-item-input-label">缩放:</span>
+					<input type="number" id="zoom-input">
 				</label>
 			</div>
 		</div>

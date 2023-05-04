@@ -10,11 +10,13 @@ import {
 	cache,
 	saveScroll,
 	postMsg,
+	nextChapter,
 } from './vscodeApi.js';
 import { el, getScroll, isPageEnd, setScroll } from './dom.js';
 import { renderId } from './webView.js';
 
-let scrollType = 0; // 0未滚动 1等待结束  2等待开始  3正在滚动
+/**  0未滚动 1等待结束  2等待开始  3正在滚动 */
+let scrollType = 0;
 let timer = {
 	scroll: 0, // 滚屏用的计时器
 	toggle: 0, // 换章用的计时器
@@ -31,7 +33,7 @@ let lastRenderId = -1;
 /**
  * 自动滚屏
  */
-export function autoScrollScreen () {
+export function autoScrollScreen() {
 	clearTimeout(timer.toggle);
 	clearInterval(timer.scroll);
 	// 如果当前非滚屏状态,则进入滚屏状态
@@ -46,7 +48,7 @@ export function autoScrollScreen () {
 // 问题是每多少时间向下移动1
 // 这个时间如果高于10,则可能会产生滚动一卡一卡的感觉(视觉效果)
 // 以人眼24帧为标准 72, 96, 120, 144, 168, 192
-function scroll (v = 1) {
+function scroll(v = 1) {
 	// 检查更新尺寸信息,仅在初始化和重新渲染后才更新尺寸信息
 	if (lastRenderId !== renderId) {
 		max = el.main.scrollHeight;
@@ -64,7 +66,7 @@ function scroll (v = 1) {
 		saveScroll(num);
 	}
 }
-function scrollEnd () {
+function scrollEnd() {
 	// 章节结束
 	// 直接执行方法使其取消自动滚屏
 	clearInterval(timer.scroll);
@@ -72,16 +74,28 @@ function scrollEnd () {
 	scrollType = 1;
 	timer.toggle = setTimeout(() => {
 		// 下一章
-		scrollType = 2;
-		postMsg('chapterToggle', 'next');
-		timer.toggle = setTimeout(() => {
-			// 开始滚屏
-			autoScrollScreen();
-		}, cache.setting.scrollStartTime);
+		nextChapter();
+		scrollRestart();
 	}, cache.setting.scrollEndTime);
 }
+/** 章节结束后的重新开始 */
+function scrollRestart() {
+	scrollType = 2;
+	timer.toggle = setTimeout(() => {
+		// 开始滚屏
+		autoScrollScreen();
+	}, cache.setting.scrollStartTime);
+}
+window.addEventListener('chapterToggle', function () {
+	if (scrollType !== 0) {
+		console.warn('检测到章节切换时处于等待下一章状态=======');
+		clearInterval(timer.scroll);
+		clearTimeout(timer.toggle);
+		scrollRestart();
+	}
+});
 // 获取间隔时间
-function getIntervalTime () {
+function getIntervalTime() {
 	let scrollSpeed = cache.setting.scrollSpeed || 96;
 	return Math.round(1000 / scrollSpeed);
 }
@@ -98,9 +112,8 @@ const hideZoom = () => {
 	// zoomEl.style.opacity = 0;
 	zoomEl.classList.remove('on');
 	zoomEl.style.opacity = 0;
-
 };
-function showZoom (size, zoom) {
+function showZoom(size, zoom) {
 	zoomEl.innerText = `${size}px ${(zoom * 100).toFixed(0)}%`;
 	zoomEl.style = 'display:flex;opacity:1;';
 	zoomEl.classList.add('on');
@@ -108,11 +121,11 @@ function showZoom (size, zoom) {
 		zoomEl.style.display = 'none';
 	};
 	clearTimeout(zoomTimer);
-	zoomTimer = setTimeout(hideZoom, 150000);
+	zoomTimer = setTimeout(hideZoom, 1500);
 }
 //滚动滑轮触发scrollFunc方法
 document.onmousewheel = scrollFunc;
-function scrollFunc (e) {
+function scrollFunc(e) {
 	// 如果是ctrl+滚轮,则放大或缩小显示
 	if (e.ctrlKey) {
 		// 先计算出新的缩放比例

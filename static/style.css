@@ -791,7 +791,16 @@ button:active,
 }
 
 .side-next-btn.btn2 {
-	display: none;
+	/* display: none; */
+	right: inherit;
+	top: initial;
+	/* 家里电脑 */
+	/* left: 136px;
+	bottom: 90px; */
+	/* 公司电脑 */
+	left: 460px;
+	bottom: 343px;
+	transform: scale(0.2);
 }
 
 .symbol-box {
@@ -803,22 +812,28 @@ button:active,
 	/* left: 30vw;
 	top: 40vw; */
 	display: none;
-
 	background: var(--bg);
-
 	width: 6rem;
 	/* border: ; */
 	--radius: 0.2rem;
-	border-radius: 0.2rem;
+	border-radius:var(--radius);
 	--shadow-size: 5px;
-
-	border: max(1px, 0.06rem) solid var(--color);
+	/* border: max(1px, 0.06rem) solid var(--color); */
 	/* --color:#000;
 	--color: inherit; */
 	font-size: 0.45rem;
 	/* overflow: hidden; */
-
 	box-shadow: 0px 0px 6px 2px var(--bg);
+	/* overflow: hidden; */
+}
+.custom-contextmenu-bg {
+	box-shadow: inset 0px 0px max(1px, 0.06rem) 0px var(--color);
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 30;
+	border-radius:var(--radius);
+	pointer-events: none;
 }
 /* .custom-contextmenu::after {
 	border-radius: inherit;
@@ -846,33 +861,20 @@ button:active,
 	border-top-left-radius: calc(var(--radius) * 0.8);
 }
 .contextmenu-item.title .after {
-	position: absolute;
+	/* position: absolute;
 	width: 100%;
 	height: 100%;
 	color: #000;
 	background: var(--color);
 	left: 0;
 	top: 0;
-	opacity: 0.3;
+	opacity: 0.3; */
 }
 .contextmenu-hr {
 	width: 100%;
 	height: 3px;
 	background: var(--color);
 	opacity: 0.3;
-}
-.contextmenu-item input {
-	border: none;
-	outline: none;
-	background: var(--btnBg);
-	color: var(--color);
-	width: 3em;
-	text-align: center;
-}
-
-.contextmenu-item label {
-	display: flex;
-	justify-content: space-between;
 }
 
 .contextmenu-item.title:hover::after {
@@ -889,6 +891,7 @@ button:active,
 	left: 0;
 	top: 0;
 	opacity: 0.1;
+	pointer-events: none;
 }
 
 .theme-item {
@@ -924,16 +927,41 @@ button:active,
 	display: block;
 	content: ' ';
 
-
 	/* 1.60倍 */
 	--size: 25%;
 	width: var(--size);
 	height: calc(var(--size) * 1.7);
 	border: 0.06rem solid;
 	transform: translate(-10%, -10%);
-	transform: rotate(45deg) ;
+	transform: rotate(45deg);
 	transform: rotate(45deg) translate(-18%, -8%);
 
 	border-left: 0;
 	border-top: 0;
+}
+
+.contextmenu-item-input-label {
+	display: inline-block;
+	flex: 1 0 auto;
+}
+
+.contextmenu-item input {
+	border: none;
+	outline: none;
+	background: var(--btnBg);
+	color: var(--color);
+	min-width: 3.6em;
+
+	text-align: center;
+}
+
+.contextmenu-item label {
+	display: flex;
+	justify-content: space-between;
+}
+
+
+.contextmenu-item-input{
+	display: flex;
+	justify-content: space-between;
 }

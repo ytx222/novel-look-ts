@@ -50,5 +50,7 @@ declare global {
 		};
 		readScroll: number;
 	}
+	type CustomEvents = 'chapterToggle' | '';
 }
+
 export {};
