@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as file from './file/file';
 
 import * as config from './config';
-import { getState, setState, getExtensionUri, getStateDefault, sleep } from './util/util';
+import { getState, setState, getExtensionUri, getStateDefault, sleep, formatTime } from './util/util';
 import { command } from './TreeViewProvider';
 import { getTargetStaticDir } from './file/file';
 
@@ -16,6 +16,22 @@ type messageType = {
 	type: string;
 	data: any;
 };
+
+// TODO: 暂时放这里
+let isZenMode = false;
+
+let curChapterTitle = '';
+let titleTimer: NodeJS.Timeout;
+
+function updateTitle() {
+	console.log('updateTitle', isZenMode, !!panel);
+	if (!panel) return;
+	if (isZenMode) {
+		panel.title = `${formatTime()} ${curChapterTitle}`;
+	} else if (panel?.title !== '阅读') {
+		panel!.title = '阅读';
+	}
+}
 
 /**
  * 显示某一章
@@ -121,6 +137,8 @@ async function getWebviewContent(uri: vscode.Uri) {
  */
 async function postMsg(type: string, data: any) {
 	console.log('postMsg---', type, data);
+	// 当钩子用了
+	if (type === 'showChapter') curChapterTitle = data.title;
 	try {
 		//FIXME: 删除这里的await 或者限制最长50ms? ""
 		// FIXME: message id?
@@ -130,6 +148,7 @@ async function postMsg(type: string, data: any) {
 			// 最多等待10ms
 			sleep(5),
 		]);
+		// vscode.window
 	} catch (error) {
 		console.log(1111);
 		console.error(error);
@@ -206,8 +225,17 @@ let fn: {
 		setState('saveScroll', data);
 	},
 	/** 切换禅模式 */
-	toggleZenMode() {
-		vscode.commands.executeCommand('workbench.action.toggleZenMode');
+	toggleZenMode({ onlyNotice = false }) {
+		if (onlyNotice) {
+			vscode.commands.executeCommand('workbench.action.toggleZenMode');
+		}
+		console.warn('toggleZenMode');
+		isZenMode = !isZenMode;
+		if (isZenMode) {
+			titleTimer = setInterval(updateTitle, 1000);
+		} else {
+			clearInterval(titleTimer);
+		}
 	},
 	/**
 	 * 更改使用的主题

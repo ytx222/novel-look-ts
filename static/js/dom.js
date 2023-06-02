@@ -113,3 +113,19 @@ export function dispatchCustomEvent(eventName, eventProperty = {}) {
 	}
 	window.dispatchEvent(event);
 }
+
+window.onresize = function (e) {
+	console.log('onresize', e);
+	//innerWidth: 1920
+	// console.log(isFullscreen());
+	// document.body.requestFullscreen();
+};
+
+// function isFullscreen() {
+// 	return (
+// 		document.fullscreenElement ||
+// 		document.webkitFullscreenElement ||
+// 		document.mozFullScreenElement ||
+// 		document.msFullscreenElement
+// 	);
+// }

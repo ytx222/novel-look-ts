@@ -15,8 +15,6 @@ export function init(_content: vscode.ExtensionContext): void {
 export function setState(key: string, value: any): void {
 	// console.warn('content.globalState',content.globalState);
 	content.globalState.update(key, value);
-
-
 }
 /**
  * 读取存储数据
@@ -62,4 +60,28 @@ export async function sleep(ms = 10) {
 	return new Promise<void>((resolve, reject) => {
 		setTimeout(resolve, ms);
 	});
+}
+
+/** 只有时分秒 */
+export function formatTime(date?: Date, isDate = false): string {
+	const _date = date || new Date();
+	const year = _date.getFullYear();
+	const month = _date.getMonth() + 1;
+	const day = _date.getDate();
+	const hour = _date.getHours();
+	const minute = _date.getMinutes();
+	const second = _date.getSeconds();
+	let res = [hour, minute, second].map(formatNumber).join(':');
+	if (isDate) res = [year, month, day].map(formatNumber).join('/') + ' ' + res;
+	return res;
+}
+
+/**
+ * @desc: 格式化数字
+ * @return: n > 10 [eg: 12] => 12 | n < 10 [eg: 3] => '03'
+ * @param {*} n
+ */
+export function formatNumber(v: string | number) {
+	const num = v.toString();
+	return num[1] ? num : '0' + num;
 }
