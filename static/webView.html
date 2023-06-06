@@ -20,13 +20,14 @@
 <body class="body">
 	<!-- 没啥名字起的,就nav吧 -->
 	<div class="nav">
-		<button class="button prev">上一章</button>
+
 		<div class="content-container flex-center">
 			<div class="zoom flex-center after-shadow">20px 500%</div>
 			<div class="title flex-center">章节标题</div>
+			<div class="time flex-center">00:00</div>
 		</div>
-		<button class="button next">下一章
-	</div>
+		<button class="button prev">上一章</button>
+		<button class="button next">下一章</button>
 	</div>
 	<div class="main">
 		<div class="header standard-width">
@@ -92,7 +93,7 @@
 			<div class="custom-contextmenu-bg"></div>
 			<div class="contextmenu-item title" id="setTheme">
 				<div class="after"></div>
-				主题
+				主题(目前请到vscode设置中修改)
 			</div>
 			<div class="" id="themeContainer">
 				<div class="contextmenu-item theme-item system-theme" data-id="0">
@@ -100,11 +101,11 @@
 					系统主题
 				</div>
 				<div class="" id="customThemeContainer">
-					<div class="contextmenu-item theme-item">
+					<!-- <div class="contextmenu-item theme-item">
 						用户主题
-					</div>
+					</div> -->
 				</div>
-				<div class="contextmenu-item theme-item add-theme">
+				<div class="contextmenu-item theme-item add-theme" style="cursor: no-drop;">
 					创建主题
 				</div>
 			</div>

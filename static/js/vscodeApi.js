@@ -14,6 +14,8 @@ export let cache = {
 	setting: {},
 	showChapter: {},
 };
+// 方便调试
+window.cache = cache;
 
 export function getState() {
 	return vscode.getState();

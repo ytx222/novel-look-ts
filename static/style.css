@@ -583,11 +583,18 @@
 
 	/* 一些非主题的参数 */
 	--scroll-bar-size: 10px;
-	--navHeight: 2rem;
+	/* --navHeight: 2rem; */
+	--navHeight: calc(var(--herderSize) * 1.75);
+
+	/* 这两个会被运行时注入的规则覆盖 */
+	--rootFontSize: 16px;
+	--zoom: 1;
+	--herderSize: calc(var(--rootFontSize) * ((var(--zoom) - 1) / 3 + 1));
 }
 
 html {
 	font-size: 16px;
+	font-size: calc(var(--rootFontSize) * var(--zoom));
 }
 body {
 	display: none;
@@ -662,46 +669,76 @@ button:active,
 	height: var(--navHeight);
 	background: var(--navBg);
 	flex: 0 0 auto;
+	font-size: calc(var(--herderSize) * 0.7);
+
+	background: calc(var(--color) + '55');
+}
+.nav::after {
+	content: ' ';
+	display: block;
+	position: absolute;
+	z-index: -1;
+	box-shadow: var(--color) 0px 4px 6px -1px;
+	opacity: 0.15;
+	width: 100%;
+	height: var(--navHeight);
+	left: 0;
+	top: 0;
 }
 .nav button {
-	width: 4rem;
-	height: 2rem;
-	font-size: 0.7rem;
+	/* width: calc(var(--herderSize) * 4); */
+	width: calc(var(--herderSize) * 3.75);
+	height: 100%;
 	background: transparent;
 	border-color: transparent;
 	border-radius: 0;
 	flex: 0 0 auto;
+	font-size: inherit;
 }
 
 .nav .content-container {
 	position: relative;
 	flex: 1 0 auto;
 	height: 100%;
+	/* justify-content: flex-start; */
+	/* padding-left: var(--herderSize); */
+	order: 5;
 }
 .nav .content-container .title {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-size: 0.7rem;
+	width: initial;
 }
+
+.nav .content-container .time {
+	right: calc(var(--herderSize) * 0.4);
+	width: initial;
+	/* display: none; */
+	line-height: var(--navHeight);
+}
+.nav.left .content-container .time {
+	display: block;
+}
+
 .nav .content-container > div {
 	position: absolute;
-	top: 0;
-	left: 0;
+	/* top: 0; */
+	/* left: 0; */
 	width: 100%;
 	height: 100%;
 	user-select: none;
 }
 .nav .content-container .zoom {
 	display: none;
-	font-size: 0.9rem;
+	/* font-size: 0.9rem; */
 	color: var(--color);
 	opacity: 1;
 	transition: opacity 300ms;
 	background: var(--navBg);
 	position: relative;
-	width: 7em;
-	height: calc(1.3em + 4px);
+	width: calc(var(--herderSize) * 7);
+	height: calc(var(--herderSize) * 1.3 + 4px);
 }
 
 .nav .content-container .zoom::after {
@@ -711,11 +748,24 @@ button:active,
 	display: none;
 }
 
+.nav.left .content-container {
+	padding-left: var(--herderSize);
+	box-sizing: border-box;
+	justify-content: flex-start;
+}
+.nav .button.next {
+	order: 15;
+}
+.nav.left .button {
+	order: 10;
+}
+
 .main {
 	display: flex;
 	width: 100%;
 	height: calc(100vh - var(--navHeight));
 	max-height: calc(100vh - var(--navHeight));
+	padding-top: calc(var(--navHeight) * 0.3);
 	margin: auto;
 	overflow-y: auto;
 	box-sizing: border-box;
@@ -731,9 +781,10 @@ button:active,
 .header .title {
 	font-size: 1.6rem;
 	text-align: center;
+	display: none;
 }
 .content-box {
-	padding-top: 30px;
+	/* padding-top: 10px; */
 }
 .content {
 	flex: 1 1 auto;
@@ -741,7 +792,8 @@ button:active,
 }
 .content div {
 	/* FIXME: 这个距离,如果修改成2rem 则无法保持当前滚动位置,需要解决办法 */
-	margin-top: 30px;
+	/* margin-top: 30px; */
+	margin-top: 1em;
 	font-size: 16px;
 	line-height: 1.5;
 	text-indent: 2em;
@@ -795,12 +847,12 @@ button:active,
 	right: inherit;
 	top: initial;
 	/* 家里电脑 */
-	/* left: 136px;
-	bottom: 90px; */
+	left: 136px;
+	bottom: 90px;
 	/* 公司电脑 */
-	left: 460px;
+	/* left: 460px;
 	bottom: 343px;
-	transform: scale(0.2);
+	transform: scale(0.2); */
 }
 
 .symbol-box {
@@ -816,7 +868,7 @@ button:active,
 	width: 6rem;
 	/* border: ; */
 	--radius: 0.2rem;
-	border-radius:var(--radius);
+	border-radius: var(--radius);
 	--shadow-size: 5px;
 	/* border: max(1px, 0.06rem) solid var(--color); */
 	/* --color:#000;
@@ -832,7 +884,7 @@ button:active,
 	width: 100%;
 	height: 100%;
 	z-index: 30;
-	border-radius:var(--radius);
+	border-radius: var(--radius);
 	pointer-events: none;
 }
 /* .custom-contextmenu::after {
@@ -960,8 +1012,7 @@ button:active,
 	justify-content: space-between;
 }
 
-
-.contextmenu-item-input{
+.contextmenu-item-input {
 	display: flex;
 	justify-content: space-between;
 }

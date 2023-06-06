@@ -43,6 +43,7 @@ declare global {
 				use: number;
 				custom: ThemeItem[];
 			};
+			titleCenter:boolean
 		};
 		showChapter: {
 			title: string;

@@ -12,7 +12,7 @@ import {
 	postMsg,
 	nextChapter,
 } from './vscodeApi.js';
-import { el, getScroll, isPageEnd, setScroll } from './dom.js';
+import { el, getScroll, getStyleRule, isPageEnd, setScroll } from './dom.js';
 import { renderId } from './webView.js';
 
 /**  0未滚动 1等待结束  2等待开始  3正在滚动 */
@@ -130,19 +130,10 @@ function scrollFunc(e) {
 	if (e.ctrlKey) {
 		// 先计算出新的缩放比例
 		let zoom = cache.setting.zoom;
-		let n = e.wheelDelta > 0 ? 0.1 : -0.1;
-		zoom = +(zoom + n).toFixed(1);
-		// 如果合法
-		if (zoom >= 0.2 && zoom <= 5) {
-			// 保存
-			postMsg('zoom', zoom);
-			cache.setting.zoom = zoom;
-			setCache('setting', cache.setting);
-			// 应用
-			document.documentElement.style.fontSize = cache.setting.rootFontSize * zoom + 'px';
-			// 显示
-			showZoom(cache.setting.rootFontSize * zoom, zoom);
-		}
+		let n = e.wheelDelta > 0;
+		let size = 0.1;
+		if (zoom > 1.5 || (n && zoom >= 1.5)) size = 0.25;
+		updateZoom(+(zoom + size * (n ? 1 : -1)).toFixed(5));
 		return;
 	} else if (scrollType !== 0) {
 		console.log('e.wheelDelta', e.wheelDelta);
@@ -157,4 +148,27 @@ function scrollFunc(e) {
 		// }, 50);
 		scrollEndTimer = setTimeout(saveScroll.bind(null, undefined, true, false), 300);
 	}
+}
+
+let zoomSaveTimer;
+
+function updateZoom(zoom) {
+	// 判断值是否合法
+	if (zoom < 0.4 || zoom > 10) {
+		zoom = zoom > 10 ? 10 : 0.4;
+		let oldZoom = cache.setting.zoom;
+		if (zoom == oldZoom) return;
+	}
+	clearTimeout(zoomSaveTimer);
+	zoomSaveTimer = setTimeout(() => postMsg('zoom', zoom), 600);
+	// 保存
+	cache.setting.zoom = zoom;
+	setCache('setting', cache.setting);
+	// 应用
+	// document.documentElement.style.fontSize = cache.setting.rootFontSize * zoom + 'px';
+	const rule = getStyleRule(':root:root');
+	console.log(rule);
+	rule.style = `--rootFontSize: ${rule.styleMap.get('--rootFontSize')}; --zoom: ${zoom};`;
+	// 显示
+	showZoom(cache.setting.rootFontSize * zoom, zoom);
 }

@@ -127,6 +127,7 @@ export function getUrl() {
 }
 
 /** 读取文件 */
-export const readFile = util.readFile;
+// export const readFile = util.readFile;
+export { readFile, getFileName } from './fileUtil';
 /** 获取文件名称 */
-export const getFileName = util.getFileName;
+// export const getFileName = util.getFileName;

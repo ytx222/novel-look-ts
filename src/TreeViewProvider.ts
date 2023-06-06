@@ -140,7 +140,7 @@ class Book extends vscode.TreeItem {
 	timer?: NodeJS.Timeout;
 	// 获取这本书的章节内容,这个是获取章节列表的最佳方式
 	async getChapterList() {
-		console.log(`getChapterList==${this.label}`);
+		// console.log(`getChapterList==${this.label}`);
 		// console.time('获取章节内容时间');
 		await this.getContent();
 		let arr = split(this.txt);
@@ -161,7 +161,7 @@ class Book extends vscode.TreeItem {
 		// console.timeEnd('获取章节内容时间');
 
 		// 如果需要隐藏已读章节
-		console.warn('是否隐藏已读章节', !getStateDefault('isShowReadChapter', false));
+		// console.warn('是否隐藏已读章节', !getStateDefault('isShowReadChapter', false));
 		if (!getStateDefault('isShowReadChapter', false)) {
 			// 多筛选一遍,并不怎么消耗性能,但是可以提高可维护性
 			this.showList = this.chapterList.filter(e => !e.isRead);

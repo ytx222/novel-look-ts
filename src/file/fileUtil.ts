@@ -92,14 +92,21 @@ export async function isDir(uri: vscode.Uri): Promise<dir[] | false> {
  * @returns 文件内容
  */
 export async function readFile(uri: vscode.Uri, checkEncoding = false): Promise<string> {
-	//{ encoding: "gb2312" },
-	// console.log('开始读取文件', uri);
-	let buffer = await _fs.readFile(uri);
-	// console.log('读取buffer完成',checkEncoding);
-	if (checkEncoding) {
-		return encoding(buffer);
-	} else {
-		return buffer.toString();
+	try {
+		// console.log(uri);
+		// console.time('读取文件耗时1');
+		// console.time('读取文件耗时-总');
+		// console.log('开始读取文件', uri);
+		let buffer = await _fs.readFile(uri);
+		// console.timeEnd('读取文件耗时1');
+		// console.log('读取buffer完成',checkEncoding);
+		if (checkEncoding) {
+			return encoding(buffer);
+		} else {
+			return buffer.toString();
+		}
+	} finally {
+		// console.timeEnd('读取文件耗时-总');
 	}
 }
 /**

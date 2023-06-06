@@ -111,6 +111,11 @@
 					"default": 3000,
 					"description": "自动切换到下一章之后,等待多少时间开始滚屏(ms)"
 				},
+				"novelLook.readSetting.titleCenter": {
+					"type": "boolean",
+					"default": false,
+					"description": "title居中"
+				},
 				"novelLook.theme.use": {
 					"type": "number",
 					"default": 0,
@@ -149,7 +154,7 @@
 							},
 							"btnActive": {
 								"type": "string",
-								"default": "#000",
+								"default": "#222",
 								"title": "按钮悬浮或聚焦时的背景颜色"
 							},
 							"btnActiveBorder": {
@@ -178,17 +183,7 @@
 							"btnActiveBorder"
 						]
 					},
-					"default": [
-						{
-							"name": "主题名称",
-							"bg": "#000",
-							"color": "#FFF",
-							"btnBg": "#000",
-							"btnColor": "#FFF",
-							"btnActive": "#000",
-							"btnActiveBorder": "#FFF"
-						}
-					],
+					"default": [],
 					"scope": "application",
 					"description": "用户自定义主题,格式\n{name:'名称',bg:'#000', color:'#000', btnBg:'#000', btnColor:'#000', btnActive:'#000', btnActiveBorder:'#000',navBg?:'#000',textColor?:'#000',}[]"
 				}

@@ -24,6 +24,7 @@ export function initEl() {
 		},
 		nav: document.querySelector('.nav'),
 		navTitle: document.querySelector('.nav .title'),
+		navTime: document.querySelector('.nav .time'),
 		sideNextBtns: document.querySelectorAll('.function-box .side-next-btn'),
 		sheet: document.querySelector('style'),
 	};
@@ -89,9 +90,29 @@ export function* ElementParentIterator(el) {
 	}
 	return null;
 }
+/**
+ * @desc: 格式化数字
+ * @return: n > 10 [eg: 12] => 12 | n < 10 [eg: 3] => '03'
+ * @param {string|number} n
+ */
+export function formatNumber(v) {
+	const num = v.toString();
+	return num[1] ? num : '0' + num;
+}
+
+export function updateHeaderTime() {
+	// console.log('el?.navTime',el?.navTime);
+	if (!el?.navTime) return;
+
+	const oldTime = el?.navTime?.innerText;
+	const date = new Date();
+	const newTime = `${formatNumber(date.getHours() % 12)}:${formatNumber(date.getMinutes())}`;
+	if (newTime !== oldTime) el.navTime.innerText = newTime;
+}
 
 window.addEventListener('DOMContentLoaded', function () {
 	initEl();
+	// 时间显示
 });
 
 /**
@@ -112,6 +133,22 @@ export function dispatchCustomEvent(eventName, eventProperty = {}) {
 		}
 	}
 	window.dispatchEvent(event);
+}
+
+/**
+ * 迭代元素的所有父元素
+ * @param {String} selector selectorText
+ * @returns {CSSStyleRule|null} 父元素
+ */
+export function getStyleRule(selector) {
+	let rules = el?.sheet?.sheet?.cssRules;
+	// if (!rules) return null;
+	for (var i = 0; i < rules?.length; i++) {
+		if (rules[i].selectorText === selector) {
+			return rules[i];
+		}
+	}
+	return null;
 }
 
 window.onresize = function (e) {

@@ -20,6 +20,8 @@ import {
 	scrollScreen,
 	nextPageOrChapter,
 	dispatchCustomEvent,
+	getStyleRule,
+	updateHeaderTime,
 } from './dom.js';
 import { autoScrollScreen } from './scroll.js';
 import './contextmenu.js';
@@ -44,9 +46,22 @@ let fn = {
 				text-indent: ${data.lineIndent}em;
 				font-size:1rem;
 		}`);
-		document.documentElement.style.fontSize = data.rootFontSize * data.zoom + 'px';
+		// 动态注入一些css变量
+		sheetEl.sheet.insertRule(`:root:root{
+			--rootFontSize: ${data.rootFontSize}px;
+			--zoom: ${data.zoom};
+		}`);
+		// console.log('setting', sheetEl.sheet);
+		// document.documentElement.style.fontSize = data.rootFontSize * data.zoom + 'px';
 		this.changeTheme(data.theme.use);
 		document.body.classList.add('init');
+		if (data.titleCenter) {
+
+		} else {
+			setInterval(updateHeaderTime, 1000);
+			updateHeaderTime();
+			el.nav.classList.add('left')
+		}
 		// window.focus()
 	},
 	/*显示章节*/
@@ -55,7 +70,7 @@ let fn = {
 		if (data.title === (cache.showChapter && cache.showChapter.title)) {
 			return;
 		}
-		console.warn('开始显示章节', data.title, cache, data);
+		// console.warn('开始显示章节', data.title, cache, data);
 		setCache('showChapter', data);
 		render(data.title, data.list);
 		// 初次渲染后,renderId 是1
@@ -78,6 +93,7 @@ let fn = {
 	changeTheme(index) {
 		cache.setting.theme.use = index;
 		const sheet = el.sheet.sheet;
+		const rule = getStyleRule('body.body');
 		console.log({
 			sheet,
 			themeSheetRuleIndex,
@@ -85,22 +101,20 @@ let fn = {
 			renderId,
 		});
 		if (!isFirstRender()) showContextMenu();
+
 		// 使用系统默认主题
 		if (index !== 0) {
 			const themes = cache.setting.theme.custom;
 			const theme = themes[index - 1];
-			console.log('使用主题', theme);
-
+			// console.log('使用主题', theme);
 			const ruleContent = getThemeStyleRule(theme);
-			console.log(ruleContent);
 			// 使用自定义主题
-			if (themeSheetRuleIndex !== undefined) sheet.cssRules[themeSheetRuleIndex].style = ruleContent;
+			if (rule) rule.style = ruleContent;
 			else {
 				themeSheetRuleIndex = sheet.insertRule(`body.body{${ruleContent}}`);
-				console.log(sheet.cssRules[themeSheetRuleIndex]);
 			}
-		} else if (themeSheetRuleIndex !== undefined) {
-			sheet.cssRules[themeSheetRuleIndex].style = '';
+		} else if (rule) {
+			rule.style = '';
 		}
 	},
 };
@@ -134,7 +148,7 @@ function render(title, lines) {
 	el.content.style.display = 'block';
 	// 修改渲染id,告诉其他人我重新渲染了
 	renderId++;
-	console.log('子页面render', renderId);
+	// console.log('子页面render', renderId);
 }
 
 /**
@@ -247,8 +261,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		scrollTimer = setTimeout(scrollAntiShake, 50);
 	});
 	function scrollAntiShake() {
-		console.log('scroll=====');
-
+		// console.log('scroll=====');
 		if (isPageEnd()) {
 			el.sideNextBtns.forEach(e => e.classList.add('right'));
 		} else {

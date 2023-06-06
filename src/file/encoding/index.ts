@@ -33,13 +33,15 @@ export default function (buffer: Uint8Array): string {
 	后期有需要的话,很有必要单独拿出来做判断
 	*/
 
-	console.time('判断编码耗时');
+	// console.time('判断编码耗时');
 	let t = chardet.detect(buffer.slice(0, 1024 * 128)) || 'UTF-8';
-	console.timeEnd('判断编码耗时');
+	// console.timeEnd('判断编码耗时');
 	// console.warn(t);
+	// console.time('转换编码耗时');
 	// 将buffer转换为指定编码格式
 	let s = iconv.decode(Buffer.from(buffer), t);
 	// console.log(s.substring(0, 50));
+	// console.timeEnd('转换编码耗时')
 	return s;
 	// resolve(s);
 }

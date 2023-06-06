@@ -24,13 +24,16 @@ let curChapterTitle = '';
 let titleTimer: NodeJS.Timeout;
 
 function updateTitle() {
-	console.log('updateTitle', isZenMode, !!panel);
-	if (!panel) return;
-	if (isZenMode) {
-		panel.title = `${formatTime()} ${curChapterTitle}`;
-	} else if (panel?.title !== '阅读') {
-		panel!.title = '阅读';
-	}
+	// // console.log('updateTitle', isZenMode, !!panel);
+	// if (!panel) return;
+	// if (isZenMode) {
+	// 	panel.title = `${formatTime()} ${curChapterTitle}`;
+	// 	return;
+	// }
+	// if (panel?.title !== '阅读') {
+	// 	panel!.title = '阅读';
+	// }
+	clearInterval(titleTimer);
 }
 
 /**
@@ -94,20 +97,35 @@ async function initWebView(title: string, list: string[]) {
 	scroll.set(data.key, data.value);
 
 	let readSetting = config.get('readSetting', {});
-	let themeSetting = config.get('theme', {});
+	let themeSetting = config.get('theme', {
+		use: 0,
+		custom: [] as Record<string, string>[],
+	});
+	if (themeSetting) {
+		themeSetting.custom = [
+			{
+				name: '绿色(插件内置)',
+				bg: '#cbd9c0',
+				color: '#303b33',
+				btnBg: '#cbd9c0',
+				btnColor: '#303b33',
+				btnActive: 'rgba(0, 0, 0, 0.2)',
+				btnActiveBorder: '#303b33',
+			},
+			...themeSetting.custom,
+		];
+	}
+	console.warn(themeSetting);
+
 	let setting = {
 		...readSetting,
 		theme: themeSetting,
 	};
-	console.log('setting', setting);
+	// console.log('setting', setting);
 	await postMsg('showChapter', { title, list });
 	await postMsg('readScroll', scroll.get('catch_' + title) || 0);
 	await postMsg('setting', setting);
 
-	//FIXME:
-
-	// console.warn("initWebView",saveScroll);
-	// postMsg("readScroll", saveScroll);
 }
 
 /**
@@ -136,7 +154,7 @@ async function getWebviewContent(uri: vscode.Uri) {
  * @param {Object} data  数据
  */
 async function postMsg(type: string, data: any) {
-	console.log('postMsg---', type, data);
+	//console.log('postMsg---', type, data);
 	// 当钩子用了
 	if (type === 'showChapter') curChapterTitle = data.title;
 	try {
@@ -225,16 +243,14 @@ let fn: {
 		setState('saveScroll', data);
 	},
 	/** 切换禅模式 */
-	toggleZenMode({ onlyNotice = false }) {
-		if (onlyNotice) {
+	toggleZenMode({ onlyNotice = false } = {}) {
+		if (!onlyNotice) {
 			vscode.commands.executeCommand('workbench.action.toggleZenMode');
 		}
 		console.warn('toggleZenMode');
 		isZenMode = !isZenMode;
 		if (isZenMode) {
 			titleTimer = setInterval(updateTitle, 1000);
-		} else {
-			clearInterval(titleTimer);
 		}
 	},
 	/**
