@@ -291,14 +291,13 @@ type Message<T extends MessageTypes> = {
 async function onMessage<T extends MessageTypes>(e: Message<T>) {
 	// TODO: 日志
 	console.log('收到webView message:  ', e);
-	// type c = MessageHandle[T];
-	// type cc = c extends MessageHandle ? 1 : 0;
-	// type ccc = cc extends 1 ? 'a' : 'b';
-	// type d = Parameters<c>;
-	fn[e.type]?.(e.data);
+
+	// FIXME: 目前水平有限,解决不了这么复杂的类型推断问题,暂时先never吧
+	// 不过话说这玩意和any区别也没多大了
+	fn[e.type]?.(e.data as never);
 }
 
-onMessage({ type: 'zoom', data: '1' });
+// onMessage({ type: 'zoom', data: '1' });
 
 export async function closeWebView() {
 	if (panel) {
