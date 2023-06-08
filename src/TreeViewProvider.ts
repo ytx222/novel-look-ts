@@ -206,7 +206,15 @@ class Book extends vscode.TreeItem {
 		this.readList[i] = 1; //数据转化为json,所以1应该比true更合适
 		setState('book_' + this.label, this.readList);
 		// console.warn(this.readList);
-		setSync('book_' + this.label);
+		setSync(
+			...[
+				// 设置需要同步的缓存key
+				'book_' + this.label,
+				'lastOpenChapter',
+				'isShowReadChapter',
+				'saveScroll',
+			]
+		);
 	}
 
 	clearReadChapter() {

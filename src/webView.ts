@@ -12,10 +12,6 @@ type saveScrollItem = [string, number];
 let content: vscode.ExtensionContext;
 
 let panel: vscode.WebviewPanel | null = null;
-type messageType = {
-	type: string;
-	data: any;
-};
 
 // TODO: 暂时放这里
 let isZenMode = false;
@@ -125,7 +121,6 @@ async function initWebView(title: string, list: string[]) {
 	await postMsg('showChapter', { title, list });
 	await postMsg('readScroll', scroll.get('catch_' + title) || 0);
 	await postMsg('setting', setting);
-
 }
 
 /**
@@ -210,9 +205,10 @@ type scrollInfo = {
 	key: string;
 	value: number;
 };
-let fn: {
-	[key in string]: Function;
-} = {
+// : {
+// [key in string]: Function;
+// }
+export let fn = {
 	chapterToggle(type: chapterToggleType) {
 		console.log('chapterToggle执行', type);
 		try {
@@ -233,12 +229,21 @@ let fn: {
 		config.set('readSetting.zoom', v);
 	},
 	/**
+	 * 更新阅读设置
+	 * @param setting
+	 */
+	updateReadSetting(setting: Record<string, number | string>) {
+		let readSetting = config.get('readSetting', {});
+		let newSetting = Object.assign(readSetting, setting);
+		config.set('readSetting', newSetting);
+	},
+
+	/**
 	 * 保存滚动高度
 	 */
 	saveScroll(data: scrollInfo) {
 		// key之前是章名,现在改成书名,因为在一本书中切换章节没有意义保存
 		// scroll.set(data.key, data.value);
-
 		scroll.set(data.key, data.value);
 		setState('saveScroll', data);
 	},
@@ -275,11 +280,26 @@ let fn: {
 		// setState('saveScroll', data);
 	},
 };
-async function onMessage(e: messageType) {
+
+type MessageHandle = typeof fn;
+
+export type MessageTypes = keyof MessageHandle;
+type Message<T extends MessageTypes> = {
+	type: T;
+	data: Parameters<MessageHandle[T]>[0];
+};
+async function onMessage<T extends MessageTypes>(e: Message<T>) {
 	// TODO: 日志
 	console.log('收到webView message:  ', e);
+	// type c = MessageHandle[T];
+	// type cc = c extends MessageHandle ? 1 : 0;
+	// type ccc = cc extends 1 ? 'a' : 'b';
+	// type d = Parameters<c>;
 	fn[e.type]?.(e.data);
 }
+
+onMessage({ type: 'zoom', data: '1' });
+
 export async function closeWebView() {
 	if (panel) {
 		panel.dispose();

@@ -119,7 +119,7 @@
 				"novelLook.theme.use": {
 					"type": "number",
 					"default": 0,
-					"scope": "application",
+					"scope": "machine",
 					"description": "使用几号主题,0为系统默认,其他的就是设置中的"
 				},
 				"novelLook.theme.custom": {
