@@ -1,5 +1,6 @@
 import { ElementParentIterator } from './dom.js';
-import { cache, nextChapter, postMsg } from './vscodeApi.js';
+import { cache, nextChapter, postMsg, setCache } from './vscodeApi.js';
+import { changeTheme } from './webView.js';
 
 let isShow = false;
 /**
@@ -13,6 +14,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		customThemeContainer: document.getElementById('customThemeContainer'),
 		themeContainer: document.getElementById('themeContainer'),
 		zenModeButton: document.querySelector('.contextmenu-item.zen-mode'),
+		systemTheme: this.themeContainer.querySelector('.system-theme'),
 	};
 	// document.querySelector('.custom-contextmenu');
 
@@ -61,19 +63,26 @@ window.addEventListener('DOMContentLoaded', function () {
 	};
 
 	function renderThemeContent() {
-		let s = cache.setting?.theme?.custom
-			?.map(
-				(theme, i) => `
+		// 使用的主题的下标
+		const use = cache.setting?.theme.use - 1;
+		const themes = cache.setting?.theme?.custom || [];
+		let themeHtml = themes.map(
+			(theme, i) => `
 		<div class="contextmenu-item theme-item"
 		style="${getThemeStyleRule(theme)}"
 		data-id="${i + 1}"
 		>
-		<div class="icon ${cache.setting?.theme.use === i + 1 ? 'on' : ''}"></div>
+		<div class="icon ${use === i ? 'on' : ''}"></div>
 		${theme.name}</div>`
-			)
-			?.join('');
+		);
+		if (!~use /** use == -1 */) {
+			console.warn(el.systemTheme);
+			el.systemTheme.querySelector('.icon')?.classList.add('on');
+		} else {
+			el.systemTheme.querySelector('.icon')?.classList.remove('on');
+		}
+		let s = themeHtml?.join('');
 		el.customThemeContainer.innerHTML = s;
-		// console.log(s);
 	}
 
 	el.themeContainer.onclick = function (e) {
@@ -99,7 +108,16 @@ window.addEventListener('DOMContentLoaded', function () {
 	 */
 	function clickItem(item) {
 		let i = item.dataset.id;
-		postMsg('changeUseTheme', +i || 0);
+		const use = +i || 0;
+		postMsg('changeUseTheme', use);
+		// 更新主题
+		changeTheme(use, true);
+		// 更新menu
+		showContextMenu();
+		// 缓存数据
+		// setCache('changeTheme', { ...cache.changeTheme, use });
+		cache.setting.theme.use = use;
+		setCache('setting', cache.setting);
 	}
 
 	/**

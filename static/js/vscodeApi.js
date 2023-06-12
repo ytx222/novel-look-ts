@@ -13,6 +13,7 @@ const vscode = acquireVsCodeApi();
 export let cache = {
 	setting: {},
 	showChapter: {},
+	// theme: {},
 };
 // 方便调试
 window.cache = cache;

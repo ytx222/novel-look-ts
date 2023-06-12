@@ -262,13 +262,7 @@ export let fn = {
 	 * 更改使用的主题
 	 */
 	changeUseTheme(data: number) {
-		// key之前是章名,现在改成书名,因为在一本书中切换章节没有意义保存
-		// scroll.set(data.key, data.value);
-
-		// scroll.set(data.key, data.value);
-		// setState('saveScroll', data);
 		config.set('theme.use', data);
-		postMsg('changeTheme', data);
 	},
 	/**
 	 * 编辑主题
@@ -295,10 +289,10 @@ async function onMessage<T extends MessageTypes>(e: Message<T>) {
 	// type cc = c extends MessageHandle ? 1 : 0;
 	// type ccc = cc extends 1 ? 'a' : 'b';
 	// type d = Parameters<c>;
-	fn[e.type]?.(e.data);
+	fn[e.type]?.(e.data as never);
 }
 
-onMessage({ type: 'zoom', data: '1' });
+// onMessage({ type: 'zoom', data: '1' });
 
 export async function closeWebView() {
 	if (panel) {

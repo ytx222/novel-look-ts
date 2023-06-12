@@ -43,13 +43,17 @@ declare global {
 				use: number;
 				custom: ThemeItem[];
 			};
-			titleCenter:boolean
+			titleCenter: boolean;
 		};
 		showChapter: {
 			title: string;
 			list: string[];
 		};
 		readScroll: number;
+		// theme: {
+		// 	use: number;
+		// 	custom: ThemeItem[];
+		// };
 	}
 	type CustomEvents = 'chapterToggle' | '';
 }
