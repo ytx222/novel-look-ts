@@ -42,7 +42,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	 * @param {number} y
 	 */
 	showContextMenu = (x, y) => {
-		console.log('showContextMenu', { isShow, x });
+		console.warn('showContextMenu', { isShow, x });
 		// 如果当前ContextMenu处于显示状态,则允许通过不传递x,y(坐标)来实现重新渲染
 		if (!isShow && x !== undefined) {
 			el.contextmenu.style = `display: block;`;
@@ -58,6 +58,7 @@ window.addEventListener('DOMContentLoaded', function () {
 			isShow = true;
 		}
 		renderThemeContent();
+
 	};
 
 	function renderThemeContent() {
@@ -73,6 +74,11 @@ window.addEventListener('DOMContentLoaded', function () {
 			)
 			?.join('');
 		el.customThemeContainer.innerHTML = s;
+		if (cache.setting?.theme.use === 0) {
+			el.themeContainer.querySelector('.system-theme .icon').classList.add('on');
+		} else {
+			el.themeContainer.querySelector('.system-theme .icon').classList.remove('on');
+		}
 		// console.log(s);
 	}
 

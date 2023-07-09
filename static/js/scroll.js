@@ -155,7 +155,7 @@ export function scrollFunc(e,isScroll) {
 		// setTimeout(() => {
 		// 	console.log('滚轮事件-',isPageEnd());
 		// }, 50);
-		// scrollEndTimer = setTimeout(saveScroll.bind(null, undefined, true, false), 300);
+		scrollEndTimer = setTimeout(saveScroll, 300);
 	}
 }
 

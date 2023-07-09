@@ -56,11 +56,10 @@ let fn = {
 		this.changeTheme(data.theme.use);
 		document.body.classList.add('init');
 		if (data.titleCenter) {
-
 		} else {
 			setInterval(updateHeaderTime, 1000);
 			updateHeaderTime();
-			el.nav.classList.add('left')
+			el.nav.classList.add('left');
 		}
 		// window.focus()
 	},
@@ -77,6 +76,7 @@ let fn = {
 		if (!isFirstRender()) {
 			setScroll(0);
 		}
+		renderId++;
 	},
 	// 只会被插件层调用
 	readScroll(data) {
@@ -91,6 +91,7 @@ let fn = {
 		saveScroll(data, false);
 	},
 	changeTheme(index) {
+		console.warn('changeTheme', index);
 		cache.setting.theme.use = index;
 		const sheet = el.sheet.sheet;
 		const rule = getStyleRule(':root:root:root');
@@ -100,6 +101,7 @@ let fn = {
 			index,
 			renderId,
 		});
+		console.log(isFirstRender(), renderId);
 		if (!isFirstRender()) showContextMenu();
 
 		// 使用系统默认主题
@@ -250,9 +252,9 @@ window.addEventListener('DOMContentLoaded', function () {
 	document.querySelector('.nav button.next').onclick = nextChapter;
 	el.content.ondblclick = autoScrollScreen;
 	el.sideNextBtns.forEach(e => {
-		e.onclick = nextPageOrChapter
+		e.onclick = nextPageOrChapter;
 		// 暂时继续使用局部滚动
-		e.onmousewheel = (e)=>scrollFunc(e,true)
+		e.onmousewheel = e => scrollFunc(e, true);
 	});
 
 	/**

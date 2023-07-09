@@ -40,6 +40,7 @@ export function setCache(key, value) {
  * @param {boolean} isPostMsg
  */
 export function saveScroll(scroll = getScroll(), isPostMsg = true) {
+	console.log({ scroll, isPostMsg });
 	// 如果滚动高度未变化,则无意义
 	if (scroll === cache.readScroll) return;
 	// TODO: 未来保存更多的信息,如段落index,pageWidth,以实现页面宽度变化时的自适应
