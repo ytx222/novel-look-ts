@@ -23,7 +23,7 @@ import {
 	getStyleRule,
 	updateHeaderTime,
 } from './dom.js';
-import { autoScrollScreen } from './scroll.js';
+import { autoScrollScreen, scrollFunc } from './scroll.js';
 import './contextmenu.js';
 import { getThemeStyleRule, showContextMenu } from './contextmenu.js';
 /** 每次重新渲染(调用render方法)加1 */
@@ -93,7 +93,7 @@ let fn = {
 	changeTheme(index) {
 		cache.setting.theme.use = index;
 		const sheet = el.sheet.sheet;
-		const rule = getStyleRule('body.body');
+		const rule = getStyleRule(':root:root:root');
 		console.log({
 			sheet,
 			themeSheetRuleIndex,
@@ -111,7 +111,7 @@ let fn = {
 			// 使用自定义主题
 			if (rule) rule.style = ruleContent;
 			else {
-				themeSheetRuleIndex = sheet.insertRule(`body.body{${ruleContent}}`);
+				themeSheetRuleIndex = sheet.insertRule(`:root:root:root{${ruleContent}}`);
 			}
 		} else if (rule) {
 			rule.style = '';
@@ -249,7 +249,11 @@ window.addEventListener('DOMContentLoaded', function () {
 	document.querySelector('.nav button.prev').onclick = prevChapter;
 	document.querySelector('.nav button.next').onclick = nextChapter;
 	el.content.ondblclick = autoScrollScreen;
-	el.sideNextBtns.forEach(e => (e.onclick = nextPageOrChapter));
+	el.sideNextBtns.forEach(e => {
+		e.onclick = nextPageOrChapter
+		// 暂时继续使用局部滚动
+		e.onmousewheel = (e)=>scrollFunc(e,true)
+	});
 
 	/**
 	 * 这个东西,放哪里合适呢,

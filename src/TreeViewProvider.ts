@@ -212,7 +212,7 @@ class Book extends vscode.TreeItem {
 				'book_' + this.label,
 				'lastOpenChapter',
 				'isShowReadChapter',
-				'saveScroll',
+				// 'saveScroll',
 			]
 		);
 	}

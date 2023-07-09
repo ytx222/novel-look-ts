@@ -40,6 +40,11 @@ export default function (buffer: Uint8Array): string {
 	// console.time('转换编码耗时');
 	// 将buffer转换为指定编码格式
 	let s = iconv.decode(Buffer.from(buffer), t);
+
+	// 转为UTF-8
+	// s = iconv.encode(s, 'UTF-8').toString();
+	// console.log(s);
+
 	// console.log(s.substring(0, 50));
 	// console.timeEnd('转换编码耗时')
 	return s;

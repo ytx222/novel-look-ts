@@ -48,7 +48,8 @@ export function autoScrollScreen() {
 // 问题是每多少时间向下移动1
 // 这个时间如果高于10,则可能会产生滚动一卡一卡的感觉(视觉效果)
 // 以人眼24帧为标准 72, 96, 120, 144, 168, 192
-function scroll(v = 1) {
+function scroll (v = 1) {
+	console.log('scroll');
 	// 检查更新尺寸信息,仅在初始化和重新渲染后才更新尺寸信息
 	if (lastRenderId !== renderId) {
 		max = el.main.scrollHeight;
@@ -124,8 +125,9 @@ function showZoom(size, zoom) {
 	zoomTimer = setTimeout(hideZoom, 1500);
 }
 //滚动滑轮触发scrollFunc方法
-document.onmousewheel = scrollFunc;
-function scrollFunc(e) {
+document.onmousewheel = scrollFunc
+export function scrollFunc(e,isScroll) {
+	console.log('scrollFunc',e,{isScroll});
 	// 如果是ctrl+滚轮,则放大或缩小显示
 	if (e.ctrlKey) {
 		// 先计算出新的缩放比例
@@ -140,13 +142,20 @@ function scrollFunc(e) {
 		// 如果处于自动滚屏状态,需要用这个进行滚屏,以
 		scroll(e.wheelDelta * -1);
 	} else {
+		if (isScroll) {
+
+			scroll(e.wheelDelta * -1);
+			// el.main.scrollTo({top:el.main.scrollTop+e.wheelDelta * -1,behavior:'smooth' })
+			e.preventDefault();
+			e.stopPropagation();
+		}
 		// 记录当前滚动高度,并存储
 		// 这里的防抖,其实可以,但是没有太大的必要,因为性能损耗应该也没多少
 		clearTimeout(scrollEndTimer);
 		// setTimeout(() => {
 		// 	console.log('滚轮事件-',isPageEnd());
 		// }, 50);
-		scrollEndTimer = setTimeout(saveScroll.bind(null, undefined, true, false), 300);
+		// scrollEndTimer = setTimeout(saveScroll.bind(null, undefined, true, false), 300);
 	}
 }
 

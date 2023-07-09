@@ -1,5 +1,4 @@
 .vscodeDefault {
-	font-size: 22px;
 	--vscode-font-family: 'Segoe WPC', 'Segoe UI', sans-serif;
 	--vscode-font-weight: normal;
 	--vscode-font-size: 13px;
@@ -550,6 +549,7 @@
 	--vscode-gitDecoration-stageDeletedResourceForeground: #c74e39;
 	--vscode-gitDecoration-conflictingResourceForeground: #e4676b;
 	--vscode-gitDecoration-submoduleResourceForeground: #8db9e2;
+	font-size: 22px;
 }
 :root {
 	--vscode-badge-background: #75715e;
@@ -595,14 +595,22 @@
 html {
 	font-size: 16px;
 	font-size: calc(var(--rootFontSize) * var(--zoom));
+	background: var(--bg);
 }
+/* ::-webkit-scrollbar-thumb{
+	background: var(--color);
+	opacity: 0.2;
+}
+::-webkit-scrollbar{
+	background: var(--bg);
+} */
 body {
 	display: none;
 	padding: 0;
 	margin: 0;
-	flex-direction: column;
-	background: var(--bg);
 	color: var(--color);
+	/* background: var(--bg); */
+	flex-direction: column;
 }
 body.init {
 	display: flex;
@@ -650,65 +658,65 @@ button:active,
 }
 
 .after-shadow::after {
-	display: block;
-	content: ' ';
-	box-shadow: 0px 0px 0px var(--shadow-size, 2px) var(--color) inset;
-	opacity: 0.5;
 	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
 	width: 100%;
 	height: 100%;
-	left: 0;
-	top: 0;
+	content: ' ';
+	opacity: 0.5;
+	box-shadow: 0px 0px 0px var(--shadow-size, 2px) var(--color) inset;
 }
 
 /********************
  *	   业务逻辑
  ********************/
 .nav {
+	position: fixed;
+	width: 100%;
+	top: 0;
+	left: 0;
 	display: flex;
 	height: var(--navHeight);
+	font-size: calc(var(--herderSize) * 0.7);
 	background: var(--navBg);
 	flex: 0 0 auto;
-	font-size: calc(var(--herderSize) * 0.7);
-
-	background: calc(var(--color) + '55');
+	/* background: calc(var(--color) + '55'); */
 }
 .nav::after {
-	content: ' ';
-	display: block;
 	position: absolute;
+	top: 0;
+	left: 0;
 	z-index: -1;
-	box-shadow: var(--color) 0px 4px 6px -1px;
-	opacity: 0.15;
+	display: block;
 	width: 100%;
 	height: var(--navHeight);
-	left: 0;
-	top: 0;
+	content: ' ';
+	opacity: 0.15;
+	box-shadow: var(--color) 0px 4px 6px -1px;
 }
 .nav button {
-	/* width: calc(var(--herderSize) * 4); */
 	width: calc(var(--herderSize) * 3.75);
 	height: 100%;
+	font-size: inherit;
 	background: transparent;
 	border-color: transparent;
 	border-radius: 0;
 	flex: 0 0 auto;
-	font-size: inherit;
 }
 
 .nav .content-container {
 	position: relative;
-	flex: 1 0 auto;
 	height: 100%;
-	/* justify-content: flex-start; */
-	/* padding-left: var(--herderSize); */
+	flex: 1 0 auto;
 	order: 5;
 }
 .nav .content-container .title {
+	width: initial;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	width: initial;
 }
 
 .nav .content-container .time {
@@ -730,15 +738,15 @@ button:active,
 	user-select: none;
 }
 .nav .content-container .zoom {
-	display: none;
-	/* font-size: 0.9rem; */
-	color: var(--color);
-	opacity: 1;
-	transition: opacity 300ms;
-	background: var(--navBg);
 	position: relative;
+	display: none;
 	width: calc(var(--herderSize) * 7);
 	height: calc(var(--herderSize) * 1.3 + 4px);
+	/* font-size: 0.9rem; */
+	color: var(--color);
+	background: var(--navBg);
+	opacity: 1;
+	transition: opacity 300ms;
 }
 
 .nav .content-container .zoom::after {
@@ -763,10 +771,9 @@ button:active,
 .main {
 	display: flex;
 	width: 100%;
-	height: calc(100vh - var(--navHeight));
 	max-height: calc(100vh - var(--navHeight));
 	padding-top: calc(var(--navHeight) * 0.3);
-	margin: auto;
+	margin:  var(--navHeight) auto 0;
 	overflow-y: auto;
 	box-sizing: border-box;
 	flex: 1;
@@ -781,14 +788,15 @@ button:active,
 .header .title {
 	font-size: 1.6rem;
 	text-align: center;
-	display: none;
+	/* display: none; */
 }
 .content-box {
 	/* padding-top: 10px; */
 }
 .content {
-	flex: 1 1 auto;
 	color: var(--textColor);
+	flex: 1 1 auto;
+	scroll-behavior:smooth;
 }
 .content div {
 	/* FIXME: 这个距离,如果修改成2rem 则无法保持当前滚动位置,需要解决办法 */
@@ -819,17 +827,22 @@ button:active,
 }
 
 .side-next-btn {
-	position: fixed;
-	right: 20px;
-	top: 50%;
 	--size: min(1.6rem, 6.4vw);
-	border-radius: var(--size);
+	position: fixed;
+	top: 50%;
+	right: 20px;
 	width: var(--size);
 	height: var(--size);
 	margin-top: calc(var(--size) * -0.54);
-	border: max(calc(var(--size) * 0.06), 2px) solid;
+
+	overflow: hidden;
+	pointer-events:stroke;
 	background: var(--bg);
+	border: max(calc(var(--size) * 0.06), 2px) solid;
+	border-radius: var(--size);
 	transition: transform 300ms;
+	scroll-snap-type: none;
+	scroll-behavior: smooth;
 }
 .side-next-btn svg {
 	width: 80%;
@@ -843,12 +856,12 @@ button:active,
 }
 
 .side-next-btn.btn2 {
+	top: initial;
 	/* display: none; */
 	right: inherit;
-	top: initial;
+	bottom: 90px;
 	/* 家里电脑 */
 	left: 136px;
-	bottom: 90px;
 	/* 公司电脑 */
 	/* left: 460px;
 	bottom: 343px;
@@ -860,32 +873,32 @@ button:active,
 }
 
 .custom-contextmenu {
+	/* border: ; */
+	--radius: 0.2rem;
+	--shadow-size: 5px;
 	position: fixed;
 	/* left: 30vw;
 	top: 40vw; */
 	display: none;
-	background: var(--bg);
 	width: 6rem;
-	/* border: ; */
-	--radius: 0.2rem;
-	border-radius: var(--radius);
-	--shadow-size: 5px;
 	/* border: max(1px, 0.06rem) solid var(--color); */
 	/* --color:#000;
 	--color: inherit; */
 	font-size: 0.45rem;
+	background: var(--bg);
+	border-radius: var(--radius);
 	/* overflow: hidden; */
 	box-shadow: 0px 0px 6px 2px var(--bg);
 	/* overflow: hidden; */
 }
 .custom-contextmenu-bg {
-	box-shadow: inset 0px 0px max(1px, 0.06rem) 0px var(--color);
 	position: absolute;
+	z-index: 30;
 	width: 100%;
 	height: 100%;
-	z-index: 30;
-	border-radius: var(--radius);
 	pointer-events: none;
+	border-radius: var(--radius);
+	box-shadow: inset 0px 0px max(1px, 0.06rem) 0px var(--color);
 }
 /* .custom-contextmenu::after {
 	border-radius: inherit;
@@ -897,16 +910,16 @@ button:active,
 } */
 
 .contextmenu-item {
+	position: relative;
+	padding: 0.2rem 0.8rem;
 	color: #000;
 	color: inherit;
-	padding: 0.2rem 0.8rem;
-	position: relative;
 	user-select: none;
 }
 .contextmenu-item.title {
 	padding: 0.1rem 0.3rem;
-	font-size: 0.36rem;
 	margin: -1px;
+	font-size: 0.36rem;
 }
 .contextmenu-item.title:first-child .after {
 	border-top-right-radius: calc(var(--radius) * 0.8);
@@ -933,24 +946,24 @@ button:active,
 	content: none;
 }
 .contextmenu-item:hover::after {
-	content: ' ';
 
 	position: absolute;
+	top: 0;
+	left: 0;
 	width: 100%;
 	height: 100%;
 	color: #000;
-	background: var(--color);
-	left: 0;
-	top: 0;
-	opacity: 0.1;
 	pointer-events: none;
+	background: var(--color);
+	content: ' ';
+	opacity: 0.1;
 }
 
 .theme-item {
-	padding-left: 1.1rem;
-	background: var(--bg);
-	color: var(--textColor);
 	display: flex;
+	padding-left: 1.1rem;
+	color: var(--textColor);
+	background: var(--bg);
 	align-items: center;
 }
 
@@ -961,35 +974,35 @@ button:active,
 }
 .theme-item .icon {
 	--iconSize: 0.5rem;
+	position: absolute;
+	left: 0.3rem;
+	display: flex;
 	width: var(--iconSize);
 	height: var(--iconSize);
-	position: absolute;
+	color: var(--bg);
 	/* background: var(--bg);
 	border: 0.16rem solid var(--color); */
 	background: var(--color);
-	color: var(--bg);
-	left: 0.3rem;
 	border-radius: var(--iconSize);
 	box-sizing: border-box;
-	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 .theme-item .icon.on::after {
-	display: block;
-	content: ' ';
 
 	/* 1.60倍 */
 	--size: 25%;
+	display: block;
 	width: var(--size);
 	height: calc(var(--size) * 1.7);
 	border: 0.06rem solid;
+	border-top: 0;
+
+	border-left: 0;
+	content: ' ';
 	transform: translate(-10%, -10%);
 	transform: rotate(45deg);
 	transform: rotate(45deg) translate(-18%, -8%);
-
-	border-left: 0;
-	border-top: 0;
 }
 
 .contextmenu-item-input-label {
@@ -998,13 +1011,13 @@ button:active,
 }
 
 .contextmenu-item input {
-	border: none;
-	outline: none;
-	background: var(--btnBg);
-	color: var(--color);
 	min-width: 3.6em;
+	color: var(--color);
 
 	text-align: center;
+	background: var(--btnBg);
+	border: none;
+	outline: none;
 }
 
 .contextmenu-item label {

@@ -60,7 +60,13 @@ export function scrollScreen(direction = 1, event) {
 	let cur = getScroll();
 	let h = document.documentElement.clientHeight - el.nav.clientHeight - 50 * (cache.setting?.zoom || 1);
 	const newH = cur + h * direction;
-	setScroll(newH);
+	// setScroll(newH);
+	el.main.scrollTo({
+		left: 0,
+		top: newH,
+		// behavior:'auto'
+		// behavior: 'smooth',
+	});
 	saveScroll(newH);
 }
 
@@ -113,6 +119,7 @@ export function updateHeaderTime() {
 window.addEventListener('DOMContentLoaded', function () {
 	initEl();
 	// 时间显示
+
 });
 
 /**

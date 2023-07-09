@@ -291,7 +291,6 @@ type Message<T extends MessageTypes> = {
 async function onMessage<T extends MessageTypes>(e: Message<T>) {
 	// TODO: 日志
 	console.log('收到webView message:  ', e);
-
 	// FIXME: 目前水平有限,解决不了这么复杂的类型推断问题,暂时先never吧
 	// 不过话说这玩意和any区别也没多大了
 	fn[e.type]?.(e.data as never);
