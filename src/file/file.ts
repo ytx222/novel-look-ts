@@ -62,7 +62,7 @@ export async function getWebViewHtml() {
 		await copyDir(dirSrc, targetDirSrc);
 	}
 
-	return await util.readFile(file);
+	return (await util.readFile(file)) as string;
 }
 
 async function refreshStaticFile() {
@@ -95,7 +95,7 @@ async function copyDir(src: vscode.Uri, dist: vscode.Uri) {
 		// 目标文件的路径,可能是文件名(index.html),或者相对地址(/js/a.js)
 		const filePath = files[i].path.replace(src.path, '');
 		let toFileUrl = vscode.Uri.joinPath(dist, filePath);
-		let s = await util.readFile(files[i]);
+		let s = await util.readFile(files[i], { binary: true });
 		// console.log(s);
 		await util.writeFile(toFileUrl, s, true);
 	}

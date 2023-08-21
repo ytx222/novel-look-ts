@@ -252,9 +252,13 @@ window.addEventListener('DOMContentLoaded', function () {
 	document.querySelector('.nav button.next').onclick = nextChapter;
 	el.content.ondblclick = autoScrollScreen;
 	el.sideNextBtns.forEach(e => {
+		// TODO: 增加防抖???
 		e.onclick = nextPageOrChapter;
 		// 暂时继续使用局部滚动
 		e.onmousewheel = e => scrollFunc(e, true);
+		// 拦截双击
+		e.ondblclick = e => e.stopPropagation();
+
 	});
 
 	/**

@@ -48,7 +48,7 @@ export function autoScrollScreen() {
 // 问题是每多少时间向下移动1
 // 这个时间如果高于10,则可能会产生滚动一卡一卡的感觉(视觉效果)
 // 以人眼24帧为标准 72, 96, 120, 144, 168, 192
-function scroll (v = 1) {
+function scroll(v = 1) {
 	console.log('scroll');
 	// 检查更新尺寸信息,仅在初始化和重新渲染后才更新尺寸信息
 	if (lastRenderId !== renderId) {
@@ -89,7 +89,7 @@ function scrollRestart() {
 }
 window.addEventListener('chapterToggle', function () {
 	if (scrollType !== 0) {
-		console.warn('检测到章节切换时处于等待下一章状态=======');
+		console.warn('检测到章节切换时处于等待下一章状态=======', scrollType);
 		clearInterval(timer.scroll);
 		clearTimeout(timer.toggle);
 		scrollRestart();
@@ -125,9 +125,9 @@ function showZoom(size, zoom) {
 	zoomTimer = setTimeout(hideZoom, 1500);
 }
 //滚动滑轮触发scrollFunc方法
-document.onmousewheel = scrollFunc
-export function scrollFunc(e,isScroll) {
-	console.log('scrollFunc',e,{isScroll});
+document.onmousewheel = scrollFunc;
+export function scrollFunc(e, isScroll) {
+	console.log('scrollFunc', e, isScroll);
 	// 如果是ctrl+滚轮,则放大或缩小显示
 	if (e.ctrlKey) {
 		// 先计算出新的缩放比例
@@ -143,9 +143,12 @@ export function scrollFunc(e,isScroll) {
 		scroll(e.wheelDelta * -1);
 	} else {
 		if (isScroll) {
-
-			scroll(e.wheelDelta * -1);
-			// el.main.scrollTo({top:el.main.scrollTop+e.wheelDelta * -1,behavior:'smooth' })
+			// scroll(e.wheelDelta * -1);
+			// el.main.scrollTo({
+			// 	top: el.main.scrollTop + e.wheelDelta * -1 * 0.666,
+			// 	// behavior: 'smooth',
+			// });
+			setScroll(el.main.scrollTop + e.wheelDelta * -1 * 0.8);
 			e.preventDefault();
 			e.stopPropagation();
 		}

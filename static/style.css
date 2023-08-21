@@ -607,10 +607,13 @@ html {
 body {
 	display: none;
 	padding: 0;
-	margin: 0;
+	margin: 0px;
 	color: var(--color);
 	/* background: var(--bg); */
 	flex-direction: column;
+	cursor: default;
+	cursor:url('./cursor.svg'),url('./fish.png');
+
 }
 body.init {
 	display: flex;

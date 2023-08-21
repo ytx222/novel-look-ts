@@ -190,7 +190,7 @@ class Book extends vscode.TreeItem {
 			}
 			// console.time();
 			//TODO:
-			this.txt = await file.readFile(vscode.Uri.file(this.fullPath), true);
+			this.txt = await file.readFile(vscode.Uri.file(this.fullPath), { checkEncoding: true }) as string;
 			// console.timeEnd();
 		} catch (error) {
 			console.error(error);

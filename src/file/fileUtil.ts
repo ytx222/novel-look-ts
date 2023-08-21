@@ -91,13 +91,14 @@ export async function isDir(uri: vscode.Uri): Promise<dir[] | false> {
  * @param checkEncoding 是否需要检查编码
  * @returns 文件内容
  */
-export async function readFile(uri: vscode.Uri, checkEncoding = false): Promise<string> {
+export async function readFile(uri: vscode.Uri, { binary = false, checkEncoding = false } = {}): Promise<string|Uint8Array> {
 	try {
 		// console.log(uri);
 		// console.time('读取文件耗时1');
 		// console.time('读取文件耗时-总');
 		// console.log('开始读取文件', uri);
 		let buffer = await _fs.readFile(uri);
+		if (binary) return buffer;
 		// console.timeEnd('读取文件耗时1');
 		// console.log('读取buffer完成',checkEncoding);
 		if (checkEncoding) {
