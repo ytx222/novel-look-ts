@@ -32,6 +32,7 @@ export const isFirstRender = () => renderId <= 1;
 
 let themeSheetRuleIndex;
 
+
 // 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
 let fn = {
 	undefined() {
@@ -40,6 +41,7 @@ let fn = {
 	/*设置一些公共设置,如行高,行间隔,字体大小等*/
 	setting(data) {
 		setCache('setting', data);
+		// setCache('changeTheme', data);
 		let sheetEl = document.querySelector('style');
 		// 这里多一个.body,以达到更高匹配级别
 		sheetEl.sheet.insertRule(`.body .main .content div{
@@ -90,36 +92,39 @@ let fn = {
 		requestAnimationFrame(setScroll.bind(null, data));
 		saveScroll(data, false);
 	},
-	changeTheme(index) {
-		console.warn('changeTheme', index);
-		cache.setting.theme.use = index;
-		const sheet = el.sheet.sheet;
-		const rule = getStyleRule(':root:root:root');
-		console.log({
-			sheet,
-			themeSheetRuleIndex,
-			index,
-			renderId,
-		});
-		console.log(isFirstRender(), renderId);
-		if (!isFirstRender()) showContextMenu();
-
-		// 使用系统默认主题
-		if (index !== 0) {
-			const themes = cache.setting.theme.custom;
-			const theme = themes[index - 1];
-			// console.log('使用主题', theme);
-			const ruleContent = getThemeStyleRule(theme);
-			// 使用自定义主题
-			if (rule) rule.style = ruleContent;
-			else {
-				themeSheetRuleIndex = sheet.insertRule(`:root:root:root{${ruleContent}}`);
-			}
-		} else if (rule) {
-			rule.style = '';
-		}
-	},
+	changeTheme,
 };
+
+export function changeTheme(index) {
+		console.warn('changeTheme', index);
+	cache.setting.theme.use = index;
+	const sheet = el.sheet.sheet;
+	const rule = getStyleRule(':root:root:root');
+	console.log({
+		sheet,
+		themeSheetRuleIndex,
+		index,
+		renderId,
+	});
+		console.log(isFirstRender(), renderId);
+
+
+	// 使用系统默认主题
+	if (index !== 0) {
+		const themes = cache.setting.theme.custom;
+		const theme = themes[index - 1];
+		// console.log('使用主题', theme);
+		const ruleContent = getThemeStyleRule(theme);
+		// 使用自定义主题
+		if (rule) rule.style = ruleContent;
+		else {
+			themeSheetRuleIndex = sheet.insertRule(`:root:root:root{${ruleContent}}`);
+		}
+	} else if (rule) {
+		rule.style = '';
+	}
+}
+
 /**
  * @param {String} title
  * @param {Array<String>} lines

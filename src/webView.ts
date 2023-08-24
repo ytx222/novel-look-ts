@@ -262,13 +262,7 @@ export let fn = {
 	 * 更改使用的主题
 	 */
 	changeUseTheme(data: number) {
-		// key之前是章名,现在改成书名,因为在一本书中切换章节没有意义保存
-		// scroll.set(data.key, data.value);
-
-		// scroll.set(data.key, data.value);
-		// setState('saveScroll', data);
 		config.set('theme.use', data);
-		postMsg('changeTheme', data);
 	},
 	/**
 	 * 编辑主题
@@ -293,7 +287,7 @@ async function onMessage<T extends MessageTypes>(e: Message<T>) {
 	console.log('收到webView message:  ', e);
 	// FIXME: 目前水平有限,解决不了这么复杂的类型推断问题,暂时先never吧
 	// 不过话说这玩意和any区别也没多大了
-	fn[e.type]?.(e.data as never);
+	fn[e.type]?.(e.data as never as never);
 }
 
 // onMessage({ type: 'zoom', data: '1' });
