@@ -13,6 +13,8 @@ const vscode = acquireVsCodeApi();
 export let cache = {
 	setting: {},
 	showChapter: {},
+
+	screenDirection: 2,
 	// theme: {},
 };
 // 方便调试
@@ -21,6 +23,7 @@ window.cache = cache;
 export function getState() {
 	return vscode.getState();
 }
+
 
 /**
  * 设置缓存 ,本来的vscode.setState是简单的对象.我自己封装一下成键值对
@@ -55,8 +58,11 @@ export function saveScroll(scroll = getScroll(), isPostMsg = true) {
 
 /**
  * 发送消息
- * @param {'saveScroll'|'chapterToggle'|'zoom'|'changeUseTheme'|'editTheme'|'toggleZenMode'} type
+ * @param {PostMessageTypes} type
  * @param {*} data
+ */
+/**
+ * @type {PostMessageFn}
  */
 export function postMsg(type, data) {
 	console.log('子页面-postMsg', type, data);

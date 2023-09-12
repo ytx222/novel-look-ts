@@ -1,4 +1,5 @@
 import { initEl } from './dom';
+import type { fn } from './../../src/webView';
 /**
  *
  *
@@ -16,10 +17,9 @@ declare global {
 	// type WebviewElements = {
 	// 	[k in keyof ReturnType<typeof initEl>]: Element;
 	// };
-	interface PostMessageType {
-		chapterToggle: 'next' | 'prev';
-		zoom: number;
-	}
+
+	type PostMessageTypes = keyof typeof fn;
+	type PostMessageFn = <T extends PostMessageTypes>(type:T,data: Parameters<(typeof fn)[T]>[0] ) => void;
 
 	interface ThemeItem {
 		name: string;
@@ -50,6 +50,7 @@ declare global {
 			list: string[];
 		};
 		readScroll: number;
+		screenDirection:1|2|3|4
 		// theme: {
 		// 	use: number;
 		// 	custom: ThemeItem[];

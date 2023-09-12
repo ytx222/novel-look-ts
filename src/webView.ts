@@ -232,10 +232,19 @@ export let fn = {
 	 * 更新阅读设置
 	 * @param setting
 	 */
-	updateReadSetting(setting: Record<string, number | string>) {
-		let readSetting = config.get('readSetting', {});
-		let newSetting = Object.assign(readSetting, setting);
-		config.set('readSetting', newSetting);
+	updateReadSetting(
+		// setting: Record<string, number | string>
+		{
+			key,
+			value,
+		}: {
+			key: string;
+			value: number | string;
+		}
+	) {
+		// let readSetting = config.get('readSetting', {});
+		// let newSetting = Object.assign(readSetting, setting);
+		config.set(key, value);
 	},
 
 	/**

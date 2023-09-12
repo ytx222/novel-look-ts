@@ -1,6 +1,7 @@
 import { ElementParentIterator } from './dom.js';
 import { cache, nextChapter, postMsg, setCache } from './vscodeApi.js';
 import { changeTheme } from './webView.js';
+import { updateZoom } from './scroll.js';
 
 let isShow = false;
 /**
@@ -14,7 +15,11 @@ window.addEventListener('DOMContentLoaded', function () {
 		customThemeContainer: document.getElementById('customThemeContainer'),
 		themeContainer: document.getElementById('themeContainer'),
 		zenModeButton: document.querySelector('.contextmenu-item.zen-mode'),
+		turnScreenButton: document.querySelector('.contextmenu-item.turn-screen'),
 		systemTheme: this.themeContainer.querySelector('.system-theme'),
+
+		scrollSpeedInput: document.getElementById('scroll-speed-input'),
+		zoomInput: document.getElementById('zoom-input'),
 	};
 	// document.querySelector('.custom-contextmenu');
 
@@ -51,7 +56,30 @@ window.addEventListener('DOMContentLoaded', function () {
 			let w = el.contextmenu.offsetWidth;
 			let h = el.contextmenu.offsetHeight;
 			let pageW = document.body.clientWidth;
-			let pageH = document.body.clientWidth;
+			let pageH = document.body.clientHeight;
+			// 在各种旋转状态时,修正坐标
+			if (!(cache.screenDirection & 1)) {
+				// 横着的
+				[pageW, pageH] = [pageH, pageW];
+				// [w, h] = [h, w];
+				[x, y] = [y, x];
+			}
+			if (cache.screenDirection === 2) {
+				y = pageW - y ;
+			}
+			if (cache.screenDirection === 3) {
+				x = pageW - x ;
+				y = pageH - y ;
+			}
+			if (cache.screenDirection === 4) {
+				x = pageH - x ;
+			}
+			if (!(cache.screenDirection & 1)) {
+				// 横着的,判断时x需要和h对比,y和w对比
+				// 这里将pageW和pageH反过来
+				[pageW, pageH] = [pageH, pageW];
+			}
+			// console.log({ x, y, w, h, pageW, pageH });
 			// console.log({x,y,w,h,pageW,pageH});
 			// 如果右(下)方位置不足,并且左(上)方有足够的位置,则移动
 			if (pageW < x + w && x > w) x -= w;
@@ -60,7 +88,6 @@ window.addEventListener('DOMContentLoaded', function () {
 			isShow = true;
 		}
 		renderThemeContent();
-
 	};
 
 	function renderThemeContent() {
@@ -76,12 +103,18 @@ window.addEventListener('DOMContentLoaded', function () {
 		<div class="icon ${use === i ? 'on' : ''}"></div>
 		${theme.name}</div>`
 		);
+		// 更新当前使用的主题
 		if (!~use /** use == -1 */) {
 			console.warn(el.systemTheme);
 			el.systemTheme.querySelector('.icon')?.classList.add('on');
 		} else {
 			el.systemTheme.querySelector('.icon')?.classList.remove('on');
 		}
+		// 更新滚动速度,zoom等
+
+		el.scrollSpeedInput.value = cache.setting.scrollSpeed;
+		el.zoomInput.value = cache.setting.zoom;
+
 		let s = themeHtml?.join('');
 		el.customThemeContainer.innerHTML = s;
 	}
@@ -98,6 +131,32 @@ window.addEventListener('DOMContentLoaded', function () {
 			if (item.classList.contains('theme-item')) return void clickItem(item);
 		}
 	};
+	el.scrollSpeedInput.onchange = inputChange;
+	el.zoomInput.onchange = inputChange;
+
+	function inputChange(e) {
+		//
+		console.warn(e);
+		let target = e.target;
+		let value = target.value;
+		let name = target.name;
+		// 判断value是否合法
+		if (name === 'zoom') {
+			// 如果不合法
+			// if (value < 0.4 || value > 10) {
+			// 	value = value > 10 ? 10 : 0.4;
+			// 	target.value = value;
+			// 	return;
+			// }
+
+			return updateZoom(value);
+		}
+		console.log({ value, name });
+		const newSetting = { ...cache.setting, [name]: +value };
+		console.log({ newSetting });
+		setCache('setting', newSetting);
+		postMsg('updateReadSetting', { key: `readSetting.${name}`, value: +value });
+	}
 
 	function addTheme() {
 		console.warn('addTheme');
@@ -129,6 +188,11 @@ window.addEventListener('DOMContentLoaded', function () {
 		postMsg('toggleZenMode');
 	};
 
+	el.turnScreenButton.onclick = function () {
+		// 进入禅模式
+		// postMsg('toggleZenMode');
+	};
+
 	/** 隐藏menu相关逻辑 */
 	function hideContextMenu() {
 		if (!isShow) return;
@@ -152,7 +216,7 @@ export let showContextMenu = (x, y) => {
  * @returns
  */
 export function getThemeStyleRule(theme) {
-	return `--bg: ${theme.bg};
+	let s = `--bg: ${theme.bg};
 	--color: ${theme.color};
 	--btnBg: ${theme.btnBg};
 	--btnColor: ${theme.btnColor};
@@ -161,4 +225,34 @@ export function getThemeStyleRule(theme) {
 
 	--navBg: ${theme.navBg || 'var(--bg)'} ;
 	--textColor:  ${theme.textColor || 'var(--color)'} ;`;
+
+	// theme.color
+	if (isHexColor(theme.bg)) {
+		s += ` --bg-rgb:${hexToRGB(theme.bg).join(',')}; `;
+	}
+	// theme.color
+	if (isHexColor(theme.color)) {
+		s += ` --color-rgb:${hexToRGB(theme.color).join(',')}; `;
+	}
+	return s;
+}
+
+/**
+判断一个字符串是16进制色值 */
+function isHexColor(str) {
+	// 使用正则表达式匹配16进制颜色值的格式
+	const hexColorPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;
+	return hexColorPattern.test(str);
+}
+
+function hexToRGB(hex) {
+	// 去除前缀 #
+	hex = hex.replace(/^#/, '');
+	// 提取RR, GG, BB分量
+	const r = parseInt(hex.slice(0, 2), 16);
+	const g = parseInt(hex.slice(2, 4), 16);
+	const b = parseInt(hex.slice(4, 6), 16);
+
+	// 返回分量值
+	return [r, g, b];
 }

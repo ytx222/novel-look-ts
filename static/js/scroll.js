@@ -14,6 +14,7 @@ import {
 } from './vscodeApi.js';
 import { el, getScroll, getStyleRule, isPageEnd, setScroll } from './dom.js';
 import { renderId } from './webView.js';
+import { toFixed } from './util.js';
 
 /**  0未滚动 1等待结束  2等待开始  3正在滚动 */
 let scrollType = 0;
@@ -131,11 +132,18 @@ export function scrollFunc(e, isScroll) {
 	// 如果是ctrl+滚轮,则放大或缩小显示
 	if (e.ctrlKey) {
 		// 先计算出新的缩放比例
-		let zoom = cache.setting.zoom;
+		let zoom = +cache.setting.zoom;
 		let n = e.wheelDelta > 0;
 		let size = 0.1;
 		if (zoom > 1.5 || (n && zoom >= 1.5)) size = 0.25;
-		updateZoom(+(zoom + size * (n ? 1 : -1)).toFixed(5));
+		let newValue = zoom + size * (n ? 1 : -1);
+		// 不是整的,则取整
+		if (newValue / size - ~~(newValue / size)) {
+			console.log('111111', newValue, toFixed(newValue / size, 0));
+			newValue = toFixed(newValue / size, 0) * size;
+			console.log('1112222111', newValue);
+		}
+		updateZoom(newValue);
 		return;
 	} else if (scrollType !== 0) {
 		console.log('e.wheelDelta', e.wheelDelta);
@@ -164,7 +172,8 @@ export function scrollFunc(e, isScroll) {
 
 let zoomSaveTimer;
 
-function updateZoom(zoom) {
+export function updateZoom(zoom) {
+	zoom = toFixed(zoom);
 	// 判断值是否合法
 	if (zoom < 0.4 || zoom > 10) {
 		zoom = zoom > 10 ? 10 : 0.4;
@@ -182,5 +191,6 @@ function updateZoom(zoom) {
 	console.log(rule);
 	rule.style = `--rootFontSize: ${rule.styleMap.get('--rootFontSize')}; --zoom: ${zoom};`;
 	// 显示
-	showZoom(cache.setting.rootFontSize * zoom, zoom);
+
+	showZoom(toFixed(cache.setting.rootFontSize * zoom), zoom);
 }

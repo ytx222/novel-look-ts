@@ -51,7 +51,10 @@ export class Bookrack implements vscode.TreeDataProvider<TreeItem> {
 		if (this.list.length) {
 			for (var i = 0; i < this.list.length; i++) {
 				if (this.list[i].fullPath === arr[i]) {
-					//如果相等,则什么都不做
+
+					// 相等的,也执行一些刷新逻辑,比如清除txt,重新读取文件
+					// FIXME: 如果文件修改了,这里会有bug吧
+					this.list[i].txt = ''
 				} else {
 					//如果不相等,首先判断是否是被删除了
 					if (arr.includes(this.list[i].fullPath)) {
@@ -206,6 +209,7 @@ class Book extends vscode.TreeItem {
 		this.readList[i] = 1; //数据转化为json,所以1应该比true更合适
 		setState('book_' + this.label, this.readList);
 		// console.warn(this.readList);
+		// TODO:
 		setSync(
 			...[
 				// 设置需要同步的缓存key

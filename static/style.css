@@ -568,6 +568,9 @@
 	--btnActiveBorder: var(--vscode-inputValidation-infoBorder);
 	/* --btnActive: var(--vscode-inputOption-hoverBackground); */
 	/* --btnDefaultBorder:var(--vscode-input-placeholderForeground); */
+	/* 计算出的主题参数 */
+	--bg-rgb: 255, 255, 255;
+	--color-rgb: 0, 0, 0;
 
 	/* 默认继承的 */
 	--navBg: var(--bg);
@@ -584,12 +587,17 @@
 	/* 一些非主题的参数 */
 	--scroll-bar-size: 10px;
 	/* --navHeight: 2rem; */
-	--navHeight: calc(var(--herderSize) * 1.75);
+	--navHeight: calc(var(--smallZoomSize) * 1.75);
 
 	/* 这两个会被运行时注入的规则覆盖 */
 	--rootFontSize: 16px;
 	--zoom: 1;
-	--herderSize: calc(var(--rootFontSize) * ((var(--zoom) - 1) / 3 + 1));
+	/* 动态计算 */
+	--smallZoomSize: calc(var(--rootFontSize) * ((var(--zoom) - 1) / 3 + 1));
+
+	/** screenDirection*/
+	--fullWidth: 100vw;
+	--fullHeight: 100vh;
 }
 
 html {
@@ -609,11 +617,12 @@ body {
 	padding: 0;
 	margin: 0px;
 	color: var(--color);
+	cursor: default;
+	cursor: url('./cursor.svg'), url('./fish.png');
 	/* background: var(--bg); */
 	flex-direction: column;
-	cursor: default;
-	cursor:url('./cursor.svg'),url('./fish.png');
-
+	width: var(--fullWidth);
+	height: var(--fullHeight);
 }
 body.init {
 	display: flex;
@@ -677,12 +686,12 @@ button:active,
  ********************/
 .nav {
 	position: fixed;
-	width: 100%;
 	top: 0;
 	left: 0;
 	display: flex;
+	width: 100%;
 	height: var(--navHeight);
-	font-size: calc(var(--herderSize) * 0.7);
+	font-size: calc(var(--smallZoomSize) * 0.7);
 	background: var(--navBg);
 	flex: 0 0 auto;
 	/* background: calc(var(--color) + '55'); */
@@ -700,7 +709,7 @@ button:active,
 	box-shadow: var(--color) 0px 4px 6px -1px;
 }
 .nav button {
-	width: calc(var(--herderSize) * 3.75);
+	width: calc(var(--smallZoomSize) * 3.75);
 	height: 100%;
 	font-size: inherit;
 	background: transparent;
@@ -720,10 +729,29 @@ button:active,
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+
+	text-shadow: 0px 0px 10px var(--bg), 0px 0px 10px var(--bg), 0px 0px 10px var(--bg), 0px 0px 10px var(--bg),
+		0px 0px 10px var(--bg), 0px 0px 10px var(--bg);
+	/* text-shadow: 0px 0px 10px var(--color), 0px 0px 10px var(--color), 0px 0px 10px var(--color),
+		0px 0px 10px var(--color), 0px 0px 10px var(--color); */
+	/* position: relative; */
+	z-index: 99999;
+}
+.nav .content-container .title::after {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
+	display: block;
+	width: 100%;
+	height: 100%;
+	content: ' ';
+	opacity: 0.5;
+	background: var(--bg);
 }
 
 .nav .content-container .time {
-	right: calc(var(--herderSize) * 0.4);
+	right: calc(var(--smallZoomSize) * 0.4);
 	width: initial;
 	/* display: none; */
 	line-height: var(--navHeight);
@@ -743,8 +771,8 @@ button:active,
 .nav .content-container .zoom {
 	position: relative;
 	display: none;
-	width: calc(var(--herderSize) * 7);
-	height: calc(var(--herderSize) * 1.3 + 4px);
+	width: calc(var(--smallZoomSize) * 7);
+	height: calc(var(--smallZoomSize) * 1.3 + 4px);
 	/* font-size: 0.9rem; */
 	color: var(--color);
 	background: var(--navBg);
@@ -760,7 +788,7 @@ button:active,
 }
 
 .nav.left .content-container {
-	padding-left: var(--herderSize);
+	padding-left: var(--smallZoomSize);
 	box-sizing: border-box;
 	justify-content: flex-start;
 }
@@ -774,10 +802,11 @@ button:active,
 .main {
 	display: flex;
 	width: 100%;
-	max-height: calc(100vh - var(--navHeight));
+	max-height: calc(var(--fullHeight) - var(--navHeight));
 	padding-top: calc(var(--navHeight) * 0.3);
-	margin:  var(--navHeight) auto 0;
+	margin: var(--navHeight) auto 0;
 	overflow-y: auto;
+	overflow-x: hidden;
 	box-sizing: border-box;
 	flex: 1;
 	flex-direction: column;
@@ -799,7 +828,7 @@ button:active,
 .content {
 	color: var(--textColor);
 	flex: 1 1 auto;
-	scroll-behavior:smooth;
+	scroll-behavior: smooth;
 }
 .content div {
 	/* FIXME: 这个距离,如果修改成2rem 则无法保持当前滚动位置,需要解决办法 */
@@ -829,8 +858,11 @@ button:active,
 	flex: 1 1 auto;
 }
 
+.function-box {
+	position: relative;
+}
 .side-next-btn {
-	--size: min(1.6rem, 6.4vw);
+	--size: min(calc(var(--smallZoomSize) * 1.6), 6.4vw);
 	position: fixed;
 	top: 50%;
 	right: 20px;
@@ -839,7 +871,7 @@ button:active,
 	margin-top: calc(var(--size) * -0.54);
 
 	overflow: hidden;
-	pointer-events:stroke;
+	pointer-events: stroke;
 	background: var(--bg);
 	border: max(calc(var(--size) * 0.06), 2px) solid;
 	border-radius: var(--size);
@@ -860,11 +892,25 @@ button:active,
 
 .side-next-btn.btn2 {
 	top: initial;
+	margin: 0;
 	/* display: none; */
 	right: inherit;
-	bottom: 90px;
 	/* 家里电脑 */
-	left: 136px;
+
+	/* --bottom-raw: 90px;
+	--left-raw: 136px; */
+	--left-raw: 211px;
+	--bottom-raw: 161px;
+	/* --bottom-raw: 120px;
+    --left-raw: 218px; */
+
+	--left: calc(var(--left-raw) - var(--size) * 0.5 - 16px);
+	--bottom: calc(var(--bottom-raw) - var(--size) * 0.5 - 16px);
+	/* --left:var( --left-raw);
+	--bottom: var(--bottom-raw); */
+	/* transform: translate(-50%, -50%); */
+	/* bottom:var(--bottom);
+	left: var(--left); */
 	/* 公司电脑 */
 	/* left: 460px;
 	bottom: 343px;
@@ -883,16 +929,18 @@ button:active,
 	/* left: 30vw;
 	top: 40vw; */
 	display: none;
-	width: 6rem;
+	width: calc(var(--smallZoomSize) * 6);
+	/* overflow: hidden; */
+
+	font-size: calc(var(--smallZoomSize) * 0.45);
 	/* border: max(1px, 0.06rem) solid var(--color); */
 	/* --color:#000;
 	--color: inherit; */
-	font-size: 0.45rem;
+
 	background: var(--bg);
 	border-radius: var(--radius);
 	/* overflow: hidden; */
 	box-shadow: 0px 0px 6px 2px var(--bg);
-	/* overflow: hidden; */
 }
 .custom-contextmenu-bg {
 	position: absolute;
@@ -914,15 +962,15 @@ button:active,
 
 .contextmenu-item {
 	position: relative;
-	padding: 0.2rem 0.8rem;
+	padding: calc(var(--smallZoomSize) * 0.2) calc(var(--smallZoomSize) * 0.4);
 	color: #000;
 	color: inherit;
 	user-select: none;
 }
 .contextmenu-item.title {
-	padding: 0.1rem 0.3rem;
+	padding: calc(var(--smallZoomSize) * 0.1) calc(var(--smallZoomSize) * 0.3);
 	margin: -1px;
-	font-size: 0.36rem;
+	font-size: calc(var(--smallZoomSize) * 0.36);
 }
 .contextmenu-item.title:first-child .after {
 	border-top-right-radius: calc(var(--radius) * 0.8);
@@ -940,7 +988,7 @@ button:active,
 }
 .contextmenu-hr {
 	width: 100%;
-	height: 3px;
+	height: 2px;
 	background: var(--color);
 	opacity: 0.3;
 }
@@ -949,7 +997,6 @@ button:active,
 	content: none;
 }
 .contextmenu-item:hover::after {
-
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -964,7 +1011,7 @@ button:active,
 
 .theme-item {
 	display: flex;
-	padding-left: 1.1rem;
+	padding-left: calc(var(--smallZoomSize) * 1.1);
 	color: var(--textColor);
 	background: var(--bg);
 	align-items: center;
@@ -976,15 +1023,14 @@ button:active,
 	--textColor: var(--color);
 }
 .theme-item .icon {
-	--iconSize: 0.5rem;
+	--iconSize: calc(var(--smallZoomSize) * 0.5);
+
 	position: absolute;
-	left: 0.3rem;
+	left: calc(var(--smallZoomSize) * 0.3);
 	display: flex;
 	width: var(--iconSize);
 	height: var(--iconSize);
 	color: var(--bg);
-	/* background: var(--bg);
-	border: 0.16rem solid var(--color); */
 	background: var(--color);
 	border-radius: var(--iconSize);
 	box-sizing: border-box;
@@ -992,13 +1038,12 @@ button:active,
 	justify-content: center;
 }
 .theme-item .icon.on::after {
-
 	/* 1.60倍 */
 	--size: 25%;
 	display: block;
 	width: var(--size);
 	height: calc(var(--size) * 1.7);
-	border: 0.06rem solid;
+	border: calc(var(--smallZoomSize) * 0.06) solid;
 	border-top: 0;
 
 	border-left: 0;
@@ -1010,17 +1055,27 @@ button:active,
 
 .contextmenu-item-input-label {
 	display: inline-block;
+	display: flex;
 	flex: 1 0 auto;
+	justify-content: space-between;
+}
+
+.contextmenu-item.zen-mode {
+	cursor: pointer;
 }
 
 .contextmenu-item input {
+	max-width: 3rem;
 	min-width: 3.6em;
+	width: calc(var(--smallZoomSize) * 1.2);
+	font-size: calc(var(--smallZoomSize) * 0.55);
 	color: var(--color);
 
 	text-align: center;
 	background: var(--btnBg);
 	border: none;
 	outline: none;
+	background: rgba(var(--color-rgb), 0.1);
 }
 
 .contextmenu-item label {
@@ -1031,4 +1086,49 @@ button:active,
 .contextmenu-item-input {
 	display: flex;
 	justify-content: space-between;
+}
+
+html {
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+}
+
+body[class^='screenDirection'] {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+body.screenDirection-1 {
+}
+body.screenDirection-1 .side-next-btn.btn2 {
+	/* bottom:; */
+	bottom: var(--bottom);
+	left: var(--left);
+}
+body.screenDirection-2 {
+	transform: rotate(90deg) translateY(-100%);
+	transform-origin: left top;
+	/* width: 100vh;
+	height: 100vw; */
+}
+body.screenDirection-2 .side-next-btn.btn2 {
+	/* bottom:; */
+	bottom: var(--left);
+	right: var(--bottom);
+}
+body.screenDirection-3 {
+	transform: rotate(180deg);
+	transform-origin: center;
+}
+body.screenDirection-4 {
+	transform: rotate(-90deg) translateX(-100%); ;
+	transform-origin: left top;
+}
+
+body.screenDirection-2,
+body.screenDirection-4 {
+	--fullWidth: 100vh;
+	--fullHeight: 100vw;
 }

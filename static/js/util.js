@@ -10,3 +10,8 @@ export async function sleep (ms = 10) {
 		setTimeout(resolve, ms);
 	});
 }
+
+
+export function toFixed(n, fractionDigits = 3) {
+	return +n.toFixed(fractionDigits);
+}

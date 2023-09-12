@@ -56,7 +56,6 @@ let fn = {
 		// console.log('setting', sheetEl.sheet);
 		// document.documentElement.style.fontSize = data.rootFontSize * data.zoom + 'px';
 		this.changeTheme(data.theme.use);
-		document.body.classList.add('init');
 		if (data.titleCenter) {
 		} else {
 			setInterval(updateHeaderTime, 1000);
@@ -64,6 +63,8 @@ let fn = {
 			el.nav.classList.add('left');
 		}
 		// window.focus()
+
+		document.body.className=`body init screenDirection-${cache.screenDirection}`
 	},
 	/*显示章节*/
 	showChapter(data) {
@@ -93,6 +94,12 @@ let fn = {
 		saveScroll(data, false);
 	},
 	changeTheme,
+	screenDirection (v) {
+		// screenDirection
+		console.log('screenDirection init');
+		// document.body.classList.add('screenDirection-'+v);
+		document.body.className=`body init screenDirection-${cache.screenDirection}`
+	}
 };
 
 export function changeTheme(index) {
@@ -182,7 +189,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	if (data) {
 		console.warn('是隐藏后的', data);
 		for (var item in data) {
-			fn[item](data[item]);
+			fn[item]?.(data[item]);
 		}
 	}
 
