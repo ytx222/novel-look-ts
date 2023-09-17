@@ -58,7 +58,7 @@ export function scrollScreen(direction = 1, event) {
 	event?.preventDefault();
 	// let cur = window.scrollY;
 	let cur = getScroll();
-	let h = document.documentElement.clientHeight - el.nav.clientHeight - 50 * (cache.setting?.zoom || 1);
+	let h =  el.main.clientHeight - el.nav.clientHeight - 50 * (cache.setting?.zoom || 1);
 	const newH = cur + h * direction;
 	// setScroll(newH);
 	el.main.scrollTo({
