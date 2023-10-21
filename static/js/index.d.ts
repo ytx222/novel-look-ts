@@ -44,13 +44,14 @@ declare global {
 				custom: ThemeItem[];
 			};
 			titleCenter: boolean;
+			screenDirection:1|2|3|4
 		};
 		showChapter: {
 			title: string;
 			list: string[];
 		};
 		readScroll: number;
-		screenDirection:1|2|3|4
+		// screenDirection:1|2|3|4
 		// theme: {
 		// 	use: number;
 		// 	custom: ThemeItem[];

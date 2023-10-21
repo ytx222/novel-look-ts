@@ -14,7 +14,7 @@ export let cache = {
 	setting: {},
 	showChapter: {},
 
-	screenDirection: 2,
+	// screenDirection: 1,
 	// theme: {},
 };
 // 方便调试

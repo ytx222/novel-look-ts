@@ -64,7 +64,7 @@ let fn = {
 		}
 		// window.focus()
 
-		document.body.className=`body init screenDirection-${cache.screenDirection}`
+		document.body.className=`body init screenDirection-${cache.setting.screenDirection}`
 	},
 	/*显示章节*/
 	showChapter(data) {
@@ -94,12 +94,12 @@ let fn = {
 		saveScroll(data, false);
 	},
 	changeTheme,
-	screenDirection (v) {
-		// screenDirection
-		console.log('screenDirection init');
-		// document.body.classList.add('screenDirection-'+v);
-		document.body.className=`body init screenDirection-${cache.screenDirection}`
-	}
+	// screenDirection (v) {
+	// 	// screenDirection
+	// 	console.log('screenDirection init');
+	// 	// document.body.classList.add('screenDirection-'+v);
+	// 	document.body.className=`body init screenDirection-${cache.setting.screenDirection}`
+	// }
 };
 
 export function changeTheme(index) {

@@ -116,6 +116,18 @@
 					"default": false,
 					"description": "title居中"
 				},
+				"novelLook.readSetting.screenDirection": {
+					"type": "number",
+					"enum": [
+						1,
+						2,
+						3,
+						4
+					],
+					"default": 1,
+					"scope": "machine",
+					"description": "屏幕方向(上右下左1234)"
+				},
 				"novelLook.theme.use": {
 					"type": "number",
 					"default": 0,

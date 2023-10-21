@@ -1,4 +1,4 @@
-import { ElementParentIterator } from './dom.js';
+import { ElementParentIterator ,dispatchCustomEvent} from './dom.js';
 import { cache, nextChapter, postMsg, setCache } from './vscodeApi.js';
 import { changeTheme } from './webView.js';
 import { updateZoom } from './scroll.js';
@@ -15,11 +15,12 @@ window.addEventListener('DOMContentLoaded', function () {
 		customThemeContainer: document.getElementById('customThemeContainer'),
 		themeContainer: document.getElementById('themeContainer'),
 		zenModeButton: document.querySelector('.contextmenu-item.zen-mode'),
-		turnScreenButton: document.querySelector('.contextmenu-item.turn-screen'),
 		systemTheme: this.themeContainer.querySelector('.system-theme'),
 
 		scrollSpeedInput: document.getElementById('scroll-speed-input'),
 		zoomInput: document.getElementById('zoom-input'),
+		// turnScreenButton: document.querySelector('.contextmenu-item.turn-screen'),
+		turnScreenInput: document.getElementById('turn-screen'),
 	};
 	// document.querySelector('.custom-contextmenu');
 
@@ -57,24 +58,25 @@ window.addEventListener('DOMContentLoaded', function () {
 			let h = el.contextmenu.offsetHeight;
 			let pageW = document.body.clientWidth;
 			let pageH = document.body.clientHeight;
+			const direction = cache.setting?.screenDirection || 1;
 			// 在各种旋转状态时,修正坐标
-			if (!(cache.screenDirection & 1)) {
+			if (!(direction & 1)) {
 				// 横着的
 				[pageW, pageH] = [pageH, pageW];
 				// [w, h] = [h, w];
 				[x, y] = [y, x];
 			}
-			if (cache.screenDirection === 2) {
+			if (direction === 2) {
 				y = pageW - y ;
 			}
-			if (cache.screenDirection === 3) {
+			if (direction === 3) {
 				x = pageW - x ;
 				y = pageH - y ;
 			}
-			if (cache.screenDirection === 4) {
+			if (direction === 4) {
 				x = pageH - x ;
 			}
-			if (!(cache.screenDirection & 1)) {
+			if (!(direction & 1)) {
 				// 横着的,判断时x需要和h对比,y和w对比
 				// 这里将pageW和pageH反过来
 				[pageW, pageH] = [pageH, pageW];
@@ -114,6 +116,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 		el.scrollSpeedInput.value = cache.setting.scrollSpeed;
 		el.zoomInput.value = cache.setting.zoom;
+		el.turnScreenInput.value = cache.setting.screenDirection;
 
 		let s = themeHtml?.join('');
 		el.customThemeContainer.innerHTML = s;
@@ -133,8 +136,10 @@ window.addEventListener('DOMContentLoaded', function () {
 	};
 	el.scrollSpeedInput.onchange = inputChange;
 	el.zoomInput.onchange = inputChange;
+	el.turnScreenInput.onchange = inputChange;
 
-	function inputChange(e) {
+	function inputChange (e) {
+		let isMsg = true;
 		//
 		console.warn(e);
 		let target = e.target;
@@ -151,11 +156,24 @@ window.addEventListener('DOMContentLoaded', function () {
 
 			return updateZoom(value);
 		}
+		if (name === 'screenDirection') {
+			isMsg = false;
+			if (!['1', '2', '3', '4'].includes(value)) {
+				return screenDirection
+			}
+			document.body.className=`body init screenDirection-${value}`
+			// window.postMessage({})
+			// setTimeout(() => {
+			// 	dispatchCustomEvent('message', { data:{type: 'screenDirection', }})
+			// })
+
+
+		}
 		console.log({ value, name });
 		const newSetting = { ...cache.setting, [name]: +value };
 		console.log({ newSetting });
 		setCache('setting', newSetting);
-		postMsg('updateReadSetting', { key: `readSetting.${name}`, value: +value });
+		isMsg && postMsg('updateReadSetting', { key: `readSetting.${name}`, value: +value });
 	}
 
 	function addTheme() {
@@ -188,10 +206,11 @@ window.addEventListener('DOMContentLoaded', function () {
 		postMsg('toggleZenMode');
 	};
 
-	el.turnScreenButton.onclick = function () {
-		// 进入禅模式
-		// postMsg('toggleZenMode');
-	};
+	// el.turnScreenButton.onclick = function () {
+	// 	// 进入禅模式
+	// 	// postMsg('toggleZenMode');
+	// };
+
 
 	/** 隐藏menu相关逻辑 */
 	function hideContextMenu() {
