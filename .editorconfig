@@ -1,0 +1,27 @@
+#部分编辑器自带editorconfig插件，部分需要自行安装
+
+root =true
+
+# 匹配全部文件, 并执行下列规则
+
+[*]
+
+# 设置字符集
+
+charset =utf-8
+
+indent_style = tab
+indent_size = 4
+
+# 结尾换行符，可选"lf"、"cr"、"crlf"
+
+end_of_line =lf
+
+# 在文件结尾插入新行，为什么插入新行参见下面的链接
+# http://beiyuu.com/carriage-return-line-feed-new-line-end-file
+
+insert_final_newline =true
+
+# 删除一行中的前后空格
+
+trim_trailing_whitespace =tru
