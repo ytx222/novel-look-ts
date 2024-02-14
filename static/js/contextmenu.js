@@ -157,7 +157,7 @@ window.addEventListener('DOMContentLoaded', function () {
 			return updateZoom(value);
 		}
 		if (name === 'screenDirection') {
-			isMsg = false;
+			// isMsg = false;
 			if (!['1', '2', '3', '4'].includes(value)) {
 				return screenDirection
 			}

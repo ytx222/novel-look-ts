@@ -695,6 +695,7 @@ button:active,
 	background: var(--navBg);
 	flex: 0 0 auto;
 	/* background: calc(var(--color) + '55'); */
+	z-index: 10;
 }
 .nav::after {
 	position: absolute;
@@ -914,10 +915,10 @@ button:active,
 	/* 公司电脑 */
 	/* --left: 460px;
 	--bottom: 343px; */
-	--left-raw: 494px;
+	/* --left-raw: 494px;
 	--bottom-raw: 376px;
 	--left: calc(var(--left-raw) - var(--size) * 0.5);
-	--bottom: calc(var(--bottom-raw) - var(--size) * 0.5);
+	--bottom: calc(var(--bottom-raw) - var(--size) * 0.5); */
 	/* left: 460px;
 	bottom: 343px; */
 	transform: scale(0.2);

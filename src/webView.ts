@@ -242,6 +242,9 @@ export let fn = {
 			value: number | string;
 		}
 	) {
+		console.log('updateReadSetting', { key, value });
+
+
 		// let readSetting = config.get('readSetting', {});
 		// let newSetting = Object.assign(readSetting, setting);
 		config.set(key, value);
