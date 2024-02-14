@@ -2,7 +2,7 @@
 	"name": "novel-look-ts",
 	"displayName": "novel-look2",
 	"description": "高性能,支持高度自定义操作的看(mo)书(yu)插件",
-	"version": "2.1.3",
+	"version": "2.1.4",
 	"keywords": [
 		"novel",
 		"摸鱼",
@@ -254,13 +254,13 @@
 				"command": "novel-look.showReadChapter",
 				"category": "小说阅读",
 				"icon": "img/refresh.png",
-				"title": "显示已读章节"
+				"title": "取消折叠已读章节"
 			},
 			{
 				"command": "novel-look.hideReadChapter",
 				"category": "小说阅读",
 				"icon": "img/refresh.png",
-				"title": "隐藏已读章节"
+				"title": "折叠已读章节"
 			},
 			{
 				"command": "novel-look.clearReadChapter",
@@ -376,8 +376,8 @@
 	"scripts": {
 		"vscode:prepublish": "npm run package",
 		"compile": "webpack",
-		"watch": "webpack --watch",
-		"package": "webpack --mode production --devtool hidden-source-map",
+		"watch": "set NODE_OPTIONS=--openssl-legacy-provider && webpack --watch",
+		"package": "set NODE_OPTIONS=--openssl-legacy-provider && webpack --mode production --devtool hidden-source-map",
 		"test-compile": "tsc -p ./",
 		"test-watch": "tsc -watch -p ./",
 		"pretest": "npm run test-compile && npm run lint",

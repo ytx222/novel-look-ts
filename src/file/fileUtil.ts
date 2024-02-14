@@ -21,6 +21,49 @@ let ignoreDir = config.get<String[]>('ignoreDir', []);
 let ignoreFileName = config.get<String[]>('ignoreFileName', []);
 let novelName = new RegExp(config.get('match.novelName', ''));
 
+export interface FileTreeItem {
+	item: vscode.Uri;
+	type: vscode.FileType;
+	child?: FileTreeItem[];
+}
+
+/**
+ * 获取电子书,结果是一个树而不是列表
+ * @param uri 地址
+ * @returns 地址列表
+ */
+export async function readBookDirTerr(uri: vscode.Uri, root = true, ): Promise<FileTreeItem[]> {
+	// 每次递归调用时只获取一次
+	// if (root) {
+	// 	ignoreDir = config.get<String[]>('ignoreDir', ['tmp', 'static']);
+	// 	ignoreFileName = config.get<String[]>('ignoreFileName', []);
+	// 	novelName = new RegExp(config.get('match.novelName', ''));
+	// }
+	// 所有目录项
+	const items: dir[] = await getDir(uri);
+
+	console.warn(items);
+	let arr: FileTreeItem[] = [];
+	for (let index = 0; index < items.length; index++) {
+		const [name, type] = items[index];
+		//如果是文件夹,
+		if (type === vscode.FileType.Directory) {
+			// 满足排除条件
+			if (ignoreDir.includes(name)) continue;
+			let child = await readBookDirTerr(Uri.joinPath(uri, name));
+			arr.push({ item: Uri.joinPath(uri, name), type, child });
+		} else if (type === vscode.FileType.File) {
+			// 满足小说名判断正则 并且不在忽略文件名列表中
+			if (novelName.test(name) && !ignoreFileName.includes(name)) {
+				arr.push({ item: Uri.joinPath(uri, name), type,  });
+			}
+		}
+	}
+	// console.warn(arr);
+	return arr;
+	// 232
+}
+
 /**
  * 获取一个目录下的所有可能的电子书文件
  * @param uri 地址
@@ -91,7 +134,10 @@ export async function isDir(uri: vscode.Uri): Promise<dir[] | false> {
  * @param checkEncoding 是否需要检查编码
  * @returns 文件内容
  */
-export async function readFile(uri: vscode.Uri, { binary = false, checkEncoding = false } = {}): Promise<string|Uint8Array> {
+export async function readFile(
+	uri: vscode.Uri,
+	{ binary = false, checkEncoding = false } = {}
+): Promise<string | Uint8Array> {
 	try {
 		// console.log(uri);
 		// console.time('读取文件耗时1');

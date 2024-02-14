@@ -3,7 +3,7 @@ import * as file from './file/file';
 
 import * as config from './config';
 import { getState, setState, getExtensionUri, getStateDefault, sleep, formatTime } from './util/util';
-import { command } from './TreeViewProvider';
+import { command } from './treeView/TreeViewProvider';
 import { getTargetStaticDir } from './file/file';
 
 //FIXME: 机制需要测试!!

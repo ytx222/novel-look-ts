@@ -5,7 +5,7 @@
 import * as vscode from 'vscode';
 import * as util from './fileUtil';
 import * as config from '../config';
-import { getDir } from './fileUtil';
+import { FileTreeItem, getDir, readBookDirTerr } from './fileUtil';
 
 import { exec } from 'child_process';
 import { closeWebView, showChapter } from '../webView';
@@ -27,7 +27,7 @@ let context: vscode.ExtensionContext;
 /**
  * 初始化
  */
-export async function init(_context: vscode.ExtensionContext): Promise<vscode.Uri[]> {
+export async function init(_context: vscode.ExtensionContext){
 	// console.warn("init----file");
 	// 初始化变量
 	context = context || _context;
@@ -35,15 +35,16 @@ export async function init(_context: vscode.ExtensionContext): Promise<vscode.Ur
 	_fs = _fs || vscode.workspace.fs;
 	// 先创建一遍,如果已存在,不会做操作
 	await _fs.createDirectory(uri);
-	return await getBookList();
+	// return await getBookList();
 }
 
 /**
  * 获取书架中书的列表
  * @returns
  */
-export async function getBookList(): Promise<vscode.Uri[]> {
-	return await util.readDir(uri, true);
+export async function getBookList(): Promise<FileTreeItem[]> {
+	// return await util.readDir(uri, {isFilterText:true});
+	return await readBookDirTerr(uri);
 }
 
 /**
