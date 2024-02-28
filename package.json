@@ -2,7 +2,7 @@
 	"name": "novel-look-ts",
 	"displayName": "novel-look2",
 	"description": "高性能,支持高度自定义操作的看(mo)书(yu)插件",
-	"version": "2.1.4",
+	"version": "2.1.5",
 	"keywords": [
 		"novel",
 		"摸鱼",
@@ -40,7 +40,7 @@
 				},
 				"novelLook.match.chapterName": {
 					"type": "string",
-					"default": "(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*",
+					"default": "^(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*$",
 					"description": "匹配章节名称的正则,'\\'不需要转义"
 				},
 				"novelLook.ignoreDir": {

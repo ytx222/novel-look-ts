@@ -1,4 +1,4 @@
-import { get } from './config';
+import { get } from "./config";
 
 /**
  * 章节信息
@@ -25,7 +25,7 @@ function getChapterTitle(s: string) {
 	const t = reg2.exec(s);
 	if (t) {
 		// console.log("成功", s.substring(t[0].length).trim());
-		return s.substring(t[0].length).replace(/ /g, '');
+		return s.substring(t[0].length).replace(/ /g, "");
 	}
 	return s;
 }
@@ -51,14 +51,19 @@ function isRepeat(cur: splitChapterInfo, last: splitChapterInfo) {
  * @return {Array<Object>} 章节列表
  */
 export function split(s: string): splitChapterInfo[] {
-	const match = get('match.chapterName', '(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*');
-	const reg = new RegExp(match, 'g');
+	const match = get(
+		"match.chapterName",
+		"^(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*$"
+	);
+	const reg = new RegExp(match, "gm");
 	let t;
 	//第一章之前的
 	t = reg.exec(s);
 	// 因为头部这两个字,txtIndex要-2,size+2(因为字符串截取)
 	// (t && t.index + 2) || 2  直接赋值为文件长度,如果后面有内容,则覆盖,没有则直接显示头部
-	const arr: splitChapterInfo[] = [{ txtIndex: -2, s: '头部', i: 0, size: s.length }];
+	const arr: splitChapterInfo[] = [
+		{ txtIndex: -2, s: "头部", i: 0, size: s.length },
+	];
 	let i = 0;
 	let lastItem = arr[0];
 	if (t) {
