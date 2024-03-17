@@ -53,7 +53,7 @@ function isRepeat(cur: splitChapterInfo, last: splitChapterInfo) {
 export function split(s: string): splitChapterInfo[] {
 	const match = get(
 		"match.chapterName",
-		"^(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*$"
+		"^(?:[ \\t\\r\\f\\v]*)(第[一二两三四五六七八九十百千万零〇\\d]*[篇节部卷][ \\t\\r\\f\\v]*.*[ \\t\\r\\f\\v]*)?第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n\\r]*$" as string
 	);
 	const reg = new RegExp(match, "gm");
 	let t;

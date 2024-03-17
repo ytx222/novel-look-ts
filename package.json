@@ -40,7 +40,7 @@
 				},
 				"novelLook.match.chapterName": {
 					"type": "string",
-					"default": "^(?:\\s*)第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n]*$",
+					"default": "^(?:[ \\t\\r\\f\\v]*)(第[一二两三四五六七八九十百千万零〇\\d]*[篇节部卷][ \\t\\r\\f\\v]*.*[ \\t\\r\\f\\v]*)?第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n\\r]*$",
 					"description": "匹配章节名称的正则,'\\'不需要转义"
 				},
 				"novelLook.ignoreDir": {
