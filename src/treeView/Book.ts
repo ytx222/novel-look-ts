@@ -20,7 +20,7 @@ export class Book extends vscode.TreeItem {
 	// TODO:类型
 	readList: number[] = [];
 	timer?: NodeJS.Timeout;
-	type = 'book';
+	type = 'book' as const;
 	/**
 	 * 创建一本书
 	 * @param  label 名称
@@ -32,10 +32,7 @@ export class Book extends vscode.TreeItem {
 		this.tooltip = `${this.label}`;
 		this.collapsibleState = 1; // 可展开,未展开
 		// this.description = this.version;
-		console.log({
-			lastChapter,
-			p: uri.fsPath,
-		});
+		// console.log({ lastChapter, p: uri.fsPath, });
 		if (lastChapter?.fullPath === uri.fsPath) {
 			this.iconPath = vscode.Uri.joinPath(getExtensionUri(), 'img/book_read.png');
 		} else {

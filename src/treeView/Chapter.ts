@@ -38,7 +38,7 @@ export class Chapter extends vscode.TreeItem {
 	label: string;
 	title: string;
 	content: string;
-	type = 'chapter';
+	type = 'chapter' as const;
 	/**
 	 * 创建章节
 	 * @param book 这个章节属于哪本书

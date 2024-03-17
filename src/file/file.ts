@@ -106,6 +106,8 @@ async function copyDir(src: vscode.Uri, dist: vscode.Uri) {
  * @param {*} url
  */
 function openExplorer(url = uri.fsPath) {
+	console.log(uri.fsPath,url);
+	// vscode.window.showErrorMessage(uri.fsPath);
 	exec('explorer.exe /e,"' + url + '"');
 }
 

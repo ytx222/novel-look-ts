@@ -1,12 +1,18 @@
-import * as vscode from 'vscode';
-import * as file from '../file/file';
-import { split } from '../split';
-import * as webView from '../webView';
-import { FileTreeItem, getFileName } from '../file/fileUtil';
-import { getState, setState, setSync, getExtensionUri, getStateDefault } from '../util/util';
-import { Book } from './Book';
-import { Chapter, ChapterGroup, LastChapterData, curChapter } from './Chapter';
-import { BookDir } from './BookDir';
+import * as vscode from "vscode";
+import * as file from "../file/file";
+import { split } from "../split";
+import * as webView from "../webView";
+import { FileTreeItem, getFileName } from "../file/fileUtil";
+import {
+	getState,
+	setState,
+	setSync,
+	getExtensionUri,
+	getStateDefault,
+} from "../util/util";
+import { Book } from "./Book";
+import { Chapter, ChapterGroup, LastChapterData, curChapter } from "./Chapter";
+import { BookDir } from "./BookDir";
 
 /**
  * 子节点类型
@@ -16,7 +22,7 @@ type TreeItem = BookDir | Book | Chapter | ChapterGroup;
 export let lastChapter: LastChapterData;
 
 export const parseTree = (arr: FileTreeItem[], map?: Map<string, Book>) => {
-	return arr.map(item => {
+	let res = arr.map((item) => {
 		if (item.type === vscode.FileType.Directory) {
 			return new BookDir(item);
 		}
@@ -24,6 +30,23 @@ export const parseTree = (arr: FileTreeItem[], map?: Map<string, Book>) => {
 		map && map.set(item.item.fsPath, new Book(item.item));
 		return new Book(item.item);
 	});
+	// BookDir排序在最前面,剩余的按照默认排序
+	res.sort((a, b) => {
+		if (a.type === "dir" && b.type !== "dir") {
+			return -1;
+		}
+		if (
+			a instanceof Book &&
+			a.fullPath === lastChapter?.fullPath &&
+			b.type !== "dir"
+		) {
+			return -1;
+		}
+
+		return a.label! > b.label! ? 1 : -1;
+	});
+
+	return res;
 };
 
 /**
@@ -40,7 +63,7 @@ export class Bookrack implements vscode.TreeDataProvider<TreeItem> {
 
 	init(arr: FileTreeItem[]) {
 		// 初始化之前阅读的书
-		lastChapter = getState<LastChapterData>('lastOpenChapter')!;
+		lastChapter = getState<LastChapterData>("lastOpenChapter")!;
 		// 初始化数据
 		this.bookMap = new Map<string, Book>();
 		this.child = parseTree(arr, this.bookMap);
@@ -49,8 +72,10 @@ export class Bookrack implements vscode.TreeDataProvider<TreeItem> {
 	/**
 	 * 刷新需要的
 	 */
-	private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | null> = new vscode.EventEmitter<TreeItem | null>();
-	readonly onDidChangeTreeData: vscode.Event<TreeItem | null> = this._onDidChangeTreeData.event;
+	private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | null> =
+		new vscode.EventEmitter<TreeItem | null>();
+	readonly onDidChangeTreeData: vscode.Event<TreeItem | null> =
+		this._onDidChangeTreeData.event;
 	// TODO: 以后使用hash?,这样可以在文件重命名后仍然保留
 	// 但是过渡的为用户(我自己?)的修改行为买单十分有意义
 	/**
@@ -117,7 +142,7 @@ export class Bookrack implements vscode.TreeDataProvider<TreeItem> {
 	//
 	async getChildren(element: TreeItem): Promise<TreeItem[]> {
 		if (!this.bookMap.size) {
-			vscode.window.showInformationMessage('没有书');
+			vscode.window.showInformationMessage("没有书");
 			return Promise.resolve([]);
 		}
 		// 返回根元素的子元素(书)
@@ -140,19 +165,21 @@ async function showChapter(e: TreeItem | null | undefined): Promise<void> {
 		e.openThis();
 	} else if (e && e instanceof Book) {
 		// 对书执行
-		vscode.window.showInformationMessage('无法对书进行此操作');
+		vscode.window.showInformationMessage("无法对书进行此操作");
 	} else {
-		vscode.window.showInformationMessage('未提供正确的参数,请点击某一章节打开');
+		vscode.window.showInformationMessage(
+			"未提供正确的参数,请点击某一章节打开"
+		);
 	}
 }
 export async function nextChapter() {
-	console.warn('nextChapter=========');
+	console.warn("nextChapter=========");
 	// 对一个章节进行下一章命令时,会记录当前章节已读
-	changeChapter(1, '下', true);
+	changeChapter(1, "下", true);
 }
 export async function prevChapter() {
-	console.warn('prevChapter=========');
-	changeChapter(-1, '上');
+	console.warn("prevChapter=========");
+	changeChapter(-1, "上");
 }
 /**
  * 切换章节
@@ -178,7 +205,9 @@ async function changeChapter(n: number, s: string, isSave = false) {
 			vscode.window.showInformationMessage(`未找到${s}一章`);
 		}
 	} else {
-		vscode.window.showInformationMessage(`未找到当前章,也许是出错了,请关闭再试一次`);
+		vscode.window.showInformationMessage(
+			`未找到当前章,也许是出错了,请关闭再试一次`
+		);
 	}
 }
 /**
@@ -198,8 +227,8 @@ async function openWebView() {
 	} else {
 		// 读取缓存中的
 		vscode.window.showInformationMessage(`正在打开`);
-		lastChapter = getState<LastChapterData>('lastOpenChapter')!;
-		if (bookrack.bookMap.get(lastChapter?.fullPath || '')) {
+		lastChapter = getState<LastChapterData>("lastOpenChapter")!;
+		if (bookrack.bookMap.get(lastChapter?.fullPath || "")) {
 			const book = bookrack.bookMap.get(lastChapter!.fullPath) as Book;
 			// 找到那本书
 			// 防止在没有获取书内容的时候查找章节
@@ -228,10 +257,10 @@ let bookrack: Bookrack;
 export async function createTreeView() {
 	if (treeView) return;
 	let fileList = await file.getBookList();
-	console.log('createTreeView 执行', fileList);
+	console.log("createTreeView 执行", fileList);
 	// vscode.window.registerTreeDataProvider("novelLookTreeView", new Bookrack(t));
 	bookrack = new Bookrack(fileList);
-	treeView = vscode.window.createTreeView<Bookrack>('novelLookTreeView', {
+	treeView = vscode.window.createTreeView<Bookrack>("novelLookTreeView", {
 		// @ts-ignore
 		treeDataProvider: bookrack,
 	});
@@ -241,24 +270,24 @@ async function refreshFile(isNotMsg = false) {
 	let list = await file.getBookList();
 	bookrack.refresh(list);
 	if (!isNotMsg) {
-		vscode.window.showInformationMessage('刷新完成');
+		vscode.window.showInformationMessage("刷新完成");
 	}
 	return list;
 }
 
 async function showReadChapter() {
-	setState('isShowReadChapter', true);
+	setState("isShowReadChapter", true);
 	await refreshFile();
 }
 async function hideReadChapter() {
-	setState('isShowReadChapter', false);
+	setState("isShowReadChapter", false);
 	await refreshFile();
 }
 async function clearReadChapter(e: vscode.TreeItem): Promise<void> {
 	//是对章执行的命令
-	console.log('clearReadChapter---执行');
+	console.log("clearReadChapter---执行");
 	if (e && e instanceof Chapter) {
-		vscode.window.showInformationMessage('无法对章节进行此操作');
+		vscode.window.showInformationMessage("无法对章节进行此操作");
 	} else if (e && e instanceof Book) {
 		// 对书执行
 		// e.collapsibleState = 2;
