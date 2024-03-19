@@ -36,6 +36,7 @@ export async function init(_context: vscode.ExtensionContext){
 	// 先创建一遍,如果已存在,不会做操作
 	await _fs.createDirectory(uri);
 	// return await getBookList();
+
 }
 
 /**

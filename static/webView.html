@@ -29,23 +29,24 @@
 		<button class="button prev">上一章</button>
 		<button class="button next">下一章</button>
 	</div>
-	<div class="function-box">
-		<div class="main">
-			<div class="header standard-width">
-				<div class="title">章节标题</div>
-			</div>
-			<div class="content-box">
-				<div class="content standard-width">
-					<div> 您现在应该看到内容,如果没有,请重新打开章节 </div>
-				</div>
-			</div>
-			<div class="footer standard-width">
-				<div class="btn-box">
-					<button class="prev" tabindex="2">上一章</button>
-					<button class="next" tabindex="1">下一章</button>
-				</div>
+	<div class="main">
+		<div class="header standard-width">
+			<div class="title">章节标题</div>
+		</div>
+		<div class="content-box">
+			<div class="content standard-width">
+				<div> 您现在应该看到内容,如果没有,请重新打开章节 </div>
 			</div>
 		</div>
+		<div class="footer standard-width">
+			<div class="btn-box">
+				<button class="prev" tabindex="2">上一章</button>
+				<button class="next" tabindex="1">下一章</button>
+			</div>
+		</div>
+	</div>
+	<div class="function-box">
+
 		<!-- 附加功能 -->
 
 		<!-- 在加载时将这个按钮显示为loading? -->
@@ -54,12 +55,17 @@
 				<use xlink:href="#arrow" />
 			</svg>
 		</div>
-
 		<div class="side-next-btn button flex-center btn2">
 			<svg>
 				<use xlink:href="#arrow" />
 			</svg>
 		</div>
+
+		<!-- <div class="side-next-btn button flex-center btn2">
+			<svg>
+				<use xlink:href="#arrow" />
+			</svg>
+		</div> -->
 
 		<!--
 				参考antd
@@ -115,16 +121,38 @@
 				切换禅模式(全屏)
 			</div>
 			<div class="contextmenu-hr "> </div>
-			<div class="contextmenu-item turn-screen">
+			<!-- <div class="contextmenu-item turn-screen">
 				<label class="contextmenu-item-input" for="turn-screen">
 					<span class="contextmenu-item-input-label">翻转屏幕方向: </span>
 					<input type="number" name="screenDirection" id="turn-screen">
 				</label>
+			</div> -->
+			<div class="contextmenu-item turn-screen">
+				<label class="contextmenu-item-input" title="屏幕旋转方向" for="turn-screen">
+					<span class="contextmenu-item-input-label">
+						<svg class="rotate-icon">
+							<use xlink:href="#rotate" />
+						</svg>
+					</span>
+					<div class="rotate-screen-items">
+						<div class="rotate-screen-item fc">
+							<div class="item" data-i="1">A</div>
+						</div>
+						<div class="rotate-screen-item fc">
+							<div class="item" data-i="2">A</div>
+						</div>
+						<div class="rotate-screen-item fc">
+							<div class="item" data-i="3">A</div>
+						</div>
+						<div class="rotate-screen-item fc">
+							<div class="item" data-i="4">A</div>
+						</div>
+					</div>
+				</label>
 			</div>
-			<div class="contextmenu-item title" id="setTheme">
+			<!-- <div class="contextmenu-item title" id="setTheme">
 				<div class="after"></div>
-
-			</div>
+			</div> -->
 			<div class="contextmenu-hr "> </div>
 			<div class="contextmenu-item">
 				<label class="contextmenu-item-input" for="scroll-speed-input">
@@ -140,6 +168,8 @@
 			</div>
 		</div>
 	</div>
+
+
 
 
 	<div class="symbol-box">
@@ -158,9 +188,28 @@
 				</svg> -->
 			<symbol id="cursor" viewBox="0 0 1024 1024">
 				<path
-				d="M384 174.8L725.3 577H551.6c-2.8 0-4.7 2.7-3.8 5.3l28.1 79.9 93 264.3-45.3 15.9-85.5-243-35.2-100.1c-1-2.9-4.9-3.6-6.9-1.2l-67.6 81.8-44.4 53.7V174.8zM320 0.5V867c0 15 18.8 21.8 28.3 10.2l124.8-151.1c2-2.4 5.8-1.7 6.9 1.2l99.1 281.6c2.9 8.3 12.1 12.7 20.4 9.8l135.8-47.8c8.3-2.9 12.7-12.1 9.8-20.4l-107-304.2c-0.9-2.6 1-5.3 3.8-5.3H829c13.6 0 21-16 12.2-26.4L320 0.5z" />
-
+					d="M384 174.8L725.3 577H551.6c-2.8 0-4.7 2.7-3.8 5.3l28.1 79.9 93 264.3-45.3 15.9-85.5-243-35.2-100.1c-1-2.9-4.9-3.6-6.9-1.2l-67.6 81.8-44.4 53.7V174.8zM320 0.5V867c0 15 18.8 21.8 28.3 10.2l124.8-151.1c2-2.4 5.8-1.7 6.9 1.2l99.1 281.6c2.9 8.3 12.1 12.7 20.4 9.8l135.8-47.8c8.3-2.9 12.7-12.1 9.8-20.4l-107-304.2c-0.9-2.6 1-5.3 3.8-5.3H829c13.6 0 21-16 12.2-26.4L320 0.5z" />
 			</symbol>
+
+			<symbol id="rotate" viewBox="0 0 1024 1024">
+
+				<!-- <path
+					d="M416 352c-38.4 0-64 25.6-64 64v192c0 38.4 25.6 64 64 64h192c38.4 0 64-25.6 64-64v-192c0-38.4-25.6-64-64-64h-192z m192 256h-192v-192h192v192zM928 704h-192c-19.2 0-32 12.8-32 32s12.8 32 32 32h140.8c-83.2 121.6-224 192-364.8 192s-275.2-64-358.4-179.2c-12.8-12.8-32-19.2-44.8-6.4-12.8 12.8-19.2 32-6.4 44.8C198.4 947.2 352 1024 512 1024c147.2 0 288-64 384-172.8v76.8c0 19.2 12.8 32 32 32s32-12.8 32-32v-192c0-19.2-12.8-32-32-32zM320 288c0-19.2-12.8-32-32-32H147.2C230.4 134.4 364.8 64 512 64c140.8 0 275.2 70.4 358.4 179.2 12.8 12.8 32 19.2 44.8 6.4 12.8-12.8 19.2-32 6.4-44.8C825.6 76.8 672 0 512 0 364.8 0 224 64 128 172.8V96C128 76.8 115.2 64 96 64s-32 12.8-32 32v192c0 19.2 12.8 32 32 32h192c19.2 0 32-12.8 32-32z"
+					p-id="2683"></path> -->
+					<path
+					d="M307.805766 333.803922A39.604706 39.604706 0 0 0 349.217531 292.392157 39.604706 39.604706 0 0 0 307.805766 250.980392H189.292825A417.02902 417.02902 0 0 1 527.413609 82.823529c130.81098 0 262.374902 65.807059 343.391373 171.720785l0.853333 1.003921a54.462745 54.462745 0 0 0 27.105883 15.058824 33.28 33.28 0 0 0 31.021176-9.035294 54.512941 54.512941 0 0 0 15.058824-27.105883 33.330196 33.330196 0 0 0-8.332549-30.218039 512.552157 512.552157 0 0 0-775.629804-50.196078v-49.894902a39.604706 39.604706 0 0 0-41.311373-41.411765A39.604706 39.604706 0 0 0 78.158707 104.156863v188.235294a39.604706 39.604706 0 0 0 41.411765 41.411765zM417.885766 345.098039c-42.867451 0-72.784314 30.117647-72.784313 72.784314v188.235294c0 42.867451 30.117647 72.784314 72.784313 72.784314h188.235294c42.867451 0 72.784314-30.117647 72.784314-72.784314v-188.235294c0-43.52-29.264314-72.784314-72.784314-72.784314z m178.196079 82.82353v168.156862h-168.156863v-168.156862zM904.436355 690.196078h-188.235295a41.411765 41.411765 0 1 0 0 82.82353h118.412549a429.126275 429.126275 0 0 1-338.070588 168.156863C359.256747 941.176471 230.905374 877.076078 153.452825 769.656471l-1.054118-1.204706a54.462745 54.462745 0 0 0-27.105882-15.058824 33.28 33.28 0 0 0-31.021176 9.035294C78.158707 778.039216 71.08106 802.735686 87.394786 819.752157a512.552157 512.552157 0 0 0 775.629804 50.196078v49.744314a41.411765 41.411765 0 1 0 82.823529 0v-188.235294a39.604706 39.604706 0 0 0-41.411764-41.261177z"
+					 p-id="7930"></path>
+			</symbol>
+
+			<!-- <svg t="1710866641636" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+				p-id="7929" width="200" height="200">
+
+			</svg> -->
+
+			<!-- <svg t="1710864334607" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+				p-id="2547" width="200" height="200">
+
+			</svg> -->
 
 		</svg>
 

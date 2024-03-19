@@ -1,9 +1,9 @@
 .vscodeDefault {
-	--vscode-font-family: 'Segoe WPC', 'Segoe UI', sans-serif;
+	--vscode-font-family: "Segoe WPC", "Segoe UI", sans-serif;
 	--vscode-font-weight: normal;
 	--vscode-font-size: 13px;
-	--vscode-editor-font-family: Consolas, 'Courier New', monospace, 'Sarasa Mono SC',
-		'Ubuntu Mono derivative Powerline';
+	--vscode-editor-font-family: Consolas, "Courier New", monospace,
+		"Sarasa Mono SC", "Ubuntu Mono derivative Powerline";
 	--vscode-editor-font-weight: normal;
 	--vscode-editor-font-size: 16px;
 	--vscode-foreground: #cccccc;
@@ -144,11 +144,26 @@
 	--vscode-merge-incomingContentBackground: rgba(64, 166, 255, 0.2);
 	--vscode-merge-commonHeaderBackground: rgba(96, 96, 96, 0.4);
 	--vscode-merge-commonContentBackground: rgba(96, 96, 96, 0.16);
-	--vscode-editorOverviewRuler-currentContentForeground: rgba(64, 200, 174, 0.5);
-	--vscode-editorOverviewRuler-incomingContentForeground: rgba(64, 166, 255, 0.5);
+	--vscode-editorOverviewRuler-currentContentForeground: rgba(
+		64,
+		200,
+		174,
+		0.5
+	);
+	--vscode-editorOverviewRuler-incomingContentForeground: rgba(
+		64,
+		166,
+		255,
+		0.5
+	);
 	--vscode-editorOverviewRuler-commonContentForeground: rgba(96, 96, 96, 0.4);
 	--vscode-editorOverviewRuler-findMatchForeground: rgba(209, 134, 22, 0.49);
-	--vscode-editorOverviewRuler-selectionHighlightForeground: rgba(160, 160, 160, 0.8);
+	--vscode-editorOverviewRuler-selectionHighlightForeground: rgba(
+		160,
+		160,
+		160,
+		0.8
+	);
 	--vscode-minimap-findMatchHighlight: #d18616;
 	--vscode-minimap-selectionOccurrenceHighlight: #676767;
 	--vscode-minimap-selectionHighlight: rgba(135, 139, 145, 0.5);
@@ -189,7 +204,12 @@
 	--vscode-editorGutter-background: #272822;
 	--vscode-editorUnnecessaryCode-opacity: rgba(0, 0, 0, 0.67);
 	--vscode-editorGhostText-foreground: rgba(255, 255, 255, 0.34);
-	--vscode-editorOverviewRuler-rangeHighlightForeground: rgba(0, 122, 204, 0.6);
+	--vscode-editorOverviewRuler-rangeHighlightForeground: rgba(
+		0,
+		122,
+		204,
+		0.6
+	);
 	--vscode-editorOverviewRuler-errorForeground: rgba(255, 18, 18, 0.7);
 	--vscode-editorOverviewRuler-warningForeground: #cca700;
 	--vscode-editorOverviewRuler-infoForeground: #3794ff;
@@ -199,7 +219,12 @@
 	--vscode-editorBracketHighlight-foreground4: rgba(0, 0, 0, 0);
 	--vscode-editorBracketHighlight-foreground5: rgba(0, 0, 0, 0);
 	--vscode-editorBracketHighlight-foreground6: rgba(0, 0, 0, 0);
-	--vscode-editorBracketHighlight-unexpectedBracket\.foreground: rgba(255, 18, 18, 0.8);
+	--vscode-editorBracketHighlight-unexpectedBracket\.foreground: rgba(
+		255,
+		18,
+		18,
+		0.8
+	);
 	--vscode-editorBracketPairGuide-background1: rgba(0, 0, 0, 0);
 	--vscode-editorBracketPairGuide-background2: rgba(0, 0, 0, 0);
 	--vscode-editorBracketPairGuide-background3: rgba(0, 0, 0, 0);
@@ -254,8 +279,18 @@
 	--vscode-editor-linkedEditingBackground: rgba(255, 0, 0, 0.3);
 	--vscode-editor-wordHighlightBackground: rgba(74, 74, 118, 0.5);
 	--vscode-editor-wordHighlightStrongBackground: rgba(106, 106, 150, 0.5);
-	--vscode-editorOverviewRuler-wordHighlightForeground: rgba(160, 160, 160, 0.8);
-	--vscode-editorOverviewRuler-wordHighlightStrongForeground: rgba(192, 160, 192, 0.8);
+	--vscode-editorOverviewRuler-wordHighlightForeground: rgba(
+		160,
+		160,
+		160,
+		0.8
+	);
+	--vscode-editorOverviewRuler-wordHighlightStrongForeground: rgba(
+		192,
+		160,
+		192,
+		0.8
+	);
 	--vscode-peekViewTitle-background: #1e1f1c;
 	--vscode-peekViewTitleLabel-foreground: #ffffff;
 	--vscode-peekViewTitleDescription-foreground: rgba(204, 204, 204, 0.7);
@@ -270,11 +305,26 @@
 	--vscode-peekViewResult-matchHighlightBackground: #75715e;
 	--vscode-peekViewEditor-matchHighlightBackground: #75715e;
 	--vscode-editorMarkerNavigationError-background: #f14c4c;
-	--vscode-editorMarkerNavigationError-headerBackground: rgba(241, 76, 76, 0.1);
+	--vscode-editorMarkerNavigationError-headerBackground: rgba(
+		241,
+		76,
+		76,
+		0.1
+	);
 	--vscode-editorMarkerNavigationWarning-background: #cca700;
-	--vscode-editorMarkerNavigationWarning-headerBackground: rgba(204, 167, 0, 0.1);
+	--vscode-editorMarkerNavigationWarning-headerBackground: rgba(
+		204,
+		167,
+		0,
+		0.1
+	);
 	--vscode-editorMarkerNavigationInfo-background: #3794ff;
-	--vscode-editorMarkerNavigationInfo-headerBackground: rgba(55, 148, 255, 0.1);
+	--vscode-editorMarkerNavigationInfo-headerBackground: rgba(
+		55,
+		148,
+		255,
+		0.1
+	);
 	--vscode-editorMarkerNavigation-background: #272822;
 	--vscode-editorSuggestWidget-background: #272822;
 	--vscode-editorSuggestWidget-border: #75715e;
@@ -342,7 +392,12 @@
 	--vscode-activityBar-dropBorder: #f8f8f2;
 	--vscode-activityBarBadge-background: #007acc;
 	--vscode-activityBarBadge-foreground: #ffffff;
-	--vscode-activityBarItem-settingsProfilesForeground: rgba(248, 248, 242, 0.4);
+	--vscode-activityBarItem-settingsProfilesForeground: rgba(
+		248,
+		248,
+		242,
+		0.4
+	);
 	--vscode-activityBarItem-settingsProfilesHoverForeground: #f8f8f2;
 	--vscode-activityBarItem-settingsProfilesBackground: #3a3c33;
 	--vscode-statusBarItem-remoteBackground: #ac6218;
@@ -376,22 +431,52 @@
 	--vscode-editorCommentsWidget-unresolvedBorder: #75715e;
 	--vscode-editorCommentsWidget-rangeBackground: rgba(117, 113, 94, 0.1);
 	--vscode-editorCommentsWidget-rangeBorder: rgba(117, 113, 94, 0.4);
-	--vscode-editorCommentsWidget-rangeActiveBackground: rgba(117, 113, 94, 0.1);
+	--vscode-editorCommentsWidget-rangeActiveBackground: rgba(
+		117,
+		113,
+		94,
+		0.1
+	);
 	--vscode-editorCommentsWidget-rangeActiveBorder: rgba(117, 113, 94, 0.4);
 	--vscode-editorGutter-commentRangeForeground: #414339;
 	--vscode-debugToolBar-background: #1e1f1c;
 	--vscode-debugIcon-startForeground: #89d185;
 	--vscode-editor-stackFrameHighlightBackground: rgba(255, 255, 0, 0.2);
-	--vscode-editor-focusedStackFrameHighlightBackground: rgba(122, 189, 122, 0.3);
+	--vscode-editor-focusedStackFrameHighlightBackground: rgba(
+		122,
+		189,
+		122,
+		0.3
+	);
 	--vscode-mergeEditor-change\.background: rgba(155, 185, 85, 0.2);
 	--vscode-mergeEditor-change\.word\.background: rgba(156, 204, 44, 0.2);
 	--vscode-mergeEditor-changeBase\.background: #4b1818;
 	--vscode-mergeEditor-changeBase\.word\.background: #6f1313;
-	--vscode-mergeEditor-conflict\.unhandledUnfocused\.border: rgba(255, 166, 0, 0.48);
+	--vscode-mergeEditor-conflict\.unhandledUnfocused\.border: rgba(
+		255,
+		166,
+		0,
+		0.48
+	);
 	--vscode-mergeEditor-conflict\.unhandledFocused\.border: #ffa600;
-	--vscode-mergeEditor-conflict\.handledUnfocused\.border: rgba(134, 134, 134, 0.29);
-	--vscode-mergeEditor-conflict\.handledFocused\.border: rgba(193, 193, 193, 0.8);
-	--vscode-mergeEditor-conflict\.handled\.minimapOverViewRuler: rgba(173, 172, 168, 0.93);
+	--vscode-mergeEditor-conflict\.handledUnfocused\.border: rgba(
+		134,
+		134,
+		134,
+		0.29
+	);
+	--vscode-mergeEditor-conflict\.handledFocused\.border: rgba(
+		193,
+		193,
+		193,
+		0.8
+	);
+	--vscode-mergeEditor-conflict\.handled\.minimapOverViewRuler: rgba(
+		173,
+		172,
+		168,
+		0.93
+	);
 	--vscode-mergeEditor-conflict\.unhandled\.minimapOverViewRuler: #fcba03;
 	--vscode-mergeEditor-conflictingLines\.background: rgba(255, 234, 0, 0.28);
 	--vscode-mergeEditor-conflict\.input1\.background: rgba(64, 200, 174, 0.2);
@@ -417,14 +502,24 @@
 	--vscode-terminal-foreground: #cccccc;
 	--vscode-terminal-selectionBackground: rgba(135, 139, 145, 0.5);
 	--vscode-terminal-inactiveSelectionBackground: rgba(135, 139, 145, 0.25);
-	--vscode-terminalCommandDecoration-defaultBackground: rgba(255, 255, 255, 0.25);
+	--vscode-terminalCommandDecoration-defaultBackground: rgba(
+		255,
+		255,
+		255,
+		0.25
+	);
 	--vscode-terminalCommandDecoration-successBackground: #1b81a8;
 	--vscode-terminalCommandDecoration-errorBackground: #f14c4c;
 	--vscode-terminalOverviewRuler-cursorForeground: rgba(160, 160, 160, 0.8);
 	--vscode-terminal-border: #414339;
 	--vscode-terminal-findMatchBackground: #515c6a;
 	--vscode-terminal-findMatchHighlightBackground: rgba(234, 92, 0, 0.33);
-	--vscode-terminalOverviewRuler-findMatchForeground: rgba(209, 134, 22, 0.49);
+	--vscode-terminalOverviewRuler-findMatchForeground: rgba(
+		209,
+		134,
+		22,
+		0.49
+	);
 	--vscode-terminal-dropBackground: rgba(65, 67, 57, 0.5);
 	--vscode-testing-iconFailed: #f14c4c;
 	--vscode-testing-iconErrored: #f14c4c;
@@ -437,7 +532,12 @@
 	--vscode-testing-peekHeaderBackground: rgba(241, 76, 76, 0.1);
 	--vscode-testing-message\.error\.decorationForeground: #f14c4c;
 	--vscode-testing-message\.error\.lineBackground: rgba(255, 0, 0, 0.2);
-	--vscode-testing-message\.info\.decorationForeground: rgba(248, 248, 242, 0.5);
+	--vscode-testing-message\.info\.decorationForeground: rgba(
+		248,
+		248,
+		242,
+		0.5
+	);
 	--vscode-welcomePage-tileBackground: #1e1f1c;
 	--vscode-welcomePage-tileHoverBackground: #242522;
 	--vscode-welcomePage-tileShadow: rgba(0, 0, 0, 0.6);
@@ -474,7 +574,12 @@
 	--vscode-notebook-selectedCellBorder: #414339;
 	--vscode-notebook-focusedCellBorder: #75715e;
 	--vscode-notebook-inactiveFocusedCellBorder: #414339;
-	--vscode-notebook-cellStatusBarItemHoverBackground: rgba(255, 255, 255, 0.15);
+	--vscode-notebook-cellStatusBarItemHoverBackground: rgba(
+		255,
+		255,
+		255,
+		0.15
+	);
 	--vscode-notebook-cellInsertionIndicator: #75715e;
 	--vscode-notebookScrollbarSlider-background: rgba(121, 121, 121, 0.4);
 	--vscode-notebookScrollbarSlider-hoverBackground: rgba(100, 100, 100, 0.7);
@@ -618,7 +723,7 @@ body {
 	margin: 0px;
 	color: var(--color);
 	cursor: default;
-	cursor: url('./cursor.svg'), url('./fish.png');
+	cursor: url("./cursor.svg"), url("./fish.png");
 	/* background: var(--bg); */
 	flex-direction: column;
 	width: var(--fullWidth);
@@ -676,7 +781,7 @@ button:active,
 	display: block;
 	width: 100%;
 	height: 100%;
-	content: ' ';
+	content: " ";
 	opacity: 0.5;
 	box-shadow: 0px 0px 0px var(--shadow-size, 2px) var(--color) inset;
 }
@@ -705,7 +810,7 @@ button:active,
 	display: block;
 	width: 100%;
 	height: var(--navHeight);
-	content: ' ';
+	content: " ";
 	opacity: 0.15;
 	box-shadow: var(--color) 0px 4px 6px -1px;
 }
@@ -731,8 +836,9 @@ button:active,
 	text-overflow: ellipsis;
 	white-space: nowrap;
 
-	text-shadow: 0px 0px 10px var(--bg), 0px 0px 10px var(--bg), 0px 0px 10px var(--bg), 0px 0px 10px var(--bg),
-		0px 0px 10px var(--bg), 0px 0px 10px var(--bg);
+	text-shadow: 0px 0px 10px var(--bg), 0px 0px 10px var(--bg),
+		0px 0px 10px var(--bg), 0px 0px 10px var(--bg), 0px 0px 10px var(--bg),
+		0px 0px 10px var(--bg);
 	/* text-shadow: 0px 0px 10px var(--color), 0px 0px 10px var(--color), 0px 0px 10px var(--color),
 		0px 0px 10px var(--color), 0px 0px 10px var(--color); */
 	/* position: relative; */
@@ -746,7 +852,7 @@ button:active,
 	display: block;
 	width: 100%;
 	height: 100%;
-	content: ' ';
+	content: " ";
 	opacity: 0.5;
 	background: var(--bg);
 }
@@ -1012,7 +1118,7 @@ button:active,
 	color: #000;
 	pointer-events: none;
 	background: var(--color);
-	content: ' ';
+	content: " ";
 	opacity: 0.1;
 }
 
@@ -1054,7 +1160,7 @@ button:active,
 	border-top: 0;
 
 	border-left: 0;
-	content: ' ';
+	content: " ";
 	transform: translate(-10%, -10%);
 	transform: rotate(45deg);
 	transform: rotate(45deg) translate(-18%, -8%);
@@ -1094,48 +1200,95 @@ button:active,
 	display: flex;
 	justify-content: space-between;
 }
-
+/*********************
+* 	   旋转控制
+*********************/
 html {
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
 }
 
-body[class^='screenDirection'] {
-	position: absolute;
-	top: 0;
-	left: 0;
-}
-
-body.screenDirection-1 {
-}
-body.screenDirection-1 .side-next-btn.btn2 {
-	/* bottom:; */
-	bottom: var(--bottom);
-	left: var(--left);
-}
-body.screenDirection-2 {
-	transform: rotate(90deg) translateY(-100%);
-	transform-origin: left top;
-	/* width: 100vh;
-	height: 100vw; */
-}
-body.screenDirection-2 .side-next-btn.btn2 {
-	/* bottom:; */
-	bottom: var(--left);
-	right: var(--bottom);
-}
-body.screenDirection-3 {
-	transform: rotate(180deg);
+body {
+	--rotate-deg: 0deg;
+	--rotate-y-translate: ;
+	transform: rotate(var(--rotate-deg)) var(--rotate-y-translate);
 	transform-origin: center;
 }
-body.screenDirection-4 {
-	transform: rotate(-90deg) translateX(-100%);
-	transform-origin: left top;
+.screenDirection-2 {
+	--rotate-deg: 90deg;
+	--rotate-y-translate: translateY(-100%);
+}
+.screenDirection-3 {
+	--rotate-deg: 180deg;
+}
+.screenDirection-4 {
+	--rotate-deg: 270deg;
+	--rotate-y-translate: translateX(-100%);
 }
 
 body.screenDirection-2,
 body.screenDirection-4 {
 	--fullWidth: 100vh;
 	--fullHeight: 100vw;
+	transform-origin: left top;
+}
+/* 专门适配的 */
+body.screenDirection-1 .side-next-btn.btn2 {
+	left: var(--left);
+	bottom: var(--bottom);
+}
+body.screenDirection-2 .side-next-btn.btn2 {
+	bottom: var(--left);
+	right: var(--bottom);
+}
+body.screenDirection-3 .side-next-btn.btn2 {
+	right: var(--left);
+	top: var(--bottom);
+}
+body.screenDirection-4 .side-next-btn.btn2 {
+	top: var(--left);
+	left: var(--bottom);
+}
+/* 旋转控制操作的 */
+.turn-screen:hover::after {
+	content: none !important;
+}
+.rotate-icon {
+	width: calc(var(--smallZoomSize) * 0.66);
+	height: calc(var(--smallZoomSize) * 0.66);
+	fill: var(--color);
+	line-height: 24px;
+}
+.rotate-screen-items {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	width: 144px;
+	margin-left: 12px;
+}
+
+.rotate-screen-item .item {
+	width: calc(var(--smallZoomSize) * 0.66);
+	height: calc(var(--smallZoomSize) * 0.5);
+	background: rgba(var(--color-rgb), 0.15);
+	text-align: center;
+	line-height: calc(var(--smallZoomSize) * 0.5);
+	font-size: calc(var(--smallZoomSize) * 0.44);
+}
+.rotate-screen-item .item:hover,
+.rotate-screen-item .item.on {
+	background: rgba(var(--color-rgb), 0.3);
+}
+.rotate-screen-item:nth-child(1) {
+	transform: rotate(calc(var(--rotate-deg) * -1));
+}
+.rotate-screen-item:nth-child(2) {
+	transform: rotate(calc(var(--rotate-deg) * -1 + 90deg));
+}
+.rotate-screen-item:nth-child(3) {
+	transform: rotate(calc(var(--rotate-deg) * -1 + 180deg));
+}
+.rotate-screen-item:nth-child(4) {
+	transform: rotate(calc(var(--rotate-deg) * -1 + 270deg));
 }

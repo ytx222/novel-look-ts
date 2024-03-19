@@ -1,26 +1,29 @@
-import { ElementParentIterator ,dispatchCustomEvent} from './dom.js';
-import { cache, nextChapter, postMsg, setCache } from './vscodeApi.js';
-import { changeTheme } from './webView.js';
-import { updateZoom } from './scroll.js';
+import { ElementParentIterator, dispatchCustomEvent } from "./dom.js";
+import { cache, nextChapter, postMsg, setCache } from "./vscodeApi.js";
+import { changeTheme } from "./webView.js";
+import { updateZoom } from "./scroll.js";
 
 let isShow = false;
 /**
  * 本页面的元素相关逻辑稍微复杂点,自己维护吧
  * 开发时方便起见代码先写dom加载完成事件里
  */
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener("DOMContentLoaded", function () {
 	/** @type { Record<string,HTMLDivElement> } */
 	const el = {
-		contextmenu: document.querySelector('.custom-contextmenu'),
-		customThemeContainer: document.getElementById('customThemeContainer'),
-		themeContainer: document.getElementById('themeContainer'),
-		zenModeButton: document.querySelector('.contextmenu-item.zen-mode'),
-		systemTheme: this.themeContainer.querySelector('.system-theme'),
+		contextmenu: document.querySelector(".custom-contextmenu"),
+		customThemeContainer: document.getElementById("customThemeContainer"),
+		themeContainer: document.getElementById("themeContainer"),
+		zenModeButton: document.querySelector(".contextmenu-item.zen-mode"),
+		systemTheme: this.themeContainer.querySelector(".system-theme"),
 
-		scrollSpeedInput: document.getElementById('scroll-speed-input'),
-		zoomInput: document.getElementById('zoom-input'),
+		scrollSpeedInput: document.getElementById("scroll-speed-input"),
+		zoomInput: document.getElementById("zoom-input"),
 		// turnScreenButton: document.querySelector('.contextmenu-item.turn-screen'),
-		turnScreenInput: document.getElementById('turn-screen'),
+		// turnScreenInput: document.getElementById("turn-screen"),
+		turnScreenBtns: document.querySelectorAll(
+			".rotate-screen-items .item "
+		),
 	};
 	// document.querySelector('.custom-contextmenu');
 
@@ -50,7 +53,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	 * @param {number} y
 	 */
 	showContextMenu = (x, y) => {
-		console.warn('showContextMenu', { isShow, x });
+		console.warn("showContextMenu", { isShow, x });
 		// 如果当前ContextMenu处于显示状态,则允许通过不传递x,y(坐标)来实现重新渲染
 		if (!isShow && x !== undefined) {
 			el.contextmenu.style = `display: block;`;
@@ -67,14 +70,14 @@ window.addEventListener('DOMContentLoaded', function () {
 				[x, y] = [y, x];
 			}
 			if (direction === 2) {
-				y = pageW - y ;
+				y = pageW - y;
 			}
 			if (direction === 3) {
-				x = pageW - x ;
-				y = pageH - y ;
+				x = pageW - x;
+				y = pageH - y;
 			}
 			if (direction === 4) {
-				x = pageH - x ;
+				x = pageH - x;
 			}
 			if (!(direction & 1)) {
 				// 横着的,判断时x需要和h对比,y和w对比
@@ -86,7 +89,9 @@ window.addEventListener('DOMContentLoaded', function () {
 			// 如果右(下)方位置不足,并且左(上)方有足够的位置,则移动
 			if (pageW < x + w && x > w) x -= w;
 			if (pageH < y + h && y > h) y -= h;
-			el.contextmenu.style = `display: block;top:${y || 0}px;left:${x || 0}px;`;
+			el.contextmenu.style = `display: block;top:${y || 0}px;left:${
+				x || 0
+			}px;`;
 			isShow = true;
 		}
 		renderThemeContent();
@@ -102,23 +107,27 @@ window.addEventListener('DOMContentLoaded', function () {
 		style="${getThemeStyleRule(theme)}"
 		data-id="${i + 1}"
 		>
-		<div class="icon ${use === i ? 'on' : ''}"></div>
+		<div class="icon ${use === i ? "on" : ""}"></div>
 		${theme.name}</div>`
 		);
 		// 更新当前使用的主题
 		if (!~use /** use == -1 */) {
 			console.warn(el.systemTheme);
-			el.systemTheme.querySelector('.icon')?.classList.add('on');
+			el.systemTheme.querySelector(".icon")?.classList.add("on");
 		} else {
-			el.systemTheme.querySelector('.icon')?.classList.remove('on');
+			el.systemTheme.querySelector(".icon")?.classList.remove("on");
 		}
 		// 更新滚动速度,zoom等
 
 		el.scrollSpeedInput.value = cache.setting.scrollSpeed;
 		el.zoomInput.value = cache.setting.zoom;
-		el.turnScreenInput.value = cache.setting.screenDirection;
+		// el.turnScreenInput.value = cache.setting.screenDirection;
+		// console.log(el.turnScreenBtns);
+		el.turnScreenBtns[cache.setting.screenDirection - 1].classList.add(
+			"on"
+		);
 
-		let s = themeHtml?.join('');
+		let s = themeHtml?.join("");
 		el.customThemeContainer.innerHTML = s;
 	}
 
@@ -130,15 +139,33 @@ window.addEventListener('DOMContentLoaded', function () {
 			if (item === el.themeContainer) return;
 			// if (item.classList.contains("remove-icon"))
 			//     return void deleteItem(item.parentElement);
-			if (item.classList.contains('add-theme')) return addTheme();
-			if (item.classList.contains('theme-item')) return void clickItem(item);
+			if (item.classList.contains("add-theme")) return addTheme();
+			if (item.classList.contains("theme-item"))
+				return void clickItem(item);
 		}
 	};
 	el.scrollSpeedInput.onchange = inputChange;
 	el.zoomInput.onchange = inputChange;
-	el.turnScreenInput.onchange = inputChange;
+	// el.turnScreenInput.onchange = inputChange;
+	el.turnScreenBtns.forEach((e) => {
+		e.onclick = (e) => {
+			const value = e.target.dataset.i;
+			document.body.className = `body init screenDirection-${value}`;
+			const newSetting = { ...cache.setting, screenDirection: +value };
+			setCache("setting", newSetting);
+			document
+				.querySelector(".rotate-screen-items .item.on")
+				?.classList.remove("on");
+			el.turnScreenBtns[+value - 1].classList.add("on");
 
-	function inputChange (e) {
+			postMsg("updateReadSetting", {
+				key: `readSetting.screenDirection`,
+				value: +value,
+			});
+		};
+	});
+
+	function inputChange(e) {
 		let isMsg = true;
 		//
 		console.warn(e);
@@ -146,7 +173,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		let value = target.value;
 		let name = target.name;
 		// 判断value是否合法
-		if (name === 'zoom') {
+		if (name === "zoom") {
 			// 如果不合法
 			// if (value < 0.4 || value > 10) {
 			// 	value = value > 10 ? 10 : 0.4;
@@ -156,28 +183,30 @@ window.addEventListener('DOMContentLoaded', function () {
 
 			return updateZoom(value);
 		}
-		if (name === 'screenDirection') {
+		if (name === "screenDirection") {
 			// isMsg = false;
-			if (!['1', '2', '3', '4'].includes(value)) {
-				return screenDirection
+			if (!["1", "2", "3", "4"].includes(value)) {
+				return screenDirection;
 			}
-			document.body.className=`body init screenDirection-${value}`
+			document.body.className = `body init screenDirection-${value}`;
 			// window.postMessage({})
 			// setTimeout(() => {
 			// 	dispatchCustomEvent('message', { data:{type: 'screenDirection', }})
 			// })
-
-
 		}
 		console.log({ value, name });
 		const newSetting = { ...cache.setting, [name]: +value };
 		console.log({ newSetting });
-		setCache('setting', newSetting);
-		isMsg && postMsg('updateReadSetting', { key: `readSetting.${name}`, value: +value });
+		setCache("setting", newSetting);
+		isMsg &&
+			postMsg("updateReadSetting", {
+				key: `readSetting.${name}`,
+				value: +value,
+			});
 	}
 
 	function addTheme() {
-		console.warn('addTheme');
+		console.warn("addTheme");
 	}
 
 	/**
@@ -187,7 +216,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	function clickItem(item) {
 		let i = item.dataset.id;
 		const use = +i || 0;
-		postMsg('changeUseTheme', use);
+		postMsg("changeUseTheme", use);
 		// 更新主题
 		changeTheme(use, true);
 		// 更新menu
@@ -195,7 +224,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		// 缓存数据
 		// setCache('changeTheme', { ...cache.changeTheme, use });
 		cache.setting.theme.use = use;
-		setCache('setting', cache.setting);
+		setCache("setting", cache.setting);
 	}
 
 	/**
@@ -203,7 +232,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	 */
 	el.zenModeButton.onclick = function () {
 		// 进入禅模式
-		postMsg('toggleZenMode');
+		postMsg("toggleZenMode");
 	};
 
 	// el.turnScreenButton.onclick = function () {
@@ -211,22 +240,21 @@ window.addEventListener('DOMContentLoaded', function () {
 	// 	// postMsg('toggleZenMode');
 	// };
 
-
 	/** 隐藏menu相关逻辑 */
 	function hideContextMenu() {
 		if (!isShow) return;
 		isShow = false;
-		el.contextmenu.style = '';
+		el.contextmenu.style = "";
 	}
-	document.body.addEventListener('click', hideContextMenu);
-	el.contextmenu.addEventListener('click', e => {
+	document.body.addEventListener("click", hideContextMenu);
+	el.contextmenu.addEventListener("click", (e) => {
 		e.stopPropagation();
 	});
 	// window.addEventListener('blur', hideContextMenu);
 });
 
 export let showContextMenu = (x, y) => {
-	throw new Error('webview=>contextMenu=>showContextMenu uninitialized ');
+	throw new Error("webview=>contextMenu=>showContextMenu uninitialized ");
 };
 
 /**
@@ -242,16 +270,16 @@ export function getThemeStyleRule(theme) {
 	--btnActive: ${theme.btnActive};
 	--btnActiveBorder:${theme.btnActiveBorder};
 
-	--navBg: ${theme.navBg || 'var(--bg)'} ;
-	--textColor:  ${theme.textColor || 'var(--color)'} ;`;
+	--navBg: ${theme.navBg || "var(--bg)"} ;
+	--textColor:  ${theme.textColor || "var(--color)"} ;`;
 
 	// theme.color
 	if (isHexColor(theme.bg)) {
-		s += ` --bg-rgb:${hexToRGB(theme.bg).join(',')}; `;
+		s += ` --bg-rgb:${hexToRGB(theme.bg).join(",")}; `;
 	}
 	// theme.color
 	if (isHexColor(theme.color)) {
-		s += ` --color-rgb:${hexToRGB(theme.color).join(',')}; `;
+		s += ` --color-rgb:${hexToRGB(theme.color).join(",")}; `;
 	}
 	return s;
 }
@@ -266,7 +294,7 @@ function isHexColor(str) {
 
 function hexToRGB(hex) {
 	// 去除前缀 #
-	hex = hex.replace(/^#/, '');
+	hex = hex.replace(/^#/, "");
 	// 提取RR, GG, BB分量
 	const r = parseInt(hex.slice(0, 2), 16);
 	const g = parseInt(hex.slice(2, 4), 16);
