@@ -116,6 +116,7 @@ window.addEventListener("DOMContentLoaded", function () {
 			el.systemTheme.querySelector(".icon")?.classList.add("on");
 		} else {
 			el.systemTheme.querySelector(".icon")?.classList.remove("on");
+
 		}
 		// 更新滚动速度,zoom等
 

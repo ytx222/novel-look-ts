@@ -113,6 +113,7 @@ async function initWebView(title: string, list: string[]) {
 	}
 	console.warn(themeSetting);
 
+
 	let setting = {
 		...readSetting,
 		theme: themeSetting,
