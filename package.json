@@ -2,7 +2,7 @@
 	"name": "novel-look-ts",
 	"displayName": "novel-look2",
 	"description": "高性能,支持高度自定义操作的看(mo)书(yu)插件",
-	"version": "2.1.6",
+	"version": "2.1.7",
 	"keywords": [
 		"novel",
 		"摸鱼",
@@ -183,23 +183,44 @@
 								"type": "string",
 								"default": "#FFF",
 								"title": "可选属性,正文文字文字颜色,默认=color,建议不要修改,直接改color即可"
+							},
+							"fontWidght": {
+								"type": "string",
+								"default": "400",
+								"title": "可选属性,正文文字文字颜色,默认=color,建议不要修改,直接改color即可"
+							},
+							"fontFamily": {
+								"type": "string",
+								"default": "#FFF",
+								"title": "可选属性,正文文字文字颜色,默认=color,建议不要修改,直接改color即可"
 							}
 						},
 						"required": [
-							"name",
-							"bg",
-							"color",
-							"btnBg",
-							"btnColor",
-							"btnActive",
-							"btnActiveBorder"
+							"name"
 						]
 					},
-					"default": [],
+					"default": [
+						{
+							"name": "默认"
+						},
+						{
+							"name": "绿色",
+							"bg": "#cbd9c0",
+							"color": "#303b33",
+							"btnBg": "#cbd9c0",
+							"btnColor": "#303b33",
+							"btnActive": "rgba(0, 0, 0, 0.2)",
+							"btnActiveBorder": "#303b33"
+						}
+					],
 					"scope": "application",
 					"description": "用户自定义主题,格式\n{name:'名称',bg:'#000', color:'#000', btnBg:'#000', btnColor:'#000', btnActive:'#000', btnActiveBorder:'#000',navBg?:'#000',textColor?:'#000',}[]"
 				}
 			}
+		},
+		"configurationDefaults": {
+			"zenMode.centerLayout": false,
+			"zenMode.showTabs": "none"
 		},
 		"commands": [
 			{

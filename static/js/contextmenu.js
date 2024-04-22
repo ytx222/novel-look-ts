@@ -15,7 +15,6 @@ window.addEventListener("DOMContentLoaded", function () {
 		customThemeContainer: document.getElementById("customThemeContainer"),
 		themeContainer: document.getElementById("themeContainer"),
 		zenModeButton: document.querySelector(".contextmenu-item.zen-mode"),
-		systemTheme: this.themeContainer.querySelector(".system-theme"),
 
 		scrollSpeedInput: document.getElementById("scroll-speed-input"),
 		zoomInput: document.getElementById("zoom-input"),
@@ -110,14 +109,7 @@ window.addEventListener("DOMContentLoaded", function () {
 		<div class="icon ${use === i ? "on" : ""}"></div>
 		${theme.name}</div>`
 		);
-		// 更新当前使用的主题
-		if (!~use /** use == -1 */) {
-			console.warn(el.systemTheme);
-			el.systemTheme.querySelector(".icon")?.classList.add("on");
-		} else {
-			el.systemTheme.querySelector(".icon")?.classList.remove("on");
 
-		}
 		// 更新滚动速度,zoom等
 
 		el.scrollSpeedInput.value = cache.setting.scrollSpeed;
@@ -263,16 +255,42 @@ export let showContextMenu = (x, y) => {
  * @param {ThemeItem} theme
  * @returns
  */
-export function getThemeStyleRule(theme) {
-	let s = `--bg: ${theme.bg};
-	--color: ${theme.color};
-	--btnBg: ${theme.btnBg};
-	--btnColor: ${theme.btnColor};
-	--btnActive: ${theme.btnActive};
-	--btnActiveBorder:${theme.btnActiveBorder};
+export function getThemeStyleRule(theme = {}) {
+	const defaultKeys = {
+		navBg: "bg",
+		textColor: "color",
+		// fontFamily: "default-font-family",
+	};
+	let list = [
+		...new Set([
+			...Object.keys(theme),
+			...Object.keys(defaultKeys),
+		]).values(),
+	];
+	console.log(list);
 
-	--navBg: ${theme.navBg || "var(--bg)"} ;
-	--textColor:  ${theme.textColor || "var(--color)"} ;`;
+	list = list.map((k) => {
+		if (defaultKeys[k])
+			return `--${k}: ${theme[k] || `var(--${defaultKeys[k]})`};`;
+		if (!theme[k]) return;
+		return ` --${k}:${theme[k]};`;
+	});
+	console.log(list);
+
+	let s = list.filter(Boolean).join("\n");
+	console.warn({ s, theme });
+
+	// let s = `
+	// --bg: var(--default-bg);
+	// --bg:${theme.bg };
+	// --color: ${theme.color};
+	// --btnBg: ${theme.btnBg};
+	// --btnColor: ${theme.btnColor};
+	// --btnActive: ${theme.btnActive};
+	// --btnActiveBorder:${theme.btnActiveBorder};
+
+	// --navBg: ${theme.navBg || "var(--bg)"} ;
+	// --textColor:  ${theme.textColor || "var(--color)"} ;`;
 
 	// theme.color
 	if (isHexColor(theme.bg)) {

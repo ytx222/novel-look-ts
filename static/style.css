@@ -671,11 +671,17 @@
 	--btnBg: var(--vscode-input-background);
 	--btnActive: var(--vscode-inputOption-activeBackground);
 	--btnActiveBorder: var(--vscode-inputValidation-infoBorder);
-	/* --btnActive: var(--vscode-inputOption-hoverBackground); */
-	/* --btnDefaultBorder:var(--vscode-input-placeholderForeground); */
+	/**/
+	/* TODO: 系统默认主题的weight设置为300 */
 	/* 计算出的主题参数 */
 	--bg-rgb: 255, 255, 255;
 	--color-rgb: 0, 0, 0;
+
+	--default-font-family: "Microsoft YaHei";
+	--fontFamily: "Microsoft YaHei";
+
+	--default-font-weight:var(--vscode-font-weight);
+	--fontWeight: var(--vscode-font-weight);
 
 	/* 默认继承的 */
 	--navBg: var(--bg);
@@ -703,12 +709,16 @@
 	/** screenDirection*/
 	--fullWidth: 100vw;
 	--fullHeight: 100vh;
+
+
+
 }
 
 html {
 	font-size: 16px;
 	font-size: calc(var(--rootFontSize) * var(--zoom));
 	background: var(--bg);
+
 }
 /* ::-webkit-scrollbar-thumb{
 	background: var(--color);
@@ -728,6 +738,10 @@ body {
 	flex-direction: column;
 	width: var(--fullWidth);
 	height: var(--fullHeight);
+
+	font-family:var(--fontFamily);
+	font-weight:var(--fontWeight);
+
 }
 body.init {
 	display: flex;
@@ -760,6 +774,8 @@ button,
 	border-radius: 4px;
 	outline: none;
 	box-sizing: border-box;
+	font-family:var(--fontFamily);
+	font-weight:var(--fontWeight);
 }
 button:hover,
 .button:hover,
@@ -1106,7 +1122,8 @@ button:active,
 	opacity: 0.3;
 }
 
-.contextmenu-item.title:hover::after {
+.contextmenu-item.title:hover::after,
+.contextmenu-item.theme-item:hover::after {
 	content: none;
 }
 .contextmenu-item:hover::after {
@@ -1123,18 +1140,23 @@ button:active,
 }
 
 .theme-item {
+	/* 默认这里会继承:root的,这里手动指定一下  */
+	--textColor: var(--color);
+	/* 默认值 */
+	--fontFamily:var(--default-font-family);
+	--fontWeight:var(--default-font-weight);
+	--bg: var(--vscode-editor-background);
+	--color: var(--vscode-editor-foreground);
+
 	display: flex;
 	padding-left: calc(var(--smallZoomSize) * 1.1);
 	color: var(--textColor);
 	background: var(--bg);
 	align-items: center;
+	font-family:var(--fontFamily);
+	font-weight:var(--fontWeight);
 }
 
-.theme-item.system-theme {
-	--bg: var(--vscode-editor-background);
-	--color: var(--vscode-editor-foreground);
-	--textColor: var(--color);
-}
 .theme-item .icon {
 	--iconSize: calc(var(--smallZoomSize) * 0.5);
 
@@ -1149,6 +1171,14 @@ button:active,
 	box-sizing: border-box;
 	align-items: center;
 	justify-content: center;
+}
+.theme-item:hover .icon:not(.on):after{
+	content: ' ';
+	--size: 40%;
+	width: var(--size);
+	height: var(--size);
+	background: var(--bg);
+	border-radius: 50%;
 }
 .theme-item .icon.on::after {
 	/* 1.60倍 */

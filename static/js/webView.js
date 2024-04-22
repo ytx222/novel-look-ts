@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { log, sleep } from './util.js';
+import { log, sleep } from "./util.js";
 
 import {
 	//
@@ -10,7 +10,7 @@ import {
 	postMsg,
 	nextChapter,
 	prevChapter,
-} from './vscodeApi.js';
+} from "./vscodeApi.js";
 import {
 	//
 	el,
@@ -22,34 +22,32 @@ import {
 	dispatchCustomEvent,
 	getStyleRule,
 	updateHeaderTime,
-} from './dom.js';
-import { autoScrollScreen, scrollFunc } from './scroll.js';
-import './contextmenu.js';
-import { getThemeStyleRule, showContextMenu } from './contextmenu.js';
+} from "./dom.js";
+import { autoScrollScreen, scrollFunc } from "./scroll.js";
+import "./contextmenu.js";
+import { getThemeStyleRule, showContextMenu } from "./contextmenu.js";
 /** 每次重新渲染(调用render方法)加1 */
 export let renderId = 0;
 export const isFirstRender = () => renderId <= 1;
 
 let themeSheetRuleIndex;
 
-
 // 渲染id,其实就是渲染次数自增,用于判断是否重新渲染了以便于重新加载尺寸信息等
 let fn = {
 	undefined() {
-		console.error('webView端找不到处理程序,无法执行');
+		console.error("webView端找不到处理程序,无法执行");
 	},
 	/*设置一些公共设置,如行高,行间隔,字体大小等*/
 	setting(data) {
-		setCache('setting', data);
+		setCache("setting", data);
 		// setCache('changeTheme', data);
-		let sheetEl = document.querySelector('style');
 		// 这里多一个.body,以达到更高匹配级别
-		sheetEl.sheet.insertRule(`.body .main .content div{
+		el.sheet.sheet.insertRule(`.body .main .content div{
 				text-indent: ${data.lineIndent}em;
 				font-size:1rem;
 		}`);
 		// 动态注入一些css变量
-		sheetEl.sheet.insertRule(`:root:root{
+		el.sheet.sheet.insertRule(`:root:root{
 			--rootFontSize: ${data.rootFontSize}px;
 			--zoom: ${data.zoom};
 		}`);
@@ -60,11 +58,11 @@ let fn = {
 		} else {
 			setInterval(updateHeaderTime, 1000);
 			updateHeaderTime();
-			el.nav.classList.add('left');
+			el.nav.classList.add("left");
 		}
 		// window.focus()
 
-		document.body.className=`body init screenDirection-${cache.setting.screenDirection}`
+		document.body.className = `body init screenDirection-${cache.setting.screenDirection}`;
 	},
 	/*显示章节*/
 	showChapter(data) {
@@ -73,7 +71,7 @@ let fn = {
 			return;
 		}
 		// console.warn('开始显示章节', data.title, cache, data);
-		setCache('showChapter', data);
+		setCache("showChapter", data);
 		render(data.title, data.list);
 		// 初次渲染后,renderId 是1
 		if (!isFirstRender()) {
@@ -103,18 +101,17 @@ let fn = {
 };
 
 export function changeTheme(index) {
-		console.warn('changeTheme', index);
+	console.warn("changeTheme", index);
 	cache.setting.theme.use = index;
 	const sheet = el.sheet.sheet;
-	const rule = getStyleRule(':root:root:root');
+	const rule = getStyleRule(":root:root:root");
 	console.log({
 		sheet,
 		themeSheetRuleIndex,
 		index,
 		renderId,
 	});
-		console.log(isFirstRender(), renderId);
-
+	console.log(isFirstRender(), renderId);
 
 	// 使用系统默认主题
 	if (index !== 0) {
@@ -125,10 +122,13 @@ export function changeTheme(index) {
 		// 使用自定义主题
 		if (rule) rule.style = ruleContent;
 		else {
-			themeSheetRuleIndex = sheet.insertRule(`:root:root:root{${ruleContent}}`);
+			console.log(sheet, el.sheet);
+			themeSheetRuleIndex = sheet.insertRule(
+				`:root:root:root{${ruleContent}}`
+			);
 		}
 	} else if (rule) {
-		rule.style = '';
+		rule.style = "";
 	}
 }
 
@@ -142,7 +142,7 @@ function render(title, lines) {
 	el.navTitle.innerText = title;
 	el.navTitle.title = title;
 	let list = el.content.children;
-	el.content.style.display = 'none';
+	el.content.style.display = "none";
 	if (list.length < lines.length) {
 		addLine(lines.length - list.length);
 	}
@@ -153,13 +153,13 @@ function render(title, lines) {
 		if (i < lines.length) {
 			list[i].innerText = lines[i];
 			list[i].dataset.i = i;
-			list[i].style = '';
+			list[i].style = "";
 		} else {
-			list[i].style.display = 'none';
+			list[i].style.display = "none";
 		}
 	}
 
-	el.content.style.display = 'block';
+	el.content.style.display = "block";
 	// 修改渲染id,告诉其他人我重新渲染了
 	renderId++;
 	// console.log('子页面render', renderId);
@@ -171,14 +171,14 @@ function render(title, lines) {
 function addLine(num) {
 	// 因为前期肯定隐藏过了dom,这里不在隐藏
 	for (var i = 0; i < num; i++) {
-		el.content.appendChild(document.createElement('div'));
+		el.content.appendChild(document.createElement("div"));
 	}
 }
-window.addEventListener('DOMContentLoaded', function () {
-	window.addEventListener('message', function (e) {
+window.addEventListener("DOMContentLoaded", function () {
+	window.addEventListener("message", function (e) {
 		let data = e.data.data;
 		let type = e.data.type;
-		console.log('子页面-message', type, data);
+		console.log("子页面-message", type, data);
 		fn[type](data);
 		// postMsg('type'+'_end')
 	});
@@ -187,7 +187,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	 **********************************/
 	let data = getState();
 	if (data) {
-		console.warn('是隐藏后的', data);
+		console.warn("是隐藏后的", data);
 		for (var item in data) {
 			fn[item]?.(data[item]);
 		}
@@ -197,32 +197,32 @@ window.addEventListener('DOMContentLoaded', function () {
 		换章和其他需要和拓展交互的功能
 	**********************************/
 	window.onkeydown = function (e) {
-		console.log('KEY onkeyup ', e.key);
+		console.log("KEY onkeyup ", e.key);
 		const flag = e.altKey || e.shiftKey || e.ctrlKey;
 		switch (e.key.toLowerCase()) {
 			//FIXME:手动处理tab事件
 			// case 'Tab':
 			// 	e.stopPropagation()
 			// 	return false
-			case 'arrowright': //下一章
-			case !flag && 'd':
+			case "arrowright": //下一章
+			case !flag && "d":
 				return nextChapter();
-			case 'arrowleft': //上一章
-			case !flag && 'a':
+			case "arrowleft": //上一章
+			case !flag && "a":
 				return prevChapter();
-			case 'arrowdown': //向下翻页
-			case !flag && 's':
+			case "arrowdown": //向下翻页
+			case !flag && "s":
 				return scrollScreen(1, e);
-			case 'arrowup': //向上翻页
-			case !flag && 'w':
+			case "arrowup": //向上翻页
+			case !flag && "w":
 				return scrollScreen(-1, e);
 			//检查是否触底,如果触底,下一章,没有则向下
 			// 空格是向下翻页,
-			case ' ':
+			case " ":
 				return nextPageOrChapter(e);
-			case '.':
+			case ".":
 				// 多判断一下是不是数字键盘的.
-				if (e.code === 'NumpadDecimal') {
+				if (e.code === "NumpadDecimal") {
 					let t = Date.now();
 					let count = 60;
 					let maxCount = count * 0.33;
@@ -233,7 +233,7 @@ window.addEventListener('DOMContentLoaded', function () {
 						if (count--) {
 							requestAnimationFrame(fn);
 						} else {
-							console.log('动画完成,时间', Date.now() - t);
+							console.log("动画完成,时间", Date.now() - t);
 							saveScroll();
 						}
 					};
@@ -258,19 +258,18 @@ window.addEventListener('DOMContentLoaded', function () {
 		}
 	};
 
-	document.querySelector('.footer .btn-box .prev').onclick = prevChapter;
-	document.querySelector('.footer .btn-box .next').onclick = nextChapter;
-	document.querySelector('.nav button.prev').onclick = prevChapter;
-	document.querySelector('.nav button.next').onclick = nextChapter;
+	document.querySelector(".footer .btn-box .prev").onclick = prevChapter;
+	document.querySelector(".footer .btn-box .next").onclick = nextChapter;
+	document.querySelector(".nav button.prev").onclick = prevChapter;
+	document.querySelector(".nav button.next").onclick = nextChapter;
 	el.content.ondblclick = autoScrollScreen;
-	el.sideNextBtns.forEach(e => {
+	el.sideNextBtns.forEach((e) => {
 		// TODO: 增加防抖???
 		e.onclick = nextPageOrChapter;
 		// 暂时继续使用局部滚动
-		e.onmousewheel = e => scrollFunc(e, true);
+		e.onmousewheel = (e) => scrollFunc(e, true);
 		// 拦截双击
-		e.ondblclick = e => e.stopPropagation();
-
+		e.ondblclick = (e) => e.stopPropagation();
 	});
 
 	/**
@@ -278,17 +277,17 @@ window.addEventListener('DOMContentLoaded', function () {
 	 * scrollAntiShake里面包含了业务逻辑
 	 */
 	let scrollTimer;
-	el.main.addEventListener('scroll', () => {
+	el.main.addEventListener("scroll", () => {
 		clearTimeout(scrollTimer);
 		scrollTimer = setTimeout(scrollAntiShake, 50);
 	});
 	function scrollAntiShake() {
 		// console.log('scroll=====');
 		if (isPageEnd()) {
-			el.sideNextBtns.forEach(e => e.classList.add('right'));
+			el.sideNextBtns.forEach((e) => e.classList.add("right"));
 		} else {
-			el.sideNextBtns.forEach(e => {
-				e.classList.remove('right');
+			el.sideNextBtns.forEach((e) => {
+				e.classList.remove("right");
 			});
 		}
 	}

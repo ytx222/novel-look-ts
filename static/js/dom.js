@@ -13,7 +13,10 @@ import { cache, nextChapter, postMsg, saveScroll } from './vscodeApi.js';
  * @type {WebviewElements}
  */
 export let el;
+const sheet = document.createElement('style')
+sheet.className='theme-sheet'
 
+document.head.appendChild(sheet)
 export function initEl() {
 	let _el = {
 		main: document.querySelector('.main'),
@@ -26,7 +29,7 @@ export function initEl() {
 		navTitle: document.querySelector('.nav .title'),
 		navTime: document.querySelector('.nav .time'),
 		sideNextBtns: document.querySelectorAll('.function-box .side-next-btn'),
-		sheet: document.querySelector('style'),
+		sheet,
 	};
 	el = _el;
 	return _el;
@@ -149,6 +152,7 @@ export function dispatchCustomEvent(eventName, eventProperty = {}) {
  */
 export function getStyleRule(selector) {
 	let rules = el?.sheet?.sheet?.cssRules;
+	console.log('getStyleRule',rules);
 	// if (!rules) return null;
 	for (var i = 0; i < rules?.length; i++) {
 		if (rules[i].selectorText === selector) {
