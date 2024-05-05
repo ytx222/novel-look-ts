@@ -7,15 +7,18 @@ import { init, command } from './index';
 // 此方法在您的扩展被激活时被调用
 // 您的扩展是激活的第一次命令被执行
 /**
- * 拓展激活的事件,激活拓展时执行,拓展激活事件只会执行一次
+ * 拓展激活的事件,激活拓展时执行,拓展激活事件只会执一次
  */
 export function activate(context: vscode.ExtensionContext) {
 	let t = console.warn;
 	t('novel-look-ts 拓展初始化');
-	// t('novel-look-ts packageJSON', context.extension.packageJSON);
+
+	t(context.globalStorageUri)
+	t('novel-look-ts 拓展初始化222');
+	// t('novel-look-ts packageSJ
 	// console.log(context.globalState);
 	// console.log(context.globalStoragePath);
-	// console.log(context.globalStorageUri);
+	console.log(context.globalStorageUri);
 	// 初始化自己的文件夹
 
 	init(context);
