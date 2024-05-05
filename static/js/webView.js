@@ -22,6 +22,7 @@ import {
 	dispatchCustomEvent,
 	getStyleRule,
 	updateHeaderTime,
+	updateBtn2Area
 } from "./dom.js";
 import { autoScrollScreen, scrollFunc } from "./scroll.js";
 import "./contextmenu.js";
@@ -76,6 +77,8 @@ let fn = {
 		// 初次渲染后,renderId 是1
 		if (!isFirstRender()) {
 			setScroll(0);
+		} else {
+			updateBtn2Area()
 		}
 		renderId++;
 	},
@@ -265,7 +268,7 @@ window.addEventListener("DOMContentLoaded", function () {
 	el.content.ondblclick = autoScrollScreen;
 	el.sideNextBtns.forEach((e) => {
 		// TODO: 增加防抖???
-		e.onclick = nextPageOrChapter;
+		if (!e.onclick) e.onclick = nextPageOrChapter;
 		// 暂时继续使用局部滚动
 		e.onmousewheel = (e) => scrollFunc(e, true);
 		// 拦截双击

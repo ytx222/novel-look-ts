@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { cache, nextChapter, postMsg, saveScroll } from './vscodeApi.js';
+import { cache, nextChapter, postMsg, saveScroll } from "./vscodeApi.js";
 
 /**
  * 此文件的定位是提供dom相关的操作,但是不包含业务逻辑
@@ -13,22 +13,23 @@ import { cache, nextChapter, postMsg, saveScroll } from './vscodeApi.js';
  * @type {WebviewElements}
  */
 export let el;
-const sheet = document.createElement('style')
-sheet.className='theme-sheet'
+const sheet = document.createElement("style");
+sheet.className = "theme-sheet";
 
-document.head.appendChild(sheet)
+document.head.appendChild(sheet);
 export function initEl() {
 	let _el = {
-		main: document.querySelector('.main'),
-		title: document.querySelector('.main .header .title'),
+		main: document.querySelector(".main"),
+		title: document.querySelector(".main .header .title"),
 		// content: document.querySelector('.main .content'),
 		get content() {
-			return document.querySelector('.main .content');
+			return document.querySelector(".main .content");
 		},
-		nav: document.querySelector('.nav'),
-		navTitle: document.querySelector('.nav .title'),
-		navTime: document.querySelector('.nav .time'),
-		sideNextBtns: document.querySelectorAll('.function-box .side-next-btn'),
+		nav: document.querySelector(".nav"),
+		navTitle: document.querySelector(".nav .title"),
+		navTime: document.querySelector(".nav .time"),
+		sideNextBtns: document.querySelectorAll(".function-box .side-next-btn"),
+		btn2: document.querySelector(".btn2"),
 		sheet,
 	};
 	el = _el;
@@ -37,7 +38,7 @@ export function initEl() {
 
 /** @returns {number} 获取主滚动区域的滚动高度 */
 export let getScroll = () => el.main.scrollTop;
-export let setScroll = h => el.main.scrollTo(0, h);
+export let setScroll = (h) => el.main.scrollTo(0, h);
 
 /**
  * 页面是否触底
@@ -61,7 +62,10 @@ export function scrollScreen(direction = 1, event) {
 	event?.preventDefault();
 	// let cur = window.scrollY;
 	let cur = getScroll();
-	let h =  el.main.clientHeight - el.nav.clientHeight - 50 * (cache.setting?.zoom || 1);
+	let h =
+		el.main.clientHeight -
+		el.nav.clientHeight -
+		50 * (cache.setting?.zoom || 1);
 	const newH = cur + h * direction;
 	// setScroll(newH);
 	el.main.scrollTo({
@@ -106,7 +110,7 @@ export function* ElementParentIterator(el) {
  */
 export function formatNumber(v) {
 	const num = v.toString();
-	return num[1] ? num : '0' + num;
+	return num[1] ? num : "0" + num;
 }
 
 export function updateHeaderTime() {
@@ -115,14 +119,16 @@ export function updateHeaderTime() {
 
 	const oldTime = el?.navTime?.innerText;
 	const date = new Date();
-	const newTime = `${formatNumber(date.getHours() % 12)}:${formatNumber(date.getMinutes())}`;
+	const newTime = `${formatNumber(date.getHours() % 12)}:${formatNumber(
+		date.getMinutes()
+	)}`;
 	if (newTime !== oldTime) el.navTime.innerText = newTime;
 }
 
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener("DOMContentLoaded", function () {
 	initEl();
 	// 时间显示
-
+	handleBtn2Click();
 });
 
 /**
@@ -139,7 +145,7 @@ export function dispatchCustomEvent(eventName, eventProperty = {}) {
 		try {
 			event[item] = eventProperty[item];
 		} catch (error) {
-			console.log('eventProperty copy', error);
+			console.log("eventProperty copy", error);
 		}
 	}
 	window.dispatchEvent(event);
@@ -152,7 +158,7 @@ export function dispatchCustomEvent(eventName, eventProperty = {}) {
  */
 export function getStyleRule(selector) {
 	let rules = el?.sheet?.sheet?.cssRules;
-	console.log('getStyleRule',rules);
+	console.log("getStyleRule", rules);
 	// if (!rules) return null;
 	for (var i = 0; i < rules?.length; i++) {
 		if (rules[i].selectorText === selector) {
@@ -163,11 +169,65 @@ export function getStyleRule(selector) {
 }
 
 window.onresize = function (e) {
-	console.log('onresize', e);
+	console.log("onresize", e);
 	//innerWidth: 1920
 	// console.log(isFullscreen());
 	// document.body.requestFullscreen();
+	updateBtn2Area();
 };
+
+const center = {
+	// 家里电脑
+	x: 0,
+	y: 0,
+	size: 0,
+};
+const isArea = (e) => {
+	console.log(e.x, e.y, center);
+	return (
+		Math.abs(e.x - center.x) < center.size &&
+		Math.abs(e.y - center.y) < center.size
+	);
+};
+export const updateBtn2Area = (init) => {
+	// 已经初始化,不重复初始化
+	if (init && center.size) return;
+	if (!el.btn2) return;
+
+	let area = el.btn2.getBoundingClientRect();
+	console.log(area);
+	center.x = area.x + area.width / 2;
+	center.y = area.y + area.width / 2;
+	center.size = area.width / 2;
+	console.log(center);
+};
+
+window.addEventListener("load", () => {
+	updateBtn2Area(true);
+	setTimeout(() => {
+		updateBtn2Area(true);
+	}, 100);
+});
+
+function handleBtn2Click() {
+	console.log("handleBtn2Click", el?.btn2);
+	if (!el?.btn2) return;
+
+	// btn2.onclick
+	document.addEventListener(
+		"click",
+		(e) => {
+			console.log("document click", e);
+			console.log(isArea(e));
+			if (isArea(e)) {
+				nextPageOrChapter()
+				e.stopPropagation()
+			}
+
+		},
+		true
+	);
+}
 
 // function isFullscreen() {
 // 	return (

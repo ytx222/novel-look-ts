@@ -11,10 +11,17 @@ import {
 	saveScroll,
 	postMsg,
 	nextChapter,
-} from './vscodeApi.js';
-import { el, getScroll, getStyleRule, isPageEnd, setScroll } from './dom.js';
-import { renderId } from './webView.js';
-import { toFixed } from './util.js';
+} from "./vscodeApi.js";
+import {
+	el,
+	getScroll,
+	getStyleRule,
+	isPageEnd,
+	setScroll,
+	updateBtn2Area,
+} from "./dom.js";
+import { renderId } from "./webView.js";
+import { toFixed } from "./util.js";
 
 /**  0未滚动 1等待结束  2等待开始  3正在滚动 */
 let scrollType = 0;
@@ -50,7 +57,7 @@ export function autoScrollScreen() {
 // 这个时间如果高于10,则可能会产生滚动一卡一卡的感觉(视觉效果)
 // 以人眼24帧为标准 72, 96, 120, 144, 168, 192
 function scroll(v = 1) {
-	console.log('scroll');
+	console.log("scroll");
 	// 检查更新尺寸信息,仅在初始化和重新渲染后才更新尺寸信息
 	if (lastRenderId !== renderId) {
 		max = el.main.scrollHeight;
@@ -64,7 +71,7 @@ function scroll(v = 1) {
 		scrollEnd();
 	} else if (num > cache.readScroll + 200) {
 		// 每200高度,保存一次当前滚动高度
-		console.warn('保存高度');
+		console.warn("保存高度");
 		saveScroll(num);
 	}
 }
@@ -88,9 +95,9 @@ function scrollRestart() {
 		autoScrollScreen();
 	}, cache.setting.scrollStartTime);
 }
-window.addEventListener('chapterToggle', function () {
+window.addEventListener("chapterToggle", function () {
 	if (scrollType !== 0) {
-		console.warn('检测到章节切换时处于等待下一章状态=======', scrollType);
+		console.warn("检测到章节切换时处于等待下一章状态=======", scrollType);
 		clearInterval(timer.scroll);
 		clearTimeout(timer.toggle);
 		scrollRestart();
@@ -106,21 +113,21 @@ function getIntervalTime() {
 ****************/
 
 /** @type {HTMLDivElement} */
-let zoomEl = document.querySelector('.zoom');
+let zoomEl = document.querySelector(".zoom");
 let zoomTimer = 0;
 let scrollEndTimer = 0;
 // 隐藏zoom框
 const hideZoom = () => {
 	// zoomEl.style.opacity = 0;
-	zoomEl.classList.remove('on');
+	zoomEl.classList.remove("on");
 	zoomEl.style.opacity = 0;
 };
 function showZoom(size, zoom) {
 	zoomEl.innerText = `${size}px ${(zoom * 100).toFixed(0)}%`;
-	zoomEl.style = 'display:flex;opacity:1;';
-	zoomEl.classList.add('on');
+	zoomEl.style = "display:flex;opacity:1;";
+	zoomEl.classList.add("on");
 	zoomEl.ontransitionend = () => {
-		zoomEl.style.display = 'none';
+		zoomEl.style.display = "none";
 	};
 	clearTimeout(zoomTimer);
 	zoomTimer = setTimeout(hideZoom, 1500);
@@ -128,7 +135,7 @@ function showZoom(size, zoom) {
 //滚动滑轮触发scrollFunc方法
 document.onmousewheel = scrollFunc;
 export function scrollFunc(e, isScroll) {
-	console.log('scrollFunc', e, isScroll);
+	console.log("scrollFunc", e, isScroll);
 	// 如果是ctrl+滚轮,则放大或缩小显示
 	if (e.ctrlKey) {
 		// 先计算出新的缩放比例
@@ -139,14 +146,14 @@ export function scrollFunc(e, isScroll) {
 		let newValue = zoom + size * (n ? 1 : -1);
 		// 不是整的,则取整
 		if (newValue / size - ~~(newValue / size)) {
-			console.log('111111', newValue, toFixed(newValue / size, 0));
+			console.log("111111", newValue, toFixed(newValue / size, 0));
 			newValue = toFixed(newValue / size, 0) * size;
-			console.log('1112222111', newValue);
+			console.log("1112222111", newValue);
 		}
 		updateZoom(newValue);
 		return;
 	} else if (scrollType !== 0) {
-		console.log('e.wheelDelta', e.wheelDelta);
+		console.log("e.wheelDelta", e.wheelDelta);
 		// 如果处于自动滚屏状态,需要用这个进行滚屏,以
 		scroll(e.wheelDelta * -1);
 	} else {
@@ -181,16 +188,20 @@ export function updateZoom(zoom) {
 		if (zoom == oldZoom) return;
 	}
 	clearTimeout(zoomSaveTimer);
-	zoomSaveTimer = setTimeout(() => postMsg('zoom', zoom), 600);
+	zoomSaveTimer = setTimeout(() => postMsg("zoom", zoom), 600);
 	// 保存
 	cache.setting.zoom = zoom;
-	setCache('setting', cache.setting);
+	setCache("setting", cache.setting);
 	// 应用
 	// document.documentElement.style.fontSize = cache.setting.rootFontSize * zoom + 'px';
-	const rule = getStyleRule(':root:root');
+	const rule = getStyleRule(":root:root");
 	console.log(rule);
-	rule.style = `--rootFontSize: ${rule.styleMap.get('--rootFontSize')}; --zoom: ${zoom};`;
+	rule.style = `--rootFontSize: ${rule.styleMap.get(
+		"--rootFontSize"
+	)}; --zoom: ${zoom};`;
 	// 显示
 
 	showZoom(toFixed(cache.setting.rootFontSize * zoom), zoom);
+
+	updateBtn2Area();
 }

@@ -817,6 +817,8 @@ button:active,
 	flex: 0 0 auto;
 	/* background: calc(var(--color) + '55'); */
 	z-index: 10;
+	pointer-events:none;
+
 }
 .nav::after {
 	position: absolute;
@@ -838,6 +840,7 @@ button:active,
 	border-color: transparent;
 	border-radius: 0;
 	flex: 0 0 auto;
+	pointer-events:initial;
 }
 
 .nav .content-container {
@@ -855,10 +858,7 @@ button:active,
 	text-shadow: 0px 0px 10px var(--bg), 0px 0px 10px var(--bg),
 		0px 0px 10px var(--bg), 0px 0px 10px var(--bg), 0px 0px 10px var(--bg),
 		0px 0px 10px var(--bg);
-	/* text-shadow: 0px 0px 10px var(--color), 0px 0px 10px var(--color), 0px 0px 10px var(--color),
-		0px 0px 10px var(--color), 0px 0px 10px var(--color); */
-	/* position: relative; */
-	z-index: 99999;
+	z-index: 999;
 }
 .nav .content-container .title::after {
 	position: absolute;
@@ -1019,6 +1019,8 @@ button:active,
 	/* display: none; */
 	right: inherit;
 	/* 家里电脑 */
+	pointer-events:none;
+
 
 	/* --bottom-raw: 90px;
 	--left-raw: 136px; */
