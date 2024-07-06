@@ -200,8 +200,8 @@ window.addEventListener("DOMContentLoaded", function () {
 		换章和其他需要和拓展交互的功能
 	**********************************/
 	window.onkeydown = function (e) {
-		console.log("KEY onkeyup ", e.key);
-		const flag = e.altKey || e.shiftKey || e.ctrlKey;
+		// console.log("KEY onkeyup ", e);
+		const flag = e.altKey || e.shiftKey || e.ctrlKey || e.metaKey;
 		switch (e.key.toLowerCase()) {
 			//FIXME:手动处理tab事件
 			// case 'Tab':
