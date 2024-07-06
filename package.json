@@ -1,12 +1,15 @@
 {
 	"name": "novel-look-ts",
 	"displayName": "novel-look2",
-	"description": "高性能,支持高度自定义操作的看(mo)书(yu)插件",
-	"version": "2.1.8",
+	"description": "支持高度自定义操作的看(mo)书(yu)插件,主打高性能,主题定制(默认vscode主题)",
+	"version": "2.1.9",
 	"keywords": [
 		"novel",
 		"摸鱼",
 		"txt",
+		"小说",
+		"阅读",
+		"阅读",
 		"高性能"
 	],
 	"publisher": "ytx222",
