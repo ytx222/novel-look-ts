@@ -2,7 +2,7 @@
 	"name": "novel-look-ts",
 	"displayName": "novel-look2",
 	"description": "支持高度自定义操作的看(mo)书(yu)插件,主打高性能,主题定制(默认vscode主题)",
-	"version": "2.1.9",
+	"version": "2.1.10",
 	"keywords": [
 		"novel",
 		"摸鱼",
