@@ -1030,7 +1030,7 @@ button:active,
     --left-raw: 218px; */
 
 	--left: calc(var(--left-raw) - var(--size) * 0.5 - 16px);
-	--bottom: calc(var(--bottom-raw) - var(--size) * 0.5 - 16px);
+	--bottom: calc(var(--bottom-raw) - var(--size) * 0.5 - 12px);
 	/* --left:var( --left-raw);
 	--bottom: var(--bottom-raw); */
 	/* transform: translate(-50%, -50%); */

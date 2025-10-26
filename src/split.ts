@@ -25,7 +25,7 @@ function getChapterTitle(s: string) {
 	const t = reg2.exec(s);
 	if (t) {
 		// console.log("成功", s.substring(t[0].length).trim());
-		return s.substring(t[0].length).replace(/ /g, "");
+		return s.substring(t[0].length).replace(/ /g, "") || s;
 	}
 	return s;
 }
@@ -53,7 +53,7 @@ function isRepeat(cur: splitChapterInfo, last: splitChapterInfo) {
 export function split(s: string): splitChapterInfo[] {
 	const match = get(
 		"match.chapterName",
-		"^(?:[ \\t\\r\\f\\v]*)(第[一二两三四五六七八九十百千万零〇\\d]*[篇节部卷][ \\t\\r\\f\\v]*.*[ \\t\\r\\f\\v]*)?第[一二两三四五六七八九十百千万零〇\\d]*章[^\\n\\r]*$" as string
+		"^(?:[ \\t\\r\\f\\v]*)(第[一二两三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟万零〇\\d]*[篇节部卷][ \\t\\r\\f\\v]*.*[ \\t\\r\\f\\v]*)?第[一二两三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟万零〇\\d]*章[^\\n\\r]*$" as string
 	);
 	const reg = new RegExp(match, "gm");
 	let t;
