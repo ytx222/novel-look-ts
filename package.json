@@ -399,9 +399,9 @@
 	"homepage": "https://github.com/ytx222/novel-look-ts/blob/master/README.md",
 	"scripts": {
 		"vscode:prepublish": "npm run package",
-		"compile": "webpack",
-		"watch": "webpack --watch",
-		"package": "set NODE_OPTIONSNODE_OPTIONSNODE_OPTIONS=--openssl-legacy-provider && webpack --mode production --devtool hidden-source-map",
+		"compile": "set NODE_OPTIONS=--openssl-legacy-provider && webpack",
+		"watch": "set NODE_OPTIONS=--openssl-legacy-provider && webpack --watch",
+		"package": "set NODE_OPTIONS=--openssl-legacy-provider && webpack --mode production --devtool hidden-source-map",
 		"test-compile": "tsc -p ./",
 		"test-watch": "tsc -watch -p ./",
 		"pretest": "npm run test-compile && npm run lint",
