@@ -1,5 +1,11 @@
 /* eslint-env browser */
-import { cache, nextChapter, postMsg, saveScroll } from "./vscodeApi.js";
+import {
+	cache,
+	nextChapter,
+	postMsg,
+	prevChapter,
+	saveScroll,
+} from "./vscodeApi.js";
 
 /**
  * 此文件的定位是提供dom相关的操作,但是不包含业务逻辑
@@ -17,6 +23,9 @@ const sheet = document.createElement("style");
 sheet.className = "theme-sheet";
 
 document.head.appendChild(sheet);
+
+/** 滚动冗余区间 */
+const scrollThreshold = 10;
 export function initEl() {
 	let _el = {
 		main: document.querySelector(".main"),
@@ -49,8 +58,8 @@ export function isPageEnd(curScroll = getScroll()) {
 	const h = el.main.scrollHeight;
 	// 当前滚动top+元素可视大小(元素大小)
 	const curH = curScroll + el.main.clientHeight;
-	// 如果距离小于10.就认为触底了
-	return h - curH < 10;
+	// 如果距离小于scrollThreshold.就认为触底了
+	return h - curH < scrollThreshold;
 }
 
 /**
@@ -66,7 +75,8 @@ export function scrollScreen(direction = 1, event) {
 		el.main.clientHeight -
 		el.nav.clientHeight -
 		50 * (cache.setting?.zoom || 1);
-	const newH = cur + h * direction;
+	// 最大值不能超过总滚动高度
+	const newH = Math.min(cur + h * direction, el.main.scrollHeight);
 	// setScroll(newH);
 	el.main.scrollTo({
 		left: 0,
@@ -86,6 +96,25 @@ export function nextPageOrChapter(event) {
 	if (flag) nextChapter();
 	// 空格自带翻页效果
 	else scrollScreen(1, event);
+
+	return flag;
+}
+
+export function prevPageOrChapter(event) {
+	console.log("prevPageOrChapter");
+	let flag = getScroll() < scrollThreshold;
+	if (flag) {
+		prevChapter();
+		window.addEventListener(
+			"showChapterAfter",
+			function () {
+				scrollScreen(1e10);
+			},
+			{ once: true }
+		);
+	}
+	// 空格自带翻页效果
+	else scrollScreen(-1, event);
 
 	return flag;
 }
@@ -220,10 +249,9 @@ function handleBtn2Click() {
 			console.log("document click", e);
 			console.log(isArea(e));
 			if (isArea(e)) {
-				nextPageOrChapter()
-				e.stopPropagation()
+				nextPageOrChapter();
+				e.stopPropagation();
 			}
-
 		},
 		true
 	);

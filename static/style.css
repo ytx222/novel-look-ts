@@ -848,6 +848,7 @@ button:active,
 	height: 100%;
 	flex: 1 0 auto;
 	order: 5;
+	overflow: hidden;
 }
 .nav .content-container .title {
 	width: initial;
@@ -855,9 +856,10 @@ button:active,
 	text-overflow: ellipsis;
 	white-space: nowrap;
 
-	text-shadow: 0px 0px 10px var(--bg), 0px 0px 10px var(--bg),
+	/* text-shadow: 0px 0px 10px var(--bg), 0px 0px 10px var(--bg),
 		0px 0px 10px var(--bg), 0px 0px 10px var(--bg), 0px 0px 10px var(--bg),
-		0px 0px 10px var(--bg);
+		0px 0px 10px var(--bg); */
+		background-color: var(--bg);
 	z-index: 999;
 }
 .nav .content-container .title::after {

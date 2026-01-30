@@ -85,7 +85,6 @@ export class Chapter extends vscode.TreeItem {
 			title: this.label,
 			i: this.i,
 			bookName: this.book.label,
-
 			fullPath: this.book.fullPath,
 		};
 		setState('lastOpenChapter', data);

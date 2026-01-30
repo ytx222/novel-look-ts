@@ -19,10 +19,11 @@ import {
 	isPageEnd,
 	scrollScreen,
 	nextPageOrChapter,
+	prevPageOrChapter,
 	dispatchCustomEvent,
 	getStyleRule,
 	updateHeaderTime,
-	updateBtn2Area
+	updateBtn2Area,
 } from "./dom.js";
 import { autoScrollScreen, scrollFunc } from "./scroll.js";
 import "./contextmenu.js";
@@ -78,9 +79,12 @@ let fn = {
 		if (!isFirstRender()) {
 			setScroll(0);
 		} else {
-			updateBtn2Area()
+			updateBtn2Area();
 		}
 		renderId++;
+		setTimeout(() => {
+			dispatchCustomEvent("showChapterAfter", data);
+		}, 0);
 	},
 	// 只会被插件层调用
 	readScroll(data) {
@@ -215,10 +219,12 @@ window.addEventListener("DOMContentLoaded", function () {
 				return prevChapter();
 			case "arrowdown": //向下翻页
 			case !flag && "s":
-				return scrollScreen(1, e);
+				// return scrollScreen(1, e);
+				return nextPageOrChapter(e);
 			case "arrowup": //向上翻页
 			case !flag && "w":
-				return scrollScreen(-1, e);
+				// return scrollScreen(-1, e);
+				return prevPageOrChapter(e);
 			//检查是否触底,如果触底,下一章,没有则向下
 			// 空格是向下翻页,
 			case " ":
